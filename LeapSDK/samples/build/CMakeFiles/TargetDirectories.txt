@@ -1,0 +1,11 @@
+C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build/CMakeFiles/CallbackSample.dir
+C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build/CMakeFiles/ImageSample.dir
+C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build/CMakeFiles/RecordPlaybackSample.dir
+C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build/CMakeFiles/GLUTRectifiedImageSample.dir
+C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build/CMakeFiles/InterpolationSample.dir
+C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build/CMakeFiles/PollingSample.dir
+C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build/CMakeFiles/GLUTSample.dir
+C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build/CMakeFiles/GLUTImageSample.dir
+C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build/CMakeFiles/GLUTDistortionShaderSample.dir
+C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build/CMakeFiles/ZERO_CHECK.dir

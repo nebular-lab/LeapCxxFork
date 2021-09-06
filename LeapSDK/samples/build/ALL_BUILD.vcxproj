@@ -1,0 +1,213 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B8D6E86A-9C05-3356-973E-667936C91E67}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\CMakeLists.txt">
+      <StdOutEncoding>UTF-8</StdOutEncoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples -BC:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build --check-stamp-file C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\WindowsPaths.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\cmake\LeapSDK\leapsdk-config.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\cmake\LeapSDK\leapsdk-configVersion.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\x64\cmake\LeapCTargets-release.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\x64\cmake\LeapCTargets.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeCCompiler.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeCXXCompiler.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeRCCompiler.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples -BC:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build --check-stamp-file C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\WindowsPaths.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\cmake\LeapSDK\leapsdk-config.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\cmake\LeapSDK\leapsdk-configVersion.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\x64\cmake\LeapCTargets-release.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\x64\cmake\LeapCTargets.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeCCompiler.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeCXXCompiler.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeRCCompiler.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples -BC:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build --check-stamp-file C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\WindowsPaths.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\cmake\LeapSDK\leapsdk-config.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\cmake\LeapSDK\leapsdk-configVersion.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\x64\cmake\LeapCTargets-release.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\x64\cmake\LeapCTargets.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeCCompiler.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeCXXCompiler.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeRCCompiler.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples -BC:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build --check-stamp-file C:/Users/hiran/Source/Repos/LEAP/LeapSDK/samples/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeCInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Compiler\MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows-MSVC-C.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.20\Modules\Platform\WindowsPaths.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\cmake\LeapSDK\leapsdk-config.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\cmake\LeapSDK\leapsdk-configVersion.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\x64\cmake\LeapCTargets-release.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\lib\x64\cmake\LeapCTargets.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeCCompiler.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeCXXCompiler.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeRCCompiler.cmake;C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\3.20.3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\ZERO_CHECK.vcxproj">
+      <Project>{5C840E9A-5712-374E-9A98-9EFD14C2E639}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CallbackSample.vcxproj">
+      <Project>{E0035AC1-B3CF-39B0-9729-7BFA9777D4D4}</Project>
+      <Name>CallbackSample</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\GLUTDistortionShaderSample.vcxproj">
+      <Project>{C6AE594B-2A7E-35A5-AEF1-BEFE8FDFF082}</Project>
+      <Name>GLUTDistortionShaderSample</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\GLUTImageSample.vcxproj">
+      <Project>{592B68BC-BAA8-3E76-9046-D7A555F82857}</Project>
+      <Name>GLUTImageSample</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\GLUTRectifiedImageSample.vcxproj">
+      <Project>{576F96A9-D8E9-32C2-A09E-7638619D4F15}</Project>
+      <Name>GLUTRectifiedImageSample</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\GLUTSample.vcxproj">
+      <Project>{DFE168D9-D976-343F-AC3C-8689BAAA4E5C}</Project>
+      <Name>GLUTSample</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\ImageSample.vcxproj">
+      <Project>{8DDECC40-6EF0-3C01-8B0F-3A8B6CE9B274}</Project>
+      <Name>ImageSample</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\InterpolationSample.vcxproj">
+      <Project>{C095A5DA-E14E-3DDF-9169-D02F62A1826A}</Project>
+      <Name>InterpolationSample</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\PollingSample.vcxproj">
+      <Project>{0B7C3C36-A3ED-3CE5-AA5C-9134EE10B1C8}</Project>
+      <Name>PollingSample</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\RecordPlaybackSample.vcxproj">
+      <Project>{4F1A12F7-2C34-3069-AE93-284DED0D189D}</Project>
+      <Name>RecordPlaybackSample</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

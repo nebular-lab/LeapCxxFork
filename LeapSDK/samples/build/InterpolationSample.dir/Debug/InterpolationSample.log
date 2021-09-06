@@ -1,0 +1,3 @@
+﻿  InterpolationSample.c
+C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\InterpolationSample.c(70,16): warning C4477: 'printf' : 書式文字列 '%f' には、型 'double' の引数が必要ですが、可変個引数 6 は型 'float *' です
+  InterpolationSample.vcxproj -> C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\Debug\InterpolationSample.exe

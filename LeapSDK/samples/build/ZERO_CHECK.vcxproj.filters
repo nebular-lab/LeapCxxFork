@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\hiran\Source\Repos\LEAP\LeapSDK\samples\build\CMakeFiles\162a8b7a71ed1f499211a03c457bbbf6\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{A8FF665D-CDCB-3A58-A7B2-ED08990C6411}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
