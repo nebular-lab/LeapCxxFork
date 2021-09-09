@@ -33,5 +33,6 @@ var group___functions =
     [ "LeapSaveConfigValue", "group___functions.html#ga8f80709d76bd235949e295055cd3bf9d", null ],
     [ "LeapSetPause", "group___functions.html#gab1da8139358849a062e1665e6edef2fb", null ],
     [ "LeapSetPolicyFlags", "group___functions.html#gab57050814a0763ec07ed088e3d2de7f2", null ],
+    [ "LeapSetTrackingMode", "group___functions.html#ga07042cbb03aff2396f163113673e259f", null ],
     [ "LeapUpdateRebase", "group___functions.html#gac111f105a4b418e1f7ed08a1b74c8bca", null ]
 ];

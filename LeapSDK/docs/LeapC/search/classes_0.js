@@ -33,6 +33,7 @@ var searchData=
   ['leap_5frecording_5fparameters',['LEAP_RECORDING_PARAMETERS',['../group___structs.html#struct_l_e_a_p___r_e_c_o_r_d_i_n_g___p_a_r_a_m_e_t_e_r_s',1,'']]],
   ['leap_5frecording_5fstatus',['LEAP_RECORDING_STATUS',['../group___structs.html#struct_l_e_a_p___r_e_c_o_r_d_i_n_g___s_t_a_t_u_s',1,'']]],
   ['leap_5ftracking_5fevent',['LEAP_TRACKING_EVENT',['../group___structs.html#struct_l_e_a_p___t_r_a_c_k_i_n_g___e_v_e_n_t',1,'']]],
+  ['leap_5ftracking_5fmode_5fevent',['LEAP_TRACKING_MODE_EVENT',['../group___structs.html#struct_l_e_a_p___t_r_a_c_k_i_n_g___m_o_d_e___e_v_e_n_t',1,'']]],
   ['leap_5fvariant',['LEAP_VARIANT',['../group___structs.html#struct_l_e_a_p___v_a_r_i_a_n_t',1,'']]],
   ['leap_5fvector',['LEAP_VECTOR',['../group___structs.html#struct_l_e_a_p___v_e_c_t_o_r',1,'']]]
 ];

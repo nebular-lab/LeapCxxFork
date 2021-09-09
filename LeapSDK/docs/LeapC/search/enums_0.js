@@ -13,5 +13,6 @@ var searchData=
   ['eleappolicyflag',['eLeapPolicyFlag',['../group___enum.html#gaf9b8fb0f14bd75188519ab4eaedd6a47',1,'LeapC.h']]],
   ['eleaprecordingflags',['eLeapRecordingFlags',['../group___enum.html#ga7f321cfd29f8d1b74589cde5dfb3a1ed',1,'LeapC.h']]],
   ['eleaprs',['eLeapRS',['../group___enum.html#ga10647f52cdf6742a654aab0054ce3d3e',1,'LeapC.h']]],
+  ['eleaptrackingmode',['eLeapTrackingMode',['../group___enum.html#ga37377b5c8fcb12067367929d5a152c16',1,'LeapC.h']]],
   ['eleapvaluetype',['eLeapValueType',['../group___enum.html#ga81c626895007f01c99427ed9760523e8',1,'LeapC.h']]]
 ];

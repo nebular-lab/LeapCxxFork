@@ -1,11 +1,19 @@
 var searchData=
 [
-  ['rectifying_20points_20example',['Rectifying Points Example',['../glut-rectify-example.html',1,'examples']]],
-  ['rectifying_20with_20a_20shader_20example',['Rectifying with a Shader Example',['../glut-shader-example.html',1,'examples']]],
-  ['release_20notes',['Release Notes',['../md_Leap_SDK_Release_Notes.html',1,'']]],
-  ['range',['range',['../group___structs.html#a7f4acea4bf88b35e81abc32b309c0122',1,'LEAP_DEVICE_INFO']]],
-  ['requestid',['requestID',['../group___structs.html#a8b843d6f4cfe672658122b28577ef32d',1,'LEAP_CONFIG_RESPONSE_EVENT::requestID()'],['../group___structs.html#aaa17a3867bef772b68a4cdfa73a53fbc',1,'LEAP_CONFIG_CHANGE_EVENT::requestID()']]],
-  ['reserved',['reserved',['../group___structs.html#a9c52107b6330d0f5028c9b0ce659d8a2',1,'LEAP_POLICY_EVENT::reserved()'],['../group___structs.html#aa3744b9a0e66cb92baf888c3823b52b0',1,'LEAP_FRAME_HEADER::reserved()']]],
-  ['ring',['ring',['../group___structs.html#a09823edb6626f4b79b2867327a027e06',1,'LEAP_HAND']]],
-  ['rotation',['rotation',['../group___structs.html#a29154f9391ae0040dff35b5e606469dc',1,'LEAP_BONE']]]
+  ['palm',['palm',['../group___structs.html#a90531d3c56d21f509b0428fa597d246c',1,'LEAP_HAND']]],
+  ['pbuffer',['pBuffer',['../group___structs.html#a5f1fa51f83736dc672b5f75532f7e192',1,'LEAP_IMAGE_FRAME_DESCRIPTION']]],
+  ['phands',['pHands',['../group___structs.html#a0b2e75f85880e0269d3a797049ffcc91',1,'LEAP_TRACKING_EVENT']]],
+  ['pid',['pid',['../group___structs.html#ac4a75e5817fbee8cbbc20c00d79268d3',1,'LEAP_DEVICE_INFO']]],
+  ['pids',['pIDs',['../group___structs.html#ac8d03f5a9251dacac52002fbdfa5970c',1,'LEAP_POINT_MAPPING']]],
+  ['pinch_5fdistance',['pinch_distance',['../group___structs.html#a3e48958fafd43770c14004d14f12e582',1,'LEAP_HAND']]],
+  ['pinch_5fstrength',['pinch_strength',['../group___structs.html#ae0d30d78bb97b70847f5832398298408',1,'LEAP_HAND']]],
+  ['pinky',['pinky',['../group___structs.html#ad70059fdab7c95f67da8a96a9dd104f0',1,'LEAP_HAND']]],
+  ['point_5fmapping_5fchange_5fevent',['point_mapping_change_event',['../group___structs.html#aaa14c54e2f39a14c74df3bd2c214ff6c',1,'LEAP_CONNECTION_MESSAGE']]],
+  ['pointer',['pointer',['../group___structs.html#ab4b14a0ebf7585a508c4cd81d34ae3fb',1,'LEAP_CONNECTION_MESSAGE']]],
+  ['policy_5fevent',['policy_event',['../group___structs.html#a6322226f210b4a7dfcb40b76120cbce9',1,'LEAP_CONNECTION_MESSAGE']]],
+  ['polling_20example',['Polling Example',['../polling-example.html',1,'examples']]],
+  ['position',['position',['../group___structs.html#a45ac4faee3ce183463c8701ea1cc897c',1,'LEAP_PALM']]],
+  ['ppoints',['pPoints',['../group___structs.html#a27c5872f2d18d54e2daa96059dcbcbd1',1,'LEAP_POINT_MAPPING']]],
+  ['prev_5fjoint',['prev_joint',['../group___structs.html#a2e72ad06729b271bff33409f432d578e',1,'LEAP_BONE']]],
+  ['proximal',['proximal',['../group___structs.html#a0266052aae76ffc1c2d39ae25ef17292',1,'LEAP_DIGIT']]]
 ];

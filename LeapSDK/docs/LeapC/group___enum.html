@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Leap Motion C API: Enumerations</title>
+<title>LeapC API: Enumerations</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -39,10 +39,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="leapmotion-logo.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="ultraleap-symbol.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Leap Motion C API
-   &#160;<span id="projectnumber">4.1.0</span>
+   <div id="projectname">LeapC API
+   &#160;<span id="projectnumber">5.0.0-preview</span>
    </div>
    <div id="projectbrief">The API to the LeapC library.</div>
   </td>
@@ -377,6 +377,10 @@ Enumerations</h2></td></tr>
 <p>Notification that point mapping has changed. </p>
 <dl class="section since"><dt>Since</dt><dd>4.0.0 </dd></dl>
 </td></tr>
+<tr><td class="fieldname"><a class="anchor" id="gga04f93b375f7c8040178ec5be2bf658eca17f24a9925cb084475853cb290aab376"></a>eLeapEventType_TrackingMode&#160;</td><td class="fielddoc">
+<p>A tracking mode change has occurred. </p>
+<p>This can be due to changing the hmd or screentop policy with <a class="el" href="group___functions.html#gab57050814a0763ec07ed088e3d2de7f2" title="Sets or clears one or more policy flags. ">LeapSetPolicyFlags()</a>. or setting the tracking mode using <a class="el" href="group___functions.html#ga07042cbb03aff2396f163113673e259f" title="Requests a tracking mode. ">LeapSetTrackingMode()</a>. </p><dl class="section since"><dt>Since</dt><dd>5.0.0 </dd></dl>
+</td></tr>
 <tr><td class="fieldname"><a class="anchor" id="gga04f93b375f7c8040178ec5be2bf658eca58b2db2e533019c88104ef697aa1254a"></a>eLeapEventType_LogEvents&#160;</td><td class="fielddoc">
 <p>An array of system messages. </p>
 <dl class="section since"><dt>Since</dt><dd>4.0.0 </dd></dl>
@@ -565,6 +569,10 @@ Enumerations</h2></td></tr>
 <p>The policy allowing an application to receive per-frame map points. </p>
 <dl class="section since"><dt>Since</dt><dd>4.0.0 </dd></dl>
 </td></tr>
+<tr><td class="fieldname"><a class="anchor" id="ggaf9b8fb0f14bd75188519ab4eaedd6a47a59946262a5131e21552bdee2b6e84a45"></a>eLeapPolicyFlag_OptimizeScreenTop&#160;</td><td class="fielddoc">
+<p>The policy specifying whether to optimize tracking for screen-top device. </p>
+<dl class="section since"><dt>Since</dt><dd>5.0.0 </dd></dl>
+</td></tr>
 </table>
 
 </div>
@@ -680,6 +688,34 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga37377b5c8fcb12067367929d5a152c16"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___enum.html#ga37377b5c8fcb12067367929d5a152c16">eLeapTrackingMode</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enumerates values for the tracking mode. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a class="anchor" id="gga37377b5c8fcb12067367929d5a152c16af0818276bb7ebbcfec6cf693df041ee8"></a>eLeapTrackingMode_Desktop&#160;</td><td class="fielddoc">
+<p>The tracking mode optimised for desktop devices. </p>
+<dl class="section since"><dt>Since</dt><dd>5.0.0 </dd></dl>
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="gga37377b5c8fcb12067367929d5a152c16ad4ab0c1007c74d1f4f583eca5500f985"></a>eLeapTrackingMode_HMD&#160;</td><td class="fielddoc">
+<p>The tracking mode optimised for head-mounted devices. </p>
+<dl class="section since"><dt>Since</dt><dd>5.0.0 </dd></dl>
+</td></tr>
+<tr><td class="fieldname"><a class="anchor" id="gga37377b5c8fcb12067367929d5a152c16aec9001a8e67c97a463b27618b2e2d66a"></a>eLeapTrackingMode_ScreenTop&#160;</td><td class="fielddoc">
+<p>The tracking mode optimised for screen top-mounted devices. </p>
+<dl class="section since"><dt>Since</dt><dd>5.0.0 </dd></dl>
+</td></tr>
+</table>
+
+</div>
+</div>
 <a class="anchor" id="ga81c626895007f01c99427ed9760523e8"></a>
 <div class="memitem">
 <div class="memproto">
@@ -723,7 +759,7 @@ Enumerations</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Aug 12 2020 09:47:25 for Leap Motion C API by
+    <li class="footer">Generated on Mon Jan 11 2021 19:08:55 for LeapC API by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

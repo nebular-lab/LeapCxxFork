@@ -7,5 +7,6 @@ var searchData=
   ['config_5fresponse_5fevent',['config_response_event',['../group___structs.html#a86330c545e0e9ed007a9252ddd82fb71',1,'LEAP_CONNECTION_MESSAGE']]],
   ['connection_5fevent',['connection_event',['../group___structs.html#aef3044bb175561b6af0535749fca1408',1,'LEAP_CONNECTION_MESSAGE']]],
   ['connection_5flost_5fevent',['connection_lost_event',['../group___structs.html#a171f518851f1aee78fcc72d8fac9236b',1,'LEAP_CONNECTION_MESSAGE']]],
-  ['current_5fpolicy',['current_policy',['../group___structs.html#a15e97d53b785691e29631b22a4b70119',1,'LEAP_POLICY_EVENT']]]
+  ['current_5fpolicy',['current_policy',['../group___structs.html#a15e97d53b785691e29631b22a4b70119',1,'LEAP_POLICY_EVENT']]],
+  ['current_5ftracking_5fmode',['current_tracking_mode',['../group___structs.html#ad7b28ab7d243d2e145f180345fae334b',1,'LEAP_TRACKING_MODE_EVENT']]]
 ];

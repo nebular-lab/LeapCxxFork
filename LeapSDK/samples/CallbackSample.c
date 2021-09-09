@@ -13,7 +13,6 @@
 #include "LeapC.h"
 #include "ExampleConnection.h"
 
-
 static LEAP_CONNECTION* connectionHandle;
 
 /** Callback for when the connection opens. */
@@ -125,10 +124,6 @@ int main(int argc, char** argv) {
   {
     LEAP_ALLOCATOR allocator = { allocate, deallocate, NULL };
     LeapSetAllocator(*connectionHandle, &allocator);
-  }
-  while (1) {
-      //ConnectionCallbacks.on_frame = &OnFrame;
-
   }
   LeapSetPolicyFlags(*connectionHandle, eLeapPolicyFlag_Images | eLeapPolicyFlag_MapPoints, 0);
 

@@ -28,6 +28,10 @@ var group___structs =
       [ "current_policy", "group___structs.html#a15e97d53b785691e29631b22a4b70119", null ],
       [ "reserved", "group___structs.html#a9c52107b6330d0f5028c9b0ce659d8a2", null ]
     ] ],
+    [ "LEAP_TRACKING_MODE_EVENT", "group___structs.html#struct_l_e_a_p___t_r_a_c_k_i_n_g___m_o_d_e___e_v_e_n_t", [
+      [ "current_tracking_mode", "group___structs.html#ad7b28ab7d243d2e145f180345fae334b", null ],
+      [ "reserved", "group___structs.html#ab5a61f45c6025d198f0beffa0f5015cc", null ]
+    ] ],
     [ "LEAP_VARIANT", "group___structs.html#struct_l_e_a_p___v_a_r_i_a_n_t", [
       [ "boolValue", "group___structs.html#a2cdb318d63d04b8c1df2bd4875292498", null ],
       [ "fValue", "group___structs.html#a0b24266965713cc690df3c027aba0e48", null ],
@@ -197,6 +201,7 @@ var group___structs =
       [ "policy_event", "group___structs.html#a6322226f210b4a7dfcb40b76120cbce9", null ],
       [ "size", "group___structs.html#a8442ee68a0f779253779add349adbc0b", null ],
       [ "tracking_event", "group___structs.html#ae0e728aabe71aaaabb7f3761bd1b20a9", null ],
+      [ "tracking_mode_event", "group___structs.html#a1a62d83fbebdad2b079f7573927eb781", null ],
       [ "type", "group___structs.html#aa9823237ccac3f675062a78aa880c1e0", null ]
     ] ],
     [ "LEAP_RECORDING_PARAMETERS", "group___structs.html#struct_l_e_a_p___r_e_c_o_r_d_i_n_g___p_a_r_a_m_e_t_e_r_s", [

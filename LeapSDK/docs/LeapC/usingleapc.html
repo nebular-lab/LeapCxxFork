@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Leap Motion C API: Using LeapC</title>
+<title>LeapC API: Using LeapC</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -39,10 +39,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="leapmotion-logo.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="ultraleap-symbol.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Leap Motion C API
-   &#160;<span id="projectnumber">4.1.0</span>
+   <div id="projectname">LeapC API
+   &#160;<span id="projectnumber">5.0.0-preview</span>
    </div>
    <div id="projectbrief">The API to the LeapC library.</div>
   </td>
@@ -131,7 +131,7 @@ $(document).ready(function(){initNavTree('usingleapc.html','');});
 <li>Requesting images.</li>
 <li>Getting and setting policy settings.</li>
 <li>Getting and setting configuration settings.</li>
-<li>Synchronizing app and Leap Motion clocks and getting interpolated frames.</li>
+<li>Synchronizing app and Ultraleap hand tracking system clocks and getting interpolated frames.</li>
 <li>Closing the connection.</li>
 </ul>
 <h1><a class="anchor" id="messagepump"></a>
@@ -146,7 +146,7 @@ Getting Tracking Frames and Other Event Messages</h1>
 <p>See the <a class="el" href="callback-example.html">Callback Example</a>.</p>
 <h1><a class="anchor" id="interpolatingframes"></a>
 Interpolating Frames</h1>
-<p>Instead of taking frames at measured at whatever rate the Leap Motion device happens to be producing them, you can request each frame at a particular time. LeapC will then interpolate the nearest measured frames to synthesize a frame at the desired time. In general, requesting frames further in the past will provide improve the perception of smoothness in the tracking data, but at a cost of increased latency. Conversely, requesting frames with a shorter delay will improve perceived responsiveness, but at a cost of increased jitteryness. You should tune the value as best suits your application; if you use the same code on desktop and mobile platforms (when mobile is supported), you will probably need different delay values for each.</p>
+<p>Instead of taking frames at measured at whatever rate the Ultraleap camera device happens to be producing them, you can request each frame at a particular time. LeapC will then interpolate the nearest measured frames to synthesize a frame at the desired time. In general, requesting frames further in the past will provide improve the perception of smoothness in the tracking data, but at a cost of increased latency. Conversely, requesting frames with a shorter delay will improve perceived responsiveness, but at a cost of increased jitteryness. You should tune the value as best suits your application; if you use the same code on desktop and mobile platforms (when mobile is supported), you will probably need different delay values for each.</p>
 <p>A timestamp that is more recent than the timestamp most recently returned by <a class="el" href="group___functions.html#ga2a8aecad339f0fd339ca22a3e7b389f6" title="Polls the connection for a new event. ">LeapPollConnection()</a> (e.g. for a tracking or image complete event) is considered to be in the future. If an interpolated frame is requested for a timestamp in the future, LeapC will use extrapolation instead of interpolation. If the same call was delayed so that the same timestamp value is no longer in the future, LeapC will choose to interpolate instead of extrapolate.</p>
 <p>The <a class="el" href="group___functions.html#ga4ef33708af974ecd618ad9784aa38161" title="Samples the universal clock used by the system to timestamp image and tracking frames. ">LeapGetNow()</a> function returns the current value of the clock used to generate frame timestamps. On Windows, this value is equal to QueryPerformanceCounter divided by QueryPerformanceFrequency, represented in microseconds. On all other platforms, it is the time since epoch of std::chrono::high_resolution_clock::now(), in microseconds. If your application time is derived from the same source as <a class="el" href="group___functions.html#ga4ef33708af974ecd618ad9784aa38161" title="Samples the universal clock used by the system to timestamp image and tracking frames. ">LeapGetNow()</a>, you can calculate the desired frame timestamps directly and do not need to use the <a class="el" href="group___structs.html#struct_l_e_a_p___c_l_o_c_k___r_e_b_a_s_e_r" title="An opaque clock rebase state structure. ">LEAP_CLOCK_REBASER</a> object.</p>
 <p>To get interpolated frames:</p>
@@ -155,7 +155,7 @@ Interpolating Frames</h1>
 <li>Call <a class="el" href="group___functions.html#ga2a8aecad339f0fd339ca22a3e7b389f6" title="Polls the connection for a new event. ">LeapPollConnection()</a> at least once to complete opening the connection.</li>
 <li>Create a <a class="el" href="group___structs.html#struct_l_e_a_p___c_l_o_c_k___r_e_b_a_s_e_r" title="An opaque clock rebase state structure. ">LEAP_CLOCK_REBASER</a> struct.</li>
 <li>Pass this struct to <a class="el" href="group___functions.html#ga95c0d7e31b8337021c41f13d4ef6849b" title="Initializes a new Leap clock-rebaser handle object. ">LeapCreateClockRebaser()</a>, which initializes the struct.</li>
-<li>Every time you render a frame of graphics, call <a class="el" href="group___functions.html#gac111f105a4b418e1f7ed08a1b74c8bca" title="Updates the relationship between the Leap Motion clock and the user clock. ">LeapUpdateRebase()</a> to synchronize the Leap Motion and application clocks. The clocks will drift apart rapidly, otherwise.</li>
+<li>Every time you render a frame of graphics, call <a class="el" href="group___functions.html#gac111f105a4b418e1f7ed08a1b74c8bca" title="Updates the relationship between the Leap Motion clock and the user clock. ">LeapUpdateRebase()</a> to synchronize the application and Ultraleap hand tracking system clocks. The clocks will drift apart rapidly, otherwise.</li>
 <li>Translate the target timestamp of the interpolated frame by passing the application time to <a class="el" href="group___functions.html#gadd9e1af6480d7948b77ccf40fbca337a" title="Computes the Leap Motion clock corresponding to a specified application clock value. ">LeapRebaseClock()</a>. LeapC writes the corresponding Leap clock time to the pLeapClock parameter.</li>
 <li>Call <a class="el" href="group___functions.html#gae680ca44ccf77a25c4a61f9ae1a311bc" title="Retrieves the number of bytes required to allocate an interpolated frame at the specified time...">LeapGetFrameSize()</a> to calculate the size of the buffer needed to require the tracking data at the desired point in time. (Frame size varies with the number of hands in view.)</li>
 <li>Allocate a buffer of the required size.</li>
@@ -205,7 +205,7 @@ Reading and writing policies</h2>
 <li>When the policy change is processed by the service, LeapC adds a <a class="el" href="group___structs.html#struct_l_e_a_p___p_o_l_i_c_y___e_v_e_n_t" title="The response from a request to get or set a policy. ">LEAP_POLICY_EVENT</a> message to the queue. You can compare <a class="el" href="group___structs.html#a15e97d53b785691e29631b22a4b70119" title="A bitfield containing the policies effective at the time the policy event was processed. ">LEAP_POLICY_EVENT::current_policy</a> with the desired policy to verify that the policy change was "approved."</li>
 </ol>
 <p>To read the current policies without making changes, set both the set and the clear parameters to 0 when calling <a class="el" href="group___functions.html#gab57050814a0763ec07ed088e3d2de7f2" title="Sets or clears one or more policy flags. ">LeapSetPolicyFlags()</a>. This will generate a <a class="el" href="group___structs.html#struct_l_e_a_p___p_o_l_i_c_y___e_v_e_n_t" title="The response from a request to get or set a policy. ">LEAP_POLICY_EVENT</a> message containing the current policies.</p>
-<p>Note that the other Leap Motion language bindings support a slightly different set of polcies and are based on libraries that enforce these policies differently. For more informations, see <a href="https://developer.leapmotion.com/documentation/cpp/devguide/Leap_Policies.html">https://developer.leapmotion.com/documentation/cpp/devguide/Leap_Policies.html</a>.</p>
+<p>Note that the other Leap language bindings support a slightly different set of polcies and are based on libraries that enforce these policies differently. For more informations, see <a href="https://developer.leapmotion.com/documentation/cpp/devguide/Leap_Policies.html">https://developer.leapmotion.com/documentation/cpp/devguide/Leap_Policies.html</a>.</p>
 <h1><a class="anchor" id="config"></a>
 Getting and Setting Configuration Values</h1>
 <p>The Leap Motion service has several configuration settings. A few are useful to individual applications. For a description of these settings, see <a class="el" href="configuration.html">Configuration</a>.</p>
@@ -238,7 +238,7 @@ Writing a config setting</h2>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">LeapC Guide</a></li>
-    <li class="footer">Generated on Wed Aug 12 2020 09:47:25 for Leap Motion C API by
+    <li class="footer">Generated on Mon Jan 11 2021 19:08:55 for LeapC API by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

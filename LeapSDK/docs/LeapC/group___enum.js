@@ -52,6 +52,7 @@ var group___enum =
       [ "eLeapEventType_DeviceStatusChange", "group___enum.html#gga04f93b375f7c8040178ec5be2bf658eca814bf9ff67ede7f37637ba0f577eba37", null ],
       [ "eLeapEventType_Image", "group___enum.html#gga04f93b375f7c8040178ec5be2bf658eca15a7d73c8148027aa6879e5c83590499", null ],
       [ "eLeapEventType_PointMappingChange", "group___enum.html#gga04f93b375f7c8040178ec5be2bf658eca2b81fda96dce9fb95ec4859697f276b7", null ],
+      [ "eLeapEventType_TrackingMode", "group___enum.html#gga04f93b375f7c8040178ec5be2bf658eca17f24a9925cb084475853cb290aab376", null ],
       [ "eLeapEventType_LogEvents", "group___enum.html#gga04f93b375f7c8040178ec5be2bf658eca58b2db2e533019c88104ef697aa1254a", null ]
     ] ],
     [ "eLeapHandType", "group___enum.html#ga6d751aedb178355c21ec1cac4706e044", [
@@ -85,7 +86,8 @@ var group___enum =
       [ "eLeapPolicyFlag_Images", "group___enum.html#ggaf9b8fb0f14bd75188519ab4eaedd6a47abe1249c79f33c8cdf0c4e96480b6cde3", null ],
       [ "eLeapPolicyFlag_OptimizeHMD", "group___enum.html#ggaf9b8fb0f14bd75188519ab4eaedd6a47a5b083410d9557ccc6cc095a0ba9b708f", null ],
       [ "eLeapPolicyFlag_AllowPauseResume", "group___enum.html#ggaf9b8fb0f14bd75188519ab4eaedd6a47a6a26051837ddd603d3ef6ed02223b1a9", null ],
-      [ "eLeapPolicyFlag_MapPoints", "group___enum.html#ggaf9b8fb0f14bd75188519ab4eaedd6a47aba4d65c66f75606632730c47884843d3", null ]
+      [ "eLeapPolicyFlag_MapPoints", "group___enum.html#ggaf9b8fb0f14bd75188519ab4eaedd6a47aba4d65c66f75606632730c47884843d3", null ],
+      [ "eLeapPolicyFlag_OptimizeScreenTop", "group___enum.html#ggaf9b8fb0f14bd75188519ab4eaedd6a47a59946262a5131e21552bdee2b6e84a45", null ]
     ] ],
     [ "eLeapRecordingFlags", "group___enum.html#ga7f321cfd29f8d1b74589cde5dfb3a1ed", null ],
     [ "eLeapRS", "group___enum.html#ga10647f52cdf6742a654aab0054ce3d3e", [
@@ -109,6 +111,11 @@ var group___enum =
       [ "eLeapRS_NotAvailable", "group___enum.html#gga10647f52cdf6742a654aab0054ce3d3eacd1c24eb1512da6d5a70dff205005a3d", null ],
       [ "eLeapRS_NotStreaming", "group___enum.html#gga10647f52cdf6742a654aab0054ce3d3eaecf541b993b21630943575459e0ee925", null ],
       [ "eLeapRS_CannotOpenDevice", "group___enum.html#gga10647f52cdf6742a654aab0054ce3d3ea2e43ae081397d7eeb5206c6b945a1010", null ]
+    ] ],
+    [ "eLeapTrackingMode", "group___enum.html#ga37377b5c8fcb12067367929d5a152c16", [
+      [ "eLeapTrackingMode_Desktop", "group___enum.html#gga37377b5c8fcb12067367929d5a152c16af0818276bb7ebbcfec6cf693df041ee8", null ],
+      [ "eLeapTrackingMode_HMD", "group___enum.html#gga37377b5c8fcb12067367929d5a152c16ad4ab0c1007c74d1f4f583eca5500f985", null ],
+      [ "eLeapTrackingMode_ScreenTop", "group___enum.html#gga37377b5c8fcb12067367929d5a152c16aec9001a8e67c97a463b27618b2e2d66a", null ]
     ] ],
     [ "eLeapValueType", "group___enum.html#ga81c626895007f01c99427ed9760523e8", [
       [ "eLeapValueType_Unknown", "group___enum.html#gga81c626895007f01c99427ed9760523e8a2146e689e54e20439a020fe80e3d8efe", null ],

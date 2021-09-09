@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['polling_20example',['Polling Example',['../polling-example.html',1,'examples']]]
+  ['leap_20concepts',['Leap Concepts',['../concepts.html',1,'index']]],
+  ['leapc_20guide',['LeapC Guide',['../index.html',1,'']]]
 ];

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['leap_20concepts',['Leap Concepts',['../concepts.html',1,'index']]],
-  ['leapc_20guide',['LeapC Guide',['../index.html',1,'']]]
+  ['known_20issues',['Known Issues',['../knownissues.html',1,'md_Leap_SDK_Release_Notes']]]
 ];

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Leap Motion C API: Functions</title>
+<title>LeapC API: Functions</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -39,10 +39,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="leapmotion-logo.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="ultraleap-symbol.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Leap Motion C API
-   &#160;<span id="projectnumber">4.1.0</span>
+   <div id="projectname">LeapC API
+   &#160;<span id="projectnumber">5.0.0-preview</span>
    </div>
    <div id="projectbrief">The API to the LeapC library.</div>
   </td>
@@ -135,6 +135,9 @@ Functions</h2></td></tr>
 <tr class="memitem:gab57050814a0763ec07ed088e3d2de7f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___enum.html#ga10647f52cdf6742a654aab0054ce3d3e">eLeapRS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___functions.html#gab57050814a0763ec07ed088e3d2de7f2">LeapSetPolicyFlags</a> (<a class="el" href="group___structs.html#struct_l_e_a_p___c_o_n_n_e_c_t_i_o_n">LEAP_CONNECTION</a> hConnection, uint64_t set, uint64_t clear)</td></tr>
 <tr class="memdesc:gab57050814a0763ec07ed088e3d2de7f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets or clears one or more policy flags.  <a href="#gab57050814a0763ec07ed088e3d2de7f2">More...</a><br /></td></tr>
 <tr class="separator:gab57050814a0763ec07ed088e3d2de7f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga07042cbb03aff2396f163113673e259f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___enum.html#ga10647f52cdf6742a654aab0054ce3d3e">eLeapRS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___functions.html#ga07042cbb03aff2396f163113673e259f">LeapSetTrackingMode</a> (<a class="el" href="group___structs.html#struct_l_e_a_p___c_o_n_n_e_c_t_i_o_n">LEAP_CONNECTION</a> hConnection, <a class="el" href="group___enum.html#ga37377b5c8fcb12067367929d5a152c16">eLeapTrackingMode</a> mode)</td></tr>
+<tr class="memdesc:ga07042cbb03aff2396f163113673e259f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Requests a tracking mode.  <a href="#ga07042cbb03aff2396f163113673e259f">More...</a><br /></td></tr>
+<tr class="separator:ga07042cbb03aff2396f163113673e259f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab1da8139358849a062e1665e6edef2fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___enum.html#ga10647f52cdf6742a654aab0054ce3d3e">eLeapRS</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___functions.html#gab1da8139358849a062e1665e6edef2fb">LeapSetPause</a> (<a class="el" href="group___structs.html#struct_l_e_a_p___c_o_n_n_e_c_t_i_o_n">LEAP_CONNECTION</a> hConnection, bool pause)</td></tr>
 <tr class="memdesc:gab1da8139358849a062e1665e6edef2fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pauses the service.  <a href="#gab1da8139358849a062e1665e6edef2fb">More...</a><br /></td></tr>
 <tr class="separator:gab1da8139358849a062e1665e6edef2fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1520,6 +1523,45 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga07042cbb03aff2396f163113673e259f"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___enum.html#ga10647f52cdf6742a654aab0054ce3d3e">eLeapRS</a> LeapSetTrackingMode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___structs.html#struct_l_e_a_p___c_o_n_n_e_c_t_i_o_n">LEAP_CONNECTION</a>&#160;</td>
+          <td class="paramname"><em>hConnection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___enum.html#ga37377b5c8fcb12067367929d5a152c16">eLeapTrackingMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Requests a tracking mode. </p>
+<p>Changing tracking modes is asynchronous. After you call this function, a subsequent call to LeapPollConnection provides a <a class="el" href="group___structs.html#struct_l_e_a_p___t_r_a_c_k_i_n_g___m_o_d_e___e_v_e_n_t" title="The response from a request to get or set a policy. ">LEAP_TRACKING_MODE_EVENT</a> containing the current tracking mode. Note that, after you call this function, a subsequent call to LeapPollConnection provides a <a class="el" href="group___structs.html#struct_l_e_a_p___p_o_l_i_c_y___e_v_e_n_t" title="The response from a request to get or set a policy. ">LEAP_POLICY_EVENT</a> containing the current tracking mode related policies, reflecting any changes. Note that the relevant <a class="el" href="group___structs.html#struct_l_e_a_p___p_o_l_i_c_y___e_v_e_n_t" title="The response from a request to get or set a policy. ">LEAP_POLICY_EVENT</a> is guaranteed to precede the <a class="el" href="group___structs.html#struct_l_e_a_p___t_r_a_c_k_i_n_g___m_o_d_e___e_v_e_n_t" title="The response from a request to get or set a policy. ">LEAP_TRACKING_MODE_EVENT</a>.</p>
+<p>The eLeapTrackingMode enumeration defines the tracking mode.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">hConnection</td><td>The connection handle created by <a class="el" href="group___functions.html#ga5bcc831cf503136f45dde040f29973b5" title="Creates a new LEAP_CONNECTION object. ">LeapCreateConnection()</a>. </td></tr>
+    <tr><td class="paramname">mode</td><td>The enum value specifying the requested tracking mode. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The operation result code, a member of the eLeapRS enumeration. </dd></dl>
+<dl class="section since"><dt>Since</dt><dd>5.0.0 </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="gac111f105a4b418e1f7ed08a1b74c8bca"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1572,7 +1614,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Aug 12 2020 09:47:25 for Leap Motion C API by
+    <li class="footer">Generated on Mon Jan 11 2021 19:08:55 for LeapC API by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

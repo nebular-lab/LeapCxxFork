@@ -67,17 +67,12 @@ int main(int argc, char** argv) {
                (long long int)LeapGetNow() - interpolatedFrame->info.timestamp);
         for(uint32_t h = 0; h < interpolatedFrame->nHands; h++){
         LEAP_HAND* hand = &interpolatedFrame->pHands[h];
-        printf("    Hand id %i is a %s hand with position (%f, %f, %f)(%f,%f,%f,%f,%f).\n",
+        printf("    Hand id %i is a %s hand with position (%f, %f, %f).\n",
                     hand->id,
                     (hand->type == eLeapHandType_Left ? "left" : "right"),
                     hand->palm.position.x,
                     hand->palm.position.y,
-                    hand->palm.position.z,
-                    hand->palm.orientation.v,
-                    hand->palm.orientation.w,
-                    hand->palm.orientation.x,
-                    hand->palm.orientation.y,
-                    hand->palm.orientation.z);
+                    hand->palm.position.z);
         }
         //Free the allocated buffer when done.
         free(interpolatedFrame);

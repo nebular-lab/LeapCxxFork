@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Leap Motion C API: Images</title>
+<title>LeapC API: Images</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -39,10 +39,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="leapmotion-logo.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="ultraleap-symbol.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Leap Motion C API
-   &#160;<span id="projectnumber">4.1.0</span>
+   <div id="projectname">LeapC API
+   &#160;<span id="projectnumber">5.0.0-preview</span>
    </div>
    <div id="projectbrief">The API to the LeapC library.</div>
   </td>
@@ -123,7 +123,7 @@ $(document).ready(function(){initNavTree('images.html','');});
 </li>
 </ul>
 </div>
-<div class="textblock"><p>The Leap Motion controller uses infrared stereo cameras as tracking sensors. The LeapC API provides an image buffer containing the sensor brightness values and a distortion buffer containing the camera calibration map. The distortion map can be used to correct lens distortion in the image data. The function <a class="el" href="group___functions.html#ga0f8c7bb9c7d46fed78efe183244f9812" title="Provides the point in the image corresponding to a ray projecting from the camera. ">LeapRectilinearToPixel()</a> can be used to undistort specific pixels in an image and the function <a class="el" href="group___functions.html#gacc6a5c80f87a60c63889407a45a3344b" title="Provides the corrected camera ray intercepting the specified point on the image. ">LeapPixelToRectilinear()</a> can be used to find the 3D location corresponding to a matched pair of stereo pixels.</p>
+<div class="textblock"><p>The Ultraleap camera device uses infrared stereo cameras as tracking sensors. The LeapC API provides an image buffer containing the sensor brightness values and a distortion buffer containing the camera calibration map. The distortion map can be used to correct lens distortion in the image data. The function <a class="el" href="group___functions.html#ga0f8c7bb9c7d46fed78efe183244f9812" title="Provides the point in the image corresponding to a ray projecting from the camera. ">LeapRectilinearToPixel()</a> can be used to undistort specific pixels in an image and the function <a class="el" href="group___functions.html#gacc6a5c80f87a60c63889407a45a3344b" title="Provides the corrected camera ray intercepting the specified point on the image. ">LeapPixelToRectilinear()</a> can be used to find the 3D location corresponding to a matched pair of stereo pixels.</p>
 <h1><a class="anchor" id="usingimages"></a>
 Using Images</h1>
 <p>Images are sent automatically if the policy for images is set.</p>
@@ -138,10 +138,10 @@ Using Images</h1>
 </ol>
 <h2><a class="anchor" id="imagebuffersize"></a>
 Image Buffer Size</h2>
-<p>The image buffer size depends on the device type as well as the image type and format. The buffer size depends on the width, height, and pixel format (bytes per pixel) of the image. A single buffer must hold stereo images. For example, if the current images produced by a Leap Motion device is 640x240, 1-byte pixels, then the buffer size must be: 640 x 240 x 1 x 2 = 307,200 bytes.</p>
+<p>The image buffer size depends on the device type as well as the image type and format. The buffer size depends on the width, height, and pixel format (bytes per pixel) of the image. A single buffer must hold stereo images. For example, if the current images produced by a Ultraleap camera device is 640x240, 1-byte pixels, then the buffer size must be: 640 x 240 x 1 x 2 = 307,200 bytes.</p>
 <h1><a class="anchor" id="imagedistortion"></a>
 Image Distortion</h1>
-<p>When a ray of light enters one of the Leap Motion cameras, the lens bends the ray so that it hits the sensor, which records it as a greyscale brightness value at a specific pixel location. Of course, no lens is perfect, so a ray of light does not land on the sensor in the optically perfect spot. The distortion map provides data to correct this imperfection, allowing you to calculate the true angle of the original ray of light. You can use the corrected angle to generate a rectified image, and, using the angles from both images in the stereo pair, you can triangulate the 3D location of a feature identified in both images.</p>
+<p>When a ray of light enters one of the Ultraleap camera devices, the lens bends the ray so that it hits the sensor, which records it as a greyscale brightness value at a specific pixel location. Of course, no lens is perfect, so a ray of light does not land on the sensor in the optically perfect spot. The distortion map provides data to correct this imperfection, allowing you to calculate the true angle of the original ray of light. You can use the corrected angle to generate a rectified image, and, using the angles from both images in the stereo pair, you can triangulate the 3D location of a feature identified in both images.</p>
 <p>For image rectification, the distortion map can be fed to a shader program that can efficiently interpolate the correction applied to rays of light to produce a texture containing the rectified image. For getting the true angle for a small set of points, you can use the <a class="el" href="group___functions.html#gacc6a5c80f87a60c63889407a45a3344b" title="Provides the corrected camera ray intercepting the specified point on the image. ">LeapPixelToRectilinear()</a> function (but this is not typically efficient enough to transform a full bitmap at a high frame rate).</p>
 <h2><a class="anchor" id="rectifypoints"></a>
 Rectifying Image Points</h2>
@@ -156,7 +156,7 @@ Rectifying with a Shader</h2>
 <p>To rectify an entire image with a shader, create a texture containing the data in the distortion buffer. The distortion buffer is contained in the distortion_matrix field of the <a class="el" href="group___structs.html#struct_l_e_a_p___i_m_a_g_e___e_v_e_n_t" title="Streaming stereo image pairs from the device. ">LEAP_IMAGE_EVENT</a> struct. This data is set up to use a shader's normal uv interpolation mechanism. You can use the interpolated uv coordinates to look up the corrected brightness in the image texture, as in the following fragment shader program:</p>
 <div class="fragment"><div class="line">uniform sampler2D rawTexture;</div><div class="line">uniform sampler2D distortionTexture;</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> main()</div><div class="line">{</div><div class="line">  vec2 distortionIndex = texture2D(distortionTexture, gl_TexCoord[0].st).xy;</div><div class="line">  <span class="keywordtype">float</span> hIndex = distortionIndex.r;</div><div class="line">  <span class="keywordtype">float</span> vIndex = distortionIndex.g;</div><div class="line"></div><div class="line">  <span class="keywordflow">if</span>(vIndex &gt; 0.0 &amp;&amp; vIndex &lt; 1.0 &amp;&amp; hIndex &gt; 0.0 &amp;&amp; hIndex &lt; 1.0)</div><div class="line">  {</div><div class="line">    gl_FragColor = vec4(texture2D(rawTexture, distortionIndex).rrr, 1.0);</div><div class="line">  }</div><div class="line">  <span class="keywordflow">else</span></div><div class="line">  {</div><div class="line">    gl_FragColor = vec4(0.2, 0.0, 0.0, 1.0);</div><div class="line">  }</div><div class="line">}</div></div><!-- fragment --><p>To interpolate correctly, the distortion texture must use the following filter and wrap parameters:</p>
 <div class="fragment"><div class="line">glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);</div><div class="line">glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);</div><div class="line">glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);</div><div class="line">glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);</div></div><!-- fragment --><p>The distortion texture itself must use two floating point values per texel and contain 64x64 texels:</p>
-<div class="fragment"><div class="line">glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, 64, 64, 0, GL_RG, GL_FLOAT, distortion_buffer_left);</div></div><!-- fragment --><p>The distortion map itself rarely changes &ndash; the only time it changes is if the Leap Motion hardware is swapped with a different device or if the device is rotated so that the user's hands enter from the opposite side of the vertical field of view. In this case the Leap Motion software inverts the image, and the distortion map, to automatically maintain the proper orientation. (Auto-orientation can be turned off in the Leap Motion service configuration.)</p>
+<div class="fragment"><div class="line">glTexImage2D(GL_TEXTURE_2D, 0, GL_RG, 64, 64, 0, GL_RG, GL_FLOAT, distortion_buffer_left);</div></div><!-- fragment --><p>The distortion map itself rarely changes &ndash; the only time it changes is if the Ultraleap camera device is swapped with a different device or if the device is rotated so that the user's hands enter from the opposite side of the vertical field of view. In this case the Ultraleap hand tracking software inverts the image, and the distortion map, to automatically maintain the proper orientation. (Auto-orientation can be turned off in the Leap Motion service configuration.)</p>
 <p>See <a class="el" href="glut-shader-example.html">Rectifying with a Shader Example</a></p>
 <h2><a class="anchor" id="distortionchanges"></a>
 Detecting when the Distortion Map Changes</h2>
@@ -170,7 +170,7 @@ Detecting when the Distortion Map Changes</h2>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">LeapC Guide</a></li>
-    <li class="footer">Generated on Wed Aug 12 2020 09:47:25 for Leap Motion C API by
+    <li class="footer">Generated on Mon Jan 11 2021 19:08:55 for LeapC API by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

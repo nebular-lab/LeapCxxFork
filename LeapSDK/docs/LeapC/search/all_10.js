@@ -1,13 +1,11 @@
 var searchData=
 [
-  ['serial',['serial',['../group___structs.html#a068ab63483a7943d5d600d95ecf15a00',1,'LEAP_DEVICE_INFO']]],
-  ['serial_5flength',['serial_length',['../group___structs.html#a37bb6f973484389335ba8fc11deef34f',1,'LEAP_DEVICE_INFO']]],
-  ['server_5fnamespace',['server_namespace',['../group___structs.html#a26b9a984be32eb62b694430baae382df',1,'LEAP_CONNECTION_CONFIG']]],
-  ['severity',['severity',['../group___structs.html#a570d08c9f285dc75726edfde685ef9eb',1,'LEAP_LOG_EVENT']]],
-  ['size',['size',['../group___structs.html#a9550944dc1940d171812370d63d95da2',1,'LEAP_CONNECTION_CONFIG::size()'],['../group___structs.html#a38d85f079b8000ae83dd8e574f63e764',1,'LEAP_CONNECTION_INFO::size()'],['../group___structs.html#a49334d64ba0b65398c74c555b261c846',1,'LEAP_DEVICE_INFO::size()'],['../group___structs.html#a8442ee68a0f779253779add349adbc0b',1,'LEAP_CONNECTION_MESSAGE::size()']]],
-  ['stabilized_5fposition',['stabilized_position',['../group___structs.html#afca8b20f0fc1e3560c5e8346dcb5a731',1,'LEAP_PALM']]],
-  ['state',['state',['../group___structs.html#ae5ecc460d695a47685e59de60a459f01',1,'LEAP_ALLOCATOR']]],
-  ['status',['status',['../group___structs.html#adc02a949569fca9e3e0f97a9cda07e08',1,'LEAP_CONNECTION_INFO::status()'],['../group___structs.html#a3f45e7d04fdb18fe4c5184185ef0f3a8',1,'LEAP_CONFIG_CHANGE_EVENT::status()'],['../group___structs.html#a0ab7a225fdd0f74bb4bddf555b07b10f',1,'LEAP_DEVICE_INFO::status()'],['../group___structs.html#aab5b501fb402ca78983a90e70b1c1ece',1,'LEAP_DEVICE_EVENT::status()'],['../group___structs.html#a8865647cc9f1a5cb1999c45a113279af',1,'LEAP_DEVICE_FAILURE_EVENT::status()'],['../group___structs.html#a5dc3457c120668c089c007a0b16e5703',1,'LEAP_DEVICE_STATUS_CHANGE_EVENT::status()']]],
-  ['strvalue',['strValue',['../group___structs.html#a21bb8d5163b41ea38db7f776d1ffc9f1',1,'LEAP_VARIANT']]],
-  ['setting_20up_20virtual_20and_20augmented_20reality_20scenes',['Setting Up Virtual and Augmented Reality Scenes',['../vrar.html',1,'index']]]
+  ['rectifying_20points_20example',['Rectifying Points Example',['../glut-rectify-example.html',1,'examples']]],
+  ['rectifying_20with_20a_20shader_20example',['Rectifying with a Shader Example',['../glut-shader-example.html',1,'examples']]],
+  ['release_20notes',['Release Notes',['../md_Leap_SDK_Release_Notes.html',1,'']]],
+  ['range',['range',['../group___structs.html#a7f4acea4bf88b35e81abc32b309c0122',1,'LEAP_DEVICE_INFO']]],
+  ['requestid',['requestID',['../group___structs.html#a8b843d6f4cfe672658122b28577ef32d',1,'LEAP_CONFIG_RESPONSE_EVENT::requestID()'],['../group___structs.html#aaa17a3867bef772b68a4cdfa73a53fbc',1,'LEAP_CONFIG_CHANGE_EVENT::requestID()']]],
+  ['reserved',['reserved',['../group___structs.html#a9c52107b6330d0f5028c9b0ce659d8a2',1,'LEAP_POLICY_EVENT::reserved()'],['../group___structs.html#ab5a61f45c6025d198f0beffa0f5015cc',1,'LEAP_TRACKING_MODE_EVENT::reserved()'],['../group___structs.html#aa3744b9a0e66cb92baf888c3823b52b0',1,'LEAP_FRAME_HEADER::reserved()']]],
+  ['ring',['ring',['../group___structs.html#a09823edb6626f4b79b2867327a027e06',1,'LEAP_HAND']]],
+  ['rotation',['rotation',['../group___structs.html#a29154f9391ae0040dff35b5e606469dc',1,'LEAP_BONE']]]
 ];

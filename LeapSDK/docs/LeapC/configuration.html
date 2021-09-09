@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Leap Motion C API: Configuration</title>
+<title>LeapC API: Configuration</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -39,10 +39,10 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="leapmotion-logo.png"/></td>
+  <td id="projectlogo"><img alt="Logo" src="ultraleap-symbol.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">Leap Motion C API
-   &#160;<span id="projectnumber">4.1.0</span>
+   <div id="projectname">LeapC API
+   &#160;<span id="projectnumber">5.0.0-preview</span>
    </div>
    <div id="projectbrief">The API to the LeapC library.</div>
   </td>
@@ -112,7 +112,7 @@ $(document).ready(function(){initNavTree('configuration.html','');});
 <div class="title">Configuration </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>The Leap Motion system stores many options in configuration files. These include most of the user-settable options in the Leap Motion Control Panel, service control settings, and feature control settings. These options can be set at runtime using the <a class="el" href="group___functions.html#ga8f80709d76bd235949e295055cd3bf9d" title="Causes the client to commit a configuration change to the Leap Motion service. ">LeapSaveConfigValue()</a> function, when starting the Leap Motion service/daemon as a command line option, or in a JSON-formatted configuration file.</p>
+<div class="textblock"><p>The Ultraleap hand tracking system stores many options in configuration files. These include most of the user-settable options in the Leap Motion Control Panel, service control settings, and feature control settings. These options can be set at runtime using the <a class="el" href="group___functions.html#ga8f80709d76bd235949e295055cd3bf9d" title="Causes the client to commit a configuration change to the Leap Motion service. ">LeapSaveConfigValue()</a> function, when starting the Leap Motion service as a command line option, or in a JSON-formatted configuration file.</p>
 <p>See <a class="el" href="usingleapc.html#config">Getting and Setting Configuration Values</a> for more information about reading and writing configuration settings.</p>
 <p><b>Important</b> These settings affect all running Leap-enabled applications, not just your own. Use caution when changing settings on computers that you don't personally control. Changes could interfere with the operation of the user's other applications.</p>
 <h1>Tracking Control Settings</h1>
@@ -124,12 +124,12 @@ $(document).ready(function(){initNavTree('configuration.html','');});
 <p class="startli">Note that applications must still invoke the image policy API at runtime to receive images. Simply enabling images on the service is not sufficient.</p>
 </li>
 <li><p class="startli"><code>image_processing_auto_flip</code> : boolean</p>
-<p class="startli">When enabled, the Leap Motion device can be used with either the long side of the device with the green LED facing toward or away from the user. The service detects the orientation and flips the images from the device before analyzing them. When disabled, the images are never flipped and tracking recognizes hands much better when the green LED side of the device is facing the user (or downward in a HMD mount).</p>
+<p class="startli">When enabled, the Ultraleap camera device can be used with either the long side of the device with the green LED facing toward or away from the user. The service detects the orientation and flips the images from the device before analyzing them. When disabled, the images are never flipped and tracking recognizes hands much better when the green LED side of the device is facing the user (or downward in a HMD mount).</p>
 <p class="startli">Since this setting is controlled by the user, you should ask for permission before changing its value.</p>
 </li>
 </ul>
 <h1>Service Control Settings</h1>
-<p>The service control settings change how the Leap Motion service (Windows) or daemon (OS X and Linux) operate.</p>
+<p>The service control settings change how the Leap Motion service operates.</p>
 <ul>
 <li><p class="startli"><code>robust_mode_enabled</code> : boolean</p>
 <p class="startli">Robust mode improves tracking when excessive ambient IR light is present. However, it also lowers the framerate significantly. If the resulting framerate is too low, turning on robust mode might cause worse tracking performance than not enabling it in the first place.</p>
@@ -172,7 +172,7 @@ $(document).ready(function(){initNavTree('configuration.html','');});
 <p class="startli">Determines whether the Leap Motion service will automatically install software updates. the auto_check_updates setting must be true for the srvice to discover updates in the first place.</p>
 </li>
 <li><p class="startli"><code>show_tray_messages</code> : boolean</p>
-<p class="startli">Allow notification area messages to be displayed by the service/daemon icon. Set true (the default) to allow; false to supress messages.</p>
+<p class="startli">Allow notification area messages to be displayed by the service icon. Set true (the default) to allow; false to supress messages.</p>
 <p class="startli">This setting should only be used on computers you control.</p>
 </li>
 <li><p class="startli"><code>metrics_enabled</code> : boolean</p>
@@ -208,7 +208,7 @@ Key string                   Value type Default value Purpose
 ``ws_port``                  integer    6437          Used for connections from HTTP clients
 ``wss_port``                 integer    6436          Used for connections from HTTPS clients
 ============================ ========== ============= ========================================
-</pre><p>Note that changes to the port numbers do not take effect until the Leap Motion service or daemon restarts. Thus, it only makes sense to set these values on the command line or in the config.json file rather than using the <a class="el" href="group___functions.html#ga8f80709d76bd235949e295055cd3bf9d" title="Causes the client to commit a configuration change to the Leap Motion service. ">LeapSaveConfigValue()</a> function:</p>
+</pre><p>Note that changes to the port numbers do not take effect until the Leap Motion service restarts. Thus, it only makes sense to set these values on the command line or in the config.json file rather than using the <a class="el" href="group___functions.html#ga8f80709d76bd235949e295055cd3bf9d" title="Causes the client to commit a configuration change to the Leap Motion service. ">LeapSaveConfigValue()</a> function:</p>
 <pre class="fragment">{
   "configuration": {
     "websockets_enabled": true,
@@ -218,32 +218,12 @@ Key string                   Value type Default value Purpose
   }
 }
 </pre><h1>Setting Configuration Options</h1>
-<p>Configuration prameters can be set on the command line when invoking the Leap Motion service/daemon executable, (<code>LeapSvc</code> on Windows and <code>leapd</code> on OS X and Linux), in a configuration file, and in application code using the LeapC API.</p>
+<p>Configuration prameters can be set on the command line when invoking the Leap Motion service executable, in a configuration file, and in application code using the LeapC API.</p>
 <h2>On the Command Line</h2>
-<p>To set configration parameters on the command line, run LeapSvc in a console window, specifying the desired options:</p>
-<ul>
-<li>Windows:: <pre class="fragment">LeapSvc --option_name=value --another_option=value
-</pre></li>
-<li>Mac and Linux:: <pre class="fragment">leapd   --option_name=value --another_option=value
-</pre></li>
-</ul>
-<p>Normally LeapSvc or leapd are installed as a service or daemon and run automatically. Before running LeapSvc manually, you must stop the service if it is already running. You can do this using the standard Windows net command (using an admin account):</p>
-<ul>
-<li>Windows:: <pre class="fragment">net stop LeapService
-</pre></li>
-<li>Mac:: <pre class="fragment">sudo launchctl unload /Library/LaunchDaemons/com.leapmotion.leapd.plist
-</pre></li>
-<li>Linux:: <pre class="fragment">sudo service leapd stop
-</pre></li>
-</ul>
-<p>As an example, the following command runs the service with auto-orientation and images turned on:</p>
-<ul>
-<li>Windows:: <pre class="fragment">LeapSvc  --image_processing_auto_flip=true  --images_mode=2
-</pre></li>
-<li>Mac and Linux <pre class="fragment">leapd    --image_processing_auto_flip=true  --images_mode=2
-</pre></li>
-</ul>
-<p><b>Important:</b> Command line configuration settings can be ignored when the Leap Motion Control Panel is already running.</p>
+<p>To set configration parameters on the command line, run LeapSvc in a console window, specifying the desired options: </p><pre class="fragment">  LeapSvc --option_name=value --another_option=value
+</pre><p>Normally LeapSvc is installed as a service and run automatically. Before running LeapSvc manually, you must stop the service if it is already running. You can do this using the standard Windows net command (using an admin account): </p><pre class="fragment">  net stop LeapService
+</pre><p>As an example, the following command runs the service with auto-orientation and images turned on: </p><pre class="fragment">  LeapSvc  --image_processing_auto_flip=true  --images_mode=2
+</pre><p><b>Important:</b> Command line configuration settings can be ignored when the Leap Motion Control Panel is already running.</p>
 <h2>In a Configuration file</h2>
 <p>You can add options to a JSON-formatted configuration file. The options file can be specified on the LeapSvc command line using the <code>--config</code> parameter or you can add your options to the standard config file.</p>
 <p>A configuration file must be valid JSON. A configuration file specifying the options discussed in this document looks like:</p>
@@ -259,20 +239,14 @@ Key string                   Value type Default value Purpose
   }
 }
 </pre><p>On the command line, you can specify the config file as follows: </p><pre class="fragment">LeapSvc --config=/path/to/config.json
-
-leapd --config=/path/to/config.json
-</pre><p>The Leap Motion system also maintains two standard JSON-formatted configuration files. One is used by the service/daemon, the other is used by the Leap Motion Control Panel application. When both the service and the control panel are running, shared settings are kept in sync. Otherwise, the control panel settings take precedence. In other words, if the service/daemon is already running when the control panel launches, settings are updated to match those found in the control panel configuration file. If the control panel is running when the service/daemon starts, the control panel settings still take precedence over any found in the service configuration file &ndash; or set on the command line.</p>
-<p>Editing these configuration files while the service/daemon or control panel is running does not change the current runtime setting. We recommend quitting the control panel and shutting down the service/daemon before making changes.</p>
+</pre><p>The Ultraleap hand tracking system also maintains two standard JSON-formatted configuration files. One is used by the service, the other is used by the Leap Motion Control Panel application. When both the service and the control panel are running, shared settings are kept in sync. Otherwise, the control panel settings take precedence. In other words, if the service is already running when the control panel launches, settings are updated to match those found in the control panel configuration file. If the control panel is running when the service starts, the control panel settings still take precedence over any found in the service configuration file &ndash; or set on the command line.</p>
+<p>Editing these configuration files while the service or control panel is running does not change the current runtime setting. We recommend quitting the control panel and shutting down the service before making changes.</p>
 <p>The configuration files are named <code>config.json</code> and can be found in the following locations:</p>
-<pre class="fragment">======= ================================================= ==========================================
-OS      Control Panel Config Location                     Service/Daemon Config Location
-======= ================================================= ==========================================
-Android /sdcard/user/Leap\\ Motion                        /sdcard/Leap\\ Motion
-Linux   $HOME/Leap\\ Motion                               /var/Leap\\ Motion
-OS X    $HOME/Library/Application\\ Support/Leap\\ Motion /Library/Application\\ Support/Leap\\ Motion
-Windows %AppData%/Leap Motion                             %ProgramData%/Leap Motion
-======= ================================================= ==========================================
-</pre><p>Note that some of these folders are located within hidden directories. </p>
+<ul>
+<li>Control Panel Config - <code>AppData%/Leap Motion</code></li>
+<li>Service Config - <code>ProgramData%/Leap Motion</code></li>
+</ul>
+<p>Note that these folders may be located within hidden directories. </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.14-->
@@ -280,7 +254,7 @@ Windows %AppData%/Leap Motion                             %ProgramData%/Leap Mot
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="index.html">LeapC Guide</a></li>
-    <li class="footer">Generated on Wed Aug 12 2020 09:47:25 for Leap Motion C API by
+    <li class="footer">Generated on Mon Jan 11 2021 19:08:55 for LeapC API by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

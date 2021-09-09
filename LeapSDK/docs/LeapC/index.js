@@ -1,7 +1,9 @@
 var index =
 [
     [ "System Requirements", "index.html#sysreq", null ],
-    [ "Overview", "index.html#overview", null ],
+    [ "Overview", "index.html#overview", [
+      [ "SDK folder contents", "index.html#sdkfolder", null ]
+    ] ],
     [ "Using LeapC", "usingleapc.html", [
       [ "Getting Tracking Frames and Other Event Messages", "usingleapc.html#messagepump", null ],
       [ "Interpolating Frames", "usingleapc.html#interpolatingframes", null ],
@@ -46,9 +48,10 @@ var index =
       [ "Connection", "concepts.html#connection_concept", null ],
       [ "Events/Messages", "concepts.html#event_concept", null ]
     ] ],
+    [ "Control Panel", "control_panel.html", null ],
     [ "Configuration", "configuration.html", null ],
     [ "Setting Up Virtual and Augmented Reality Scenes", "vrar.html", [
-      [ "Mounting the Leap Motion Device", "vrar.html#vrmount", null ],
+      [ "Mounting the Ultraleap camera device", "vrar.html#vrmount", null ],
       [ "Interpupillary Offset", "vrar.html#vr_offset", [
         [ "Using a Proxy Object", "vrar.html#vr_proxy", null ],
         [ "Angling the Mount", "vrar.html#vr_angled_mount", null ]
@@ -61,5 +64,6 @@ var index =
         [ "Transform a Direction", "vrar.html#vr_transforms_direction", null ]
       ] ],
       [ "Camera Placement in an AR scene", "vrar.html#ar_camera", null ]
-    ] ]
+    ] ],
+    [ "Troubleshooting", "troubleshooting.html", null ]
 ];

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['y',['y',['../group___structs.html#acdf3f3fa3c71069bf5d8ac80f9f85ad8',1,'LEAP_DISTORTION_MATRIX::y()'],['../group___structs.html#a38a094824b34f895659e7fec297db4ba',1,'LEAP_VECTOR::y()'],['../group___structs.html#a0258ce59455fb12ecace1e9d1fd34009',1,'LEAP_QUATERNION::y()']]],
-  ['y_5foffset',['y_offset',['../group___structs.html#a67f06bd6fb11829a45743f694cbb21a0',1,'LEAP_IMAGE_PROPERTIES']]],
-  ['y_5fscale',['y_scale',['../group___structs.html#ac9c02e7bceed60c370f57f0c9b8b687d',1,'LEAP_IMAGE_PROPERTIES']]]
+  ['x',['x',['../group___structs.html#aadae1c4f6d2d1b7165a64d8177e6b912',1,'LEAP_DISTORTION_MATRIX::x()'],['../group___structs.html#afd00ac5b6e0991df902b759e576dd14a',1,'LEAP_VECTOR::x()'],['../group___structs.html#aa009194241001c96a78321224289cb80',1,'LEAP_QUATERNION::x()']]],
+  ['x_5foffset',['x_offset',['../group___structs.html#aa929e4c2c1fd6c2dc9a279efe2611175',1,'LEAP_IMAGE_PROPERTIES']]],
+  ['x_5fscale',['x_scale',['../group___structs.html#a2e05d6c158fbd001ff90155735c713a4',1,'LEAP_IMAGE_PROPERTIES']]]
 ];
