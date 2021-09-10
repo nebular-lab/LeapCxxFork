@@ -1,0 +1,9 @@
+*.obj
+*.suo
+*.db
+*.tlog
+*.lib
+*.log
+*.user
+*.lib.recipe
+*.pdb
