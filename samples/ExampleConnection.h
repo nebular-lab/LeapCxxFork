@@ -8,7 +8,7 @@
 #ifndef ExampleConnection_h
 #define ExampleConnection_h
 
-#include "../include/LeapC.h"
+#include "../LeapSDK/include/LeapC.h"
 
 /* Client functions */
 LEAP_CONNECTION* OpenConnection();

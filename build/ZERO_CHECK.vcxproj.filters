@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Home\Hase\Project\Experiments\LeaspGrasp\LeapCxxFork\build\CMakeFiles\d3e28ff4761d5df45fc7d8411090a766\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{B52BFE57-6C8E-3D3D-B0C6-0A347DBF4244}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

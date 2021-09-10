@@ -12,13 +12,15 @@
 #include<chrono>
 #include<thread>
 //#include "LeapC++.h"
-#include"LeapC.h"
+#include "../LeapSDK/include/LeapC.h"
 #include <Springhead.h>
 #include <Framework/SprFWApp.h>
 //#include "FWFileLoaderSample.h"
-#include "SampleApp.h"
-#include "ExampleConnection.h"
-//#include "Handler.h"
+#include "../src/Samples/SampleApp.h"
+extern "C" {
+  #include "ExampleConnection.h"
+}
+  //#include "Handler.h"
 
 //using namespace Leap;
 using namespace Spr;
@@ -313,6 +315,7 @@ public:
   //PHSpringIf* kojoint3;
 
   //PHSpringIf* oyahito;
+  CDShapeIf* shapejenga;
 
   PHSolidIf* judge;
 
