@@ -173,7 +173,8 @@ public:
   Vec3d fg_pos[5][4][2];
   Vec3d fg_pos_middle[5][4];
   Quaterniond fg_ori[5][4];
-  PHSpringIf* fg_joint[5][4];
+  PHSpringIf* fg_joint_vc[5][4];
+  PHBallJointIf* fg_joint[5][3];
 
   //Controller controller;
   int64_t lastFrameID = 0;
@@ -183,7 +184,8 @@ public:
   //PHSolidIf* soOyaBase;//Leapからの情報
   //PHSolidIf* soOyaObj;//実際に触る方
   //PHSpringIf* Oyajoint;
-  PHSpringDesc Oyadesc;
+  PHSpringDesc Springdesc;
+  PHBallJointDesc Balldesc[5][3];
   //Posed oyapose;
 
   //Vec3d Hito_position;
@@ -355,7 +357,6 @@ public:
     AddAction(MENU_MAIN, ID_SHAKE, "shake floor");
     AddHotKey(MENU_MAIN, ID_SHAKE, 'f');
 
-
   }
   ~MyApp() {}
 
@@ -462,12 +463,12 @@ public:
     soBone->AddShape(shapebone);
 
 
-    soBone->SetShapePose(0, Posed(Vec3d(0, 0.31 * 2, -0.67 * 2) * (double)BlenderToSpr, Quaterniond::Rot(Rad(-90), 'y')));
-    soBone->SetShapePose(1, Posed(Vec3d(0, 0, 0) * (double)BlenderToSpr, Quaterniond::Rot(Rad(-90), 'y')));
-    soBone->SetShapePose(2, Posed(Vec3d(0, 0, 0.38 * 2) * (double)BlenderToSpr, Quaterniond::Rot(Rad(0), 'y')));//180かも
+    soBone->SetShapePose(0, Posed(Vec3d(0.0, 0.31 * 2, -0.67 * 2) * (double)BlenderToSpr, Quaterniond::Rot(Rad(-90), 'y')));
+    soBone->SetShapePose(1, Posed(Vec3d(0.0, 0, 0) * (double)BlenderToSpr, Quaterniond::Rot(Rad(-90.0), 'y')));
+    soBone->SetShapePose(2, Posed(Vec3d(0.0, 0, 0.38 * 2) * (double)BlenderToSpr, Quaterniond::Rot(Rad(0.0), 'y')));//180かも
 
     //soBone->CompInertia();
-    soBone->SetMass(1.0);
+    soBone->SetMass(1.0f);
     soBone->SetGravity(false);
     return soBone;
 
@@ -491,15 +492,15 @@ public:
     CDEllipsoidDesc pad;
     pad.radius = Vec3d(2.79, 1.26, 1.5) * (double)BlenderToSpr;
     shapepad = GetSdk()->GetPHSdk()->CreateShape(pad)->Cast();
-    shapepad->SetDensity(1.0);
-    shapepad->SetStaticFriction(1.0);
-    shapepad->SetDynamicFriction(1.0);
+    shapepad->SetDensity(1.0f);
+    shapepad->SetStaticFriction(1.0f);
+    shapepad->SetDynamicFriction(1.0f);
 
     CDCapsuleDesc bone;
     bone.radius = 1.24 * (double)BlenderToSpr;
     bone.length = (2 - 1.24) * 2 * (double)BlenderToSpr;
     shapebone = GetSdk()->GetPHSdk()->CreateShape(bone)->Cast();
-    shapebone->SetDensity(1.0);
+    shapebone->SetDensity(1.0f);
     //shapebone->SetStaticFriction(2.5);
     //shapebone->SetDynamicFriction(2.5);
 
@@ -513,7 +514,7 @@ public:
     soBone->SetShapePose(1, Posed(Vec3d(0, 0, 0.38 * 2) * (double)BlenderToSpr, Quaterniond::Rot(Rad(0), 'y')));//180かも
 
     //soBone->CompInertia();
-    soBone->SetMass(1.0);
+    soBone->SetMass(1.0f);
     //soBone->SetGravity(false);
     return soBone;
 
@@ -523,7 +524,7 @@ public:
   PHSolidIf* CreateBone2() {
     PHSolidIf* soBone = GetPHScene()->CreateSolid();
     CDSphereDesc sd;
-    sd.radius = 0.3;
+    sd.radius = 0.3f;
 
     shapeSphere = GetSdk()->GetPHSdk()->CreateShape(sd)->Cast();
 
@@ -539,14 +540,15 @@ public:
   PHSolidIf* CreateBone3(Vec3d p, Vec3d n) {
     PHSolidIf* soBone = GetPHScene()->CreateSolid();
     CDCapsuleDesc cd;
-    cd.radius = 1.0;
-    cd.length = sqrt((p.x - n.x) * (p.x - n.x) + (p.y - n.y) * (p.y - n.y) + (p.z - n.z) * (p.z - n.z));
+    cd.radius = 1.0f;
+    cd.length = (float)sqrt((p.x - n.x) * (p.x - n.x) + (p.y - n.y) * (p.y - n.y) + (p.z - n.z) * (p.z - n.z));
 
     shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
-    shapeCapsule->SetDensity(1.0);
+    shapeCapsule->SetDensity(0.1f);
 
     soBone->AddShape(shapeCapsule);
     soBone->SetGravity(false);
+    //soBone->SetDynamical(false);
     //soBone->SetDynamical(false);
     soBone->CompInertia();
 
@@ -638,7 +640,7 @@ public:
 
     //soPalm = CreateBone();
 
-
+    GetFWScene()->EnableRenderAxis(false, false, false);
 
 
     //指先の作成
@@ -716,10 +718,10 @@ public:
 
 
 
-    Oyadesc.spring = Vec3d(1500.0, 1500.0, 1500.0);
-    Oyadesc.damper = Vec3d(15.0, 15.0, 15.0);
-    Oyadesc.springOri = 1000.0;
-    Oyadesc.damperOri = 1000.0;
+    Springdesc.spring = Vec3d(15000.0, 15000.0, 1500.0);
+    Springdesc.damper = Vec3d(150.0, 150.0, 150.0);
+    Springdesc.springOri = 10000.0;
+    Springdesc.damperOri = 100.0;
 
     for(int i=0;i<5;i++){
       for (int j = 0; j < 4; j++) {
@@ -736,37 +738,30 @@ public:
           
           fg_base[i][j] = CreateBone2();
           GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base[i][j]);
-          if (j == 3) {
+          if (j == 3) {//指先
             fg_obj[i][j] = CreateBone(tip_width[i]);
           }
-          else {
+          else {//指の骨
             fg_obj[i][j] = CreateBone3(fg_pos[i][j][0],fg_pos[i][j][1]);
           }
           
           GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_obj[i][j]);
 
-          fg_joint[i][j] = GetPHScene()->CreateJoint(fg_base[i][j], fg_obj[i][j], Oyadesc)->Cast();
+          fg_joint_vc[i][j] = GetPHScene()->CreateJoint(fg_base[i][j], fg_obj[i][j], Springdesc)->Cast();
         }
       }
     }
+    //for (int i = 0; i < 5; i++) {
+    //    for (int j = 0; j < 3; j++) {
+    //        if (!(i == 0 && j == 0)) {
+    //            Balldesc[i][j].poseSocket.Pos() = (fg_pos[i][j][1] - fg_pos[i][j][0]) / 2.0;
+    //            Balldesc[i][j].posePlug.Pos() = (fg_pos[i][j + 1][0] - fg_pos[i][j + 1][1]) / 2.0;
+    //            fg_joint[i][j] = GetPHScene()->CreateJoint(fg_obj[i][j], fg_obj[i][j + 1], Balldesc[i][j])->Cast();
+    //        }
+    //    }
+    //}
 
-    for (int i = 0; i < 5; i++) {
-      for (int j = 0; j < 4; j++) {
-        if (!(i == 0 && j == 0)) {
-          GetPHScene()->SetContactMode(fg_base[i][j], PHSceneDesc::MODE_NONE);
-          GetPHScene()->SetContactMode(fg_obj[i][j], soFloor, PHSceneDesc::MODE_NONE);
-        }
-      }
-    }
 
-    for (int i = 0; i < 5; i++) {
-      for (int j = 0; j < 4 - 1; j++) {
-        if (!(i == 0 && j == 0)) GetPHScene()->SetContactMode(fg_obj[i][j], fg_obj[i][j + 1], PHSceneDesc::MODE_NONE);
-      }
-    }
-    for (int i = 1; i < 5-1; i++) {
-      GetPHScene()->SetContactMode(fg_obj[i][0], fg_obj[i+1][0], PHSceneDesc::MODE_NONE);
-    }
 
     //soOyaBase = CreateBone2();
     //soOyaBase->SetDynamical(false);
@@ -778,11 +773,11 @@ public:
     ////soOyaObj->SetDynamical(true);
     //GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, soOyaObj);
     ////soOyaObj->SetMass(1);
-    //Oyadesc.spring = Vec3d(1500, 1500, 1500);
-    //Oyadesc.damper = Vec3d(15, 15, 15);
-    //Oyadesc.springOri = 10000.0;
-    //Oyadesc.damperOri = 1000.0;
-    //Oyajoint = GetPHScene()->CreateJoint(soOyaBase, soOyaObj, Oyadesc)->Cast();
+    //Springdesc.spring = Vec3d(1500, 1500, 1500);
+    //Springdesc.damper = Vec3d(15, 15, 15);
+    //Springdesc.springOri = 10000.0;
+    //Springdesc.damperOri = 1000.0;
+    //Oyajoint = GetPHScene()->CreateJoint(soOyaBase, soOyaObj, Springdesc)->Cast();
 
     ////人差し指
     //soHitoBase = CreateBone2();
@@ -793,7 +788,7 @@ public:
 
     //GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, soHitoObj);
     ////soHitoObj->SetMass(1);
-    //Hitojoint = GetPHScene()->CreateJoint(soHitoBase, soHitoObj, Oyadesc)->Cast();
+    //Hitojoint = GetPHScene()->CreateJoint(soHitoBase, soHitoObj, Springdesc)->Cast();
 
 
     //oyahitodesc.spring = Vec3d(200, 200, 200);
@@ -894,23 +889,23 @@ public:
 
 
     ////joint
-    //oyajoint1 = GetPHScene()->CreateJoint(sooya1b, sooya1, Oyadesc)->Cast();
-    //oyajoint2 = GetPHScene()->CreateJoint(sooya2b, sooya2, Oyadesc)->Cast();
-    //hitojoint1 = GetPHScene()->CreateJoint(sohito1b, sohito1, Oyadesc)->Cast();
-    //hitojoint2 = GetPHScene()->CreateJoint(sohito2b, sohito2, Oyadesc)->Cast();
-    //hitojoint3 = GetPHScene()->CreateJoint(sohito3b, sohito3, Oyadesc)->Cast();
-    //nakajoint0 = GetPHScene()->CreateJoint(sonaka0b, sonaka0, Oyadesc)->Cast();
-    //nakajoint1 = GetPHScene()->CreateJoint(sonaka1b, sonaka1, Oyadesc)->Cast();
-    //nakajoint2 = GetPHScene()->CreateJoint(sonaka2b, sonaka2, Oyadesc)->Cast();
-    //nakajoint3 = GetPHScene()->CreateJoint(sonaka3b, sonaka3, Oyadesc)->Cast();
-    //kusurijoint0 = GetPHScene()->CreateJoint(sokusuri0b, sokusuri0, Oyadesc)->Cast();
-    //kusurijoint1 = GetPHScene()->CreateJoint(sokusuri1b, sokusuri1, Oyadesc)->Cast();
-    //kusurijoint2 = GetPHScene()->CreateJoint(sokusuri2b, sokusuri2, Oyadesc)->Cast();
-    //kusurijoint3 = GetPHScene()->CreateJoint(sokusuri3b, sokusuri3, Oyadesc)->Cast();
-    //kojoint0 = GetPHScene()->CreateJoint(soko0b, soko0, Oyadesc)->Cast();
-    //kojoint1 = GetPHScene()->CreateJoint(soko1b, soko1, Oyadesc)->Cast();
-    //kojoint2 = GetPHScene()->CreateJoint(soko2b, soko2, Oyadesc)->Cast();
-    //kojoint3 = GetPHScene()->CreateJoint(soko3b, soko3, Oyadesc)->Cast();
+    //oyajoint1 = GetPHScene()->CreateJoint(sooya1b, sooya1, Springdesc)->Cast();
+    //oyajoint2 = GetPHScene()->CreateJoint(sooya2b, sooya2, Springdesc)->Cast();
+    //hitojoint1 = GetPHScene()->CreateJoint(sohito1b, sohito1, Springdesc)->Cast();
+    //hitojoint2 = GetPHScene()->CreateJoint(sohito2b, sohito2, Springdesc)->Cast();
+    //hitojoint3 = GetPHScene()->CreateJoint(sohito3b, sohito3, Springdesc)->Cast();
+    //nakajoint0 = GetPHScene()->CreateJoint(sonaka0b, sonaka0, Springdesc)->Cast();
+    //nakajoint1 = GetPHScene()->CreateJoint(sonaka1b, sonaka1, Springdesc)->Cast();
+    //nakajoint2 = GetPHScene()->CreateJoint(sonaka2b, sonaka2, Springdesc)->Cast();
+    //nakajoint3 = GetPHScene()->CreateJoint(sonaka3b, sonaka3, Springdesc)->Cast();
+    //kusurijoint0 = GetPHScene()->CreateJoint(sokusuri0b, sokusuri0, Springdesc)->Cast();
+    //kusurijoint1 = GetPHScene()->CreateJoint(sokusuri1b, sokusuri1, Springdesc)->Cast();
+    //kusurijoint2 = GetPHScene()->CreateJoint(sokusuri2b, sokusuri2, Springdesc)->Cast();
+    //kusurijoint3 = GetPHScene()->CreateJoint(sokusuri3b, sokusuri3, Springdesc)->Cast();
+    //kojoint0 = GetPHScene()->CreateJoint(soko0b, soko0, Springdesc)->Cast();
+    //kojoint1 = GetPHScene()->CreateJoint(soko1b, soko1, Springdesc)->Cast();
+    //kojoint2 = GetPHScene()->CreateJoint(soko2b, soko2, Springdesc)->Cast();
+    //kojoint3 = GetPHScene()->CreateJoint(soko3b, soko3, Springdesc)->Cast();
 
 
 
@@ -951,7 +946,23 @@ public:
     GetPHScene()->SetContactMode(soko0b, PHSceneDesc::MODE_NONE);*/
 
 
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (!(i == 0 && j == 0)) {
+                GetPHScene()->SetContactMode(fg_base[i][j], PHSceneDesc::MODE_NONE);
+                GetPHScene()->SetContactMode(fg_obj[i][j], soFloor, PHSceneDesc::MODE_NONE);
+            }
+        }
+    }
 
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 4 - 1; j++) {
+            if (!(i == 0 && j == 0)) GetPHScene()->SetContactMode(fg_obj[i][j], fg_obj[i][j + 1], PHSceneDesc::MODE_NONE);
+        }
+    }
+    for (int i = 1; i < 5 - 1; i++) {
+        GetPHScene()->SetContactMode(fg_obj[i][0], fg_obj[i + 1][0], PHSceneDesc::MODE_NONE);
+    }
 
     // 床を揺らす
     if (soFloor && floorShakeAmplitude) {
