@@ -141,7 +141,7 @@
     <OutDir>$(VisualStudioVersion)\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(VisualStudioVersion)\$(Platform)\$(Configuration)\</IntDir>
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../../Springhead/core/include;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../../Springhead/core/include;../../../Springhead\core\src\Samples\Framework\FWFileLoaderSample</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);../../../Springhead/dependency/lib/win64;../LeapSDK/lib/x64</LibraryPath>
     <ExecutablePath>$(VC_ExecutablePath_x64);$(CommonExecutablePath);</ExecutablePath>
   </PropertyGroup>
