@@ -15,11 +15,13 @@
 #include "../LeapSDK/include/LeapC.h"
 #include <Springhead.h>
 #include <Framework/SprFWApp.h>
-//#include "FWFileLoaderSample.h"
+#include "FWFileLoaderSample.h"
 #include "../src/Samples/SampleApp.h"
 extern "C" {
   #include "ExampleConnection.h"
 }
+#define USE_SPRFILE
+#define ESC 27
   //#include "Handler.h"
 
 //using namespace Leap;
@@ -144,6 +146,73 @@ void OnPointMappingChange(const LEAP_POINT_MAPPING_CHANGE_EVENT* change) {
 //    event->head_orientation.z);
 //}
 
+FWFileLoaderSample::FWFileLoaderSample() {
+#ifdef USE_SPRFILE
+    fileName = "./files/sceneSample.spr";	// sprファイル
+#else
+    fileName = "./files/sceneSample.x";		// xファイル
+#endif
+}
+void FWFileLoaderSample::Init(int argc, char* argv[]) {
+    CreateSdk();			// SDKの作成
+    UTRef<ImportIf> import = GetSdk()->GetFISdk()->CreateImport();
+    GetSdk()->LoadScene(fileName, import);			// ファイルのロード
+    GetSdk()->SaveScene("save.spr", import);		// ファイルのセーブテスト
+    GRInit(argc, argv);		// ウィンドウマネジャ初期化
+    CreateWin();			// ウィンドウを作成
+    CreateTimer();			// タイマを作成
+
+    InitCameraView();		// カメラビューの初期化
+    GetSdk()->SetDebugMode(false);						// デバックモードの無効化
+    GetSdk()->GetScene()->EnableRenderAxis(true);		// 座標軸の表示
+    GetSdk()->GetScene()->EnableRenderContact(true);	// 接触領域の表示
+}
+
+void FWFileLoaderSample::InitCameraView() {
+    Vec3d pos = Vec3d(-0.978414, 11.5185, 24.4473);		// カメラ初期位置
+    GetCurrentWin()->GetTrackball()->SetPosition(pos);	// カメラ初期位置の設定
+}
+
+void FWFileLoaderSample::Reset() {
+    GetSdk()->Clear();
+    GetSdk()->LoadScene(fileName);
+    GetCurrentWin()->SetScene(GetSdk()->GetScene());
+}
+
+
+void FWFileLoaderSample::Keyboard(int key, int x, int y) {
+    switch (key) {
+    case ESC:
+    case 'q':
+        // アプリケーションの終了
+        exit(0);
+        break;
+    case 'r':
+        // ファイルの再読み込み
+        Reset();
+        break;
+    case 'w':
+        // カメラ位置の初期化
+        InitCameraView();
+        break;
+    case 'd':
+    {
+        // デバック表示
+        static bool bDebug = GetSdk()->GetDebugMode();
+        if (bDebug)	bDebug = false;
+        else		bDebug = true;
+        GetSdk()->SetDebugMode(bDebug);
+        DSTR << "Debug Mode " << bDebug << std::endl;
+        //DSTR << "CameraPosition" << std::endl;
+        //DSTR << GetCurrentWin()->GetTrackball()->GetPosition() << std::endl;
+    }
+    break;
+    default:
+        break;
+    }
+}
+
+
 class MyApp : public SampleApp {
 public:
   /// ページID
@@ -175,6 +244,15 @@ public:
   Quaterniond fg_ori[5][4];
   PHSpringIf* fg_joint_vc[5][4];
   PHBallJointIf* fg_joint[5][3];
+
+  PHSolidIf* palm_middle_base;
+  PHSolidIf* palm_middle_obj;
+  Quaterniond palm_middle_ori;
+  PHSpringIf* palm_middle_joint_vc;
+
+  Vec3d palm_middle_pos;
+  PHSolidIf* palm_spread_obj[12];
+  PHSolidIf* palm_spread_base[12];
 
   //Controller controller;
   int64_t lastFrameID = 0;
@@ -329,6 +407,8 @@ public:
   CDEllipsoidIf* shapenail;
   CDEllipsoidIf* shapepad;
   CDCapsuleIf* shapebone;
+  Vec3d palm_v;
+
 
 public:
   MyApp() {
@@ -437,38 +517,38 @@ public:
 
     CDEllipsoidDesc nail;
     //nail.radius = Vec3d(1.69, 0.179, 1.12)*(double)BlenderToSpr;
-    nail.radius = Vec3d(2.5, 0.179, 1.12) * (double)BlenderToSpr;
+    nail.radius = Vec3d(2.5f, 0.179f, 1.12f) * (double)BlenderToSpr;
     shapenail = GetSdk()->GetPHSdk()->CreateShape(nail)->Cast();
-    shapenail->SetDensity(1.0);
-    shapenail->SetStaticFriction(1.0);
-    shapenail->SetDynamicFriction(1.0);
+    shapenail->SetDensity(1.0f);
+    shapenail->SetStaticFriction(100.0f);
+    shapenail->SetDynamicFriction(100.0f);
 
     CDEllipsoidDesc pad;
     pad.radius = Vec3d(2.79, 1.26, 1.5) * (double)BlenderToSpr;
     shapepad = GetSdk()->GetPHSdk()->CreateShape(pad)->Cast();
-    shapepad->SetDensity(1.0);
-    shapepad->SetStaticFriction(1.0);
-    shapepad->SetDynamicFriction(1.0);
+    shapepad->SetDensity(1.0f);
+    shapepad->SetStaticFriction(100.0f);
+    shapepad->SetDynamicFriction(100.0f);
 
     CDCapsuleDesc bone;
-    bone.radius = 1.24 * (double)BlenderToSpr;
-    bone.length = (2 - 1.24) * 2 * (double)BlenderToSpr;
+    bone.radius = 1.24 * BlenderToSpr;
+    bone.length = (2.0f - 1.24f) * 2.0f * BlenderToSpr;
     shapebone = GetSdk()->GetPHSdk()->CreateShape(bone)->Cast();
-    shapebone->SetDensity(1.0);
-    //shapebone->SetStaticFriction(2.5);
-    //shapebone->SetDynamicFriction(2.5);
+    shapebone->SetDensity(1.0f);
+    shapebone->SetStaticFriction(100.0f);
+    shapebone->SetDynamicFriction(100.0f);
 
     soBone->AddShape(shapenail);
     soBone->AddShape(shapepad);
     soBone->AddShape(shapebone);
 
 
-    soBone->SetShapePose(0, Posed(Vec3d(0.0, 0.31 * 2, -0.67 * 2) * (double)BlenderToSpr, Quaterniond::Rot(Rad(-90), 'y')));
-    soBone->SetShapePose(1, Posed(Vec3d(0.0, 0, 0) * (double)BlenderToSpr, Quaterniond::Rot(Rad(-90.0), 'y')));
-    soBone->SetShapePose(2, Posed(Vec3d(0.0, 0, 0.38 * 2) * (double)BlenderToSpr, Quaterniond::Rot(Rad(0.0), 'y')));//180かも
+    soBone->SetShapePose(0, Posed(Vec3d(0.0, 0.31 * 2.0, -0.67 * 2.0) * (double)BlenderToSpr, Quaterniond::Rot(Rad(-90.0), 'y')));
+    soBone->SetShapePose(1, Posed(Vec3d(0.0, 0.0, 0.0) * (double)BlenderToSpr, Quaterniond::Rot(Rad(-90.0), 'y')));
+    soBone->SetShapePose(2, Posed(Vec3d(0.0, 0.0, 0.38 * 2.0) * (double)BlenderToSpr, Quaterniond::Rot(Rad(0.0), 'y')));//180かも
 
-    //soBone->CompInertia();
-    soBone->SetMass(1.0f);
+    soBone->CompInertia();
+    //soBone->SetMass(1.0f);
     soBone->SetGravity(false);
     return soBone;
 
@@ -477,7 +557,7 @@ public:
   //指先(爪なし)
   PHSolidIf* CreateBoneNo(float width) {
 
-    float BlenderToSpr = width / 2.48 / 15;
+    float BlenderToSpr = width / 2.48 / 15.0;
     printf("width=%f,BlenderToSpr=%f", width, BlenderToSpr);
     PHSolidIf* soBone = GetPHScene()->CreateSolid();
 
@@ -497,8 +577,8 @@ public:
     shapepad->SetDynamicFriction(1.0f);
 
     CDCapsuleDesc bone;
-    bone.radius = 1.24 * (double)BlenderToSpr;
-    bone.length = (2 - 1.24) * 2 * (double)BlenderToSpr;
+    bone.radius = 1.24f * BlenderToSpr;
+    bone.length = (2.0f - 1.24f) * 2.0f * BlenderToSpr;
     shapebone = GetSdk()->GetPHSdk()->CreateShape(bone)->Cast();
     shapebone->SetDensity(1.0f);
     //shapebone->SetStaticFriction(2.5);
@@ -510,8 +590,8 @@ public:
 
 
     //soBone->SetShapePose(0, Posed(Vec3d(0, 0.31 * 2, -0.67 * 2) * (double)BlenderToSpr, Quaterniond::Rot(Rad(-90), 'y')));
-    soBone->SetShapePose(0, Posed(Vec3d(0, 0, 0) * (double)BlenderToSpr, Quaterniond::Rot(Rad(-90), 'y')));
-    soBone->SetShapePose(1, Posed(Vec3d(0, 0, 0.38 * 2) * (double)BlenderToSpr, Quaterniond::Rot(Rad(0), 'y')));//180かも
+    soBone->SetShapePose(0, Posed(Vec3d(0.0, 0.0, 0.0) * (double)BlenderToSpr, Quaterniond::Rot(Rad(-90.0), 'y')));
+    soBone->SetShapePose(1, Posed(Vec3d(0.0, 0.0, 0.38 * 2) * (double)BlenderToSpr, Quaterniond::Rot(Rad(0.0), 'y')));//180かも
 
     //soBone->CompInertia();
     soBone->SetMass(1.0f);
@@ -524,7 +604,7 @@ public:
   PHSolidIf* CreateBone2() {
     PHSolidIf* soBone = GetPHScene()->CreateSolid();
     CDSphereDesc sd;
-    sd.radius = 0.3f;
+    sd.radius = 1.0f;
 
     shapeSphere = GetSdk()->GetPHSdk()->CreateShape(sd)->Cast();
 
@@ -595,6 +675,17 @@ public:
     //soBone->CompInertia();
 
     return soBone;
+  } 
+  PHSolidIf* CreatePalm_obj() {
+      PHSolidIf* soPalm= GetPHScene()->CreateSolid();
+      CDEllipsoidIf* shapepalm;
+      CDEllipsoidDesc palm;
+      palm.radius = Vec3d(3.5, 1.0, 4.0);
+      shapepalm = GetSdk()->GetPHSdk()->CreateShape(palm)->Cast();
+      soPalm->AddShape(shapepalm);
+      soPalm->SetShapePose(0, Posed(Vec3d(0.0, 0.0, 2.5), Quaterniond::Rot(Rad(0.0), 'y')));
+      soPalm->SetGravity(false);
+      return soPalm;
   }
 
 
@@ -625,6 +716,21 @@ public:
 
     return vec3;
   }
+  Vec3d vecvec3_3(LEAP_VECTOR vec) {
+      Vec3d vec3;
+      double x;
+      double y;
+      double z;
+      x= (double)(vec.x / 10.0);
+      y= (double)(vec.y / 10.0);
+      z= (double)(vec.z / 10.0);
+
+      vec3.x = -x;
+      vec3.y = 25.0 - z;
+      vec3.z = 30.0 - y;
+
+      return vec3;
+  }
   Quaterniond quaquad(LEAP_QUATERNION qua) {
     Quaterniond quad;
     quad.x = (double)qua.x;
@@ -634,6 +740,75 @@ public:
     return quad;
   }
 
+  void Drop(int shape, int mat, Vec3d v, Vec3d w, Vec3d p, Quaterniond q) {
+      // ステートを解放
+      states->ReleaseState(GetPHScene());
+
+      // 剛体を作成
+      PHSolidIf* solid = GetPHScene()->CreateSolid();
+      // マテリアルを設定
+      GetFWScene()->SetSolidMaterial(mat, solid);
+
+      // 形状の割当て
+      if (shape == SHAPE_BOX) {
+          CDBoxDesc bd;
+          bd.boxsize = Vec3d(3.0, 10.0, 3.0);
+          shapeBox->SetDynamicFriction(10.0f);
+          shapeBox->SetStaticFriction(10.0f);
+          shapeBox->SetDensity(0.001f);
+          shapeBox = GetSdk()->GetPHSdk()->CreateShape(bd)->Cast();
+          solid->AddShape(shapeBox);
+      }
+
+      if (shape == SHAPE_CAPSULE) {
+          CDCapsuleDesc cd;
+          cd.length = 12.0f;
+          shapeCapsule->SetDynamicFriction(10.0f);
+          shapeCapsule->SetStaticFriction(10.0f);
+          shapeCapsule->SetDensity(0.1f);
+          shapeCapsule= GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
+          solid->AddShape(shapeCapsule);
+
+      }
+          
+      if (shape == SHAPE_ROUNDCONE)
+          solid->AddShape(shapeRoundCone);
+      if (shape == SHAPE_SPHERE)
+          solid->AddShape(shapeSphere);
+      if (shape == SHAPE_ELLIPSOID)
+          solid->AddShape(shapeEllipsoid);
+      if (shape == SHAPE_ROCK) {
+          CDConvexMeshDesc md;
+          int nv = rand() % 100 + 50;
+          for (int i = 0; i < nv; ++i) {
+              Vec3d v;
+              for (int c = 0; c < 3; ++c) {
+                  v[c] = ((rand() % 100) / 100.0 - 0.5) * 5 * 1.3 * ShapeScale();
+              }
+              md.vertices.push_back(v);
+          }
+          solid->AddShape(GetSdk()->GetPHSdk()->CreateShape(md));
+      }
+      if (shape == SHAPE_BLOCK) {
+          for (int i = 0; i < 7; i++)
+              solid->AddShape(shapeBox);
+          Posed pose;
+          pose.Pos() = ShapeScale() * Vec3d(3, 0, 0); solid->SetShapePose(1, pose);
+          pose.Pos() = ShapeScale() * Vec3d(-3, 0, 0); solid->SetShapePose(2, pose);
+          pose.Pos() = ShapeScale() * Vec3d(0, 3, 0); solid->SetShapePose(3, pose);
+          pose.Pos() = ShapeScale() * Vec3d(0, -3, 0); solid->SetShapePose(4, pose);
+          pose.Pos() = ShapeScale() * Vec3d(0, 0, 3); solid->SetShapePose(5, pose);
+          pose.Pos() = ShapeScale() * Vec3d(0, 0, -3); solid->SetShapePose(6, pose);
+      }
+      if (shape == SHAPE_COIN) {
+          solid->AddShape(shapeCoin);
+      }
+      solid->SetVelocity(v);
+      solid->SetAngularVelocity(w);
+      solid->SetFramePosition(p);
+      solid->SetOrientation(q);
+      solid->CompInertia();
+  }
   virtual void BuildScene() {
 
     soFloor = CreateFloor(true);
@@ -754,12 +929,16 @@ public:
     //for (int i = 0; i < 5; i++) {
     //    for (int j = 0; j < 3; j++) {
     //        if (!(i == 0 && j == 0)) {
-    //            Balldesc[i][j].poseSocket.Pos() = (fg_pos[i][j][1] - fg_pos[i][j][0]) / 2.0;
-    //            Balldesc[i][j].posePlug.Pos() = (fg_pos[i][j + 1][0] - fg_pos[i][j + 1][1]) / 2.0;
+    //            Balldesc[i][j].poseSocket.Pos() = Vec3d(fg_pos[i][j][1].x - fg_pos[i][j][0].x, fg_pos[i][j][1].y - fg_pos[i][j][0].y, fg_pos[i][j][1].z - fg_pos[i][j][0].z) / 2.0;
+    //            Balldesc[i][j].posePlug.Pos() = Vec3d(fg_pos[i][j + 1][0].x - fg_pos[i][j + 1][1].x, fg_pos[i][j + 1][0].y - fg_pos[i][j + 1][1].y, fg_pos[i][j + 1][0].z - fg_pos[i][j + 1][1].z) / 2.0;
     //            fg_joint[i][j] = GetPHScene()->CreateJoint(fg_obj[i][j], fg_obj[i][j + 1], Balldesc[i][j])->Cast();
     //        }
     //    }
     //}
+    //palm_middle_obj = CreatePalm_obj();
+    //palm_middle_base = CreateBone2();
+    //palm_middle_joint_vc= GetPHScene()->CreateJoint(palm_middle_base, palm_middle_obj, Springdesc)->Cast();
+
 
 
 
@@ -951,13 +1130,16 @@ public:
             if (!(i == 0 && j == 0)) {
                 GetPHScene()->SetContactMode(fg_base[i][j], PHSceneDesc::MODE_NONE);
                 GetPHScene()->SetContactMode(fg_obj[i][j], soFloor, PHSceneDesc::MODE_NONE);
+                //GetPHScene()->SetContactMode(fg_obj[i][j], PHSceneDesc::MODE_NONE);
             }
         }
     }
 
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j < 4 - 1; j++) {
-            if (!(i == 0 && j == 0)) GetPHScene()->SetContactMode(fg_obj[i][j], fg_obj[i][j + 1], PHSceneDesc::MODE_NONE);
+            if (!(i == 0 && j == 0)) {
+                GetPHScene()->SetContactMode(fg_obj[i][j], fg_obj[i][j+1], PHSceneDesc::MODE_NONE);
+            }
         }
     }
     for (int i = 1; i < 5 - 1; i++) {
@@ -981,6 +1163,7 @@ public:
       //printf("Frame %lli with %i hands.\n", (long long int)frame->tracking_frame_id, frame->nHands);
       for (uint32_t h = 0; h < frame->nHands; h++) {
         LEAP_HAND* hand = &frame->pHands[0];
+        palm_v = vecvec3_2(hand->palm.velocity);
 
         for (int i = 0; i < 5; i++) {
           for (int j = 0; j < 4; j++) {
@@ -991,9 +1174,18 @@ public:
               fg_ori[i][j] = y180 * fg_ori[i][j];
               fg_base[i][j]->SetFramePosition(fg_pos_middle[i][j]);
               fg_base[i][j]->SetOrientation(fg_ori[i][j]);
+              //fg_base[i][j]->SetVelocity(palm_v);
             }
           }
         }
+
+        //palm_middle_pos = vecvec3_3(hand->palm.position);
+        //palm_middle_ori = quaquad(hand->palm.orientation);
+        //palm_middle_ori = x90 * palm_middle_ori;
+        //palm_middle_ori = y180 * palm_middle_ori;
+        //palm_middle_base->SetFramePosition(palm_middle_pos);
+        //palm_middle_base->SetOrientation(palm_middle_ori);
+
 
         /*Oya_position = vecvec3(hand->thumb.distal.prev_joint, hand->thumb.distal.next_joint);
         Oya_orientation = quaquad(hand->thumb.distal.rotation);
@@ -1143,13 +1335,13 @@ public:
       if (id == ID_BOX) {
         Drop(SHAPE_BOX, GRRenderIf::RED, v, w, p, q);
         message = "box dropped.";
-        start = clock();
+        //start = clock();
       }
       if (id == ID_CAPSULE) {
         Drop(SHAPE_CAPSULE, GRRenderIf::GREEN, v, w, p, q);
         message = "capsule dropped.";
-        end = clock();
-        cout << ((float)end - start) / CLOCKS_PER_SEC << endl;
+        //end = clock();
+        //cout << ((float)end - start) / CLOCKS_PER_SEC << endl;
       }
       if (id == ID_ROUNDCONE) {
         //Drop(SHAPE_ROUNDCONE, GRRenderIf::BLUE, v, w, p, q);
