@@ -815,7 +815,7 @@ public:
 
     //soPalm = CreateBone();
 
-    GetFWScene()->EnableRenderAxis(false, false, false);
+    //GetFWScene()->EnableRenderAxis(false, false, false);
 
 
     //wæ‚Ìì¬
@@ -929,7 +929,7 @@ public:
     //for (int i = 0; i < 5; i++) {
     //    for (int j = 0; j < 3; j++) {
     //        if (!(i == 0 && j == 0)) {
-    //            Balldesc[i][j].poseSocket.Pos() = Vec3d(fg_pos[i][j][1].x - fg_pos[i][j][0].x, fg_pos[i][j][1].y - fg_pos[i][j][0].y, fg_pos[i][j][1].z - fg_pos[i][j][0].z) / 2.0;
+    //            Balldesc[i][j].poseSocket.Pos() = Vec3d(0.0, 0.0, (fg_pos[i][j][1].x - fg_pos[i][j][0].x)* (fg_pos[i][j][1].x - fg_pos[i][j][0].x) + (fg_pos[i][j][1].y - fg_pos[i][j][0].y)* (fg_pos[i][j][1].y - fg_pos[i][j][0].y)+(fg_pos[i][j][1].x - fg_pos[i][j][0].x) ^ 2) / 2.0;
     //            Balldesc[i][j].posePlug.Pos() = Vec3d(fg_pos[i][j + 1][0].x - fg_pos[i][j + 1][1].x, fg_pos[i][j + 1][0].y - fg_pos[i][j + 1][1].y, fg_pos[i][j + 1][0].z - fg_pos[i][j + 1][1].z) / 2.0;
     //            fg_joint[i][j] = GetPHScene()->CreateJoint(fg_obj[i][j], fg_obj[i][j + 1], Balldesc[i][j])->Cast();
     //        }

@@ -1,0 +1,28 @@
+Import { path="cylinder2.x"}
+
+FWScene fwScene{	
+	/* PHSolidとGRFrameとの関連付け */
+
+
+	FWObject fwCylinder{
+		*soCylinder		// PHSolid
+		*grFrameCylinder	// GRFrame
+	}
+
+	/* PHScene内のObject */
+	PHScene phScene{
+
+		PHSolid soCylinder{
+			pose = 1 0 0 0  -0.5 10 0
+			inertia = 10 0 0   0 1 0  0 0 10
+			dynamical = true
+			*cylinder2		// link to xfile(physics model)
+		}
+	}
+	
+	/* GRScene内のObject */
+	GRScene grScene{
+		GRFrame grFrameCylinder{ *cylinder2}
+
+	}
+}
