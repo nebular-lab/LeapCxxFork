@@ -148,9 +148,9 @@ void OnPointMappingChange(const LEAP_POINT_MAPPING_CHANGE_EVENT* change) {
 
 FWFileLoaderSample::FWFileLoaderSample() {
 #ifdef USE_SPRFILE
-    fileName = "./files/sceneSample.spr";	// sprファイル
+    fileName = "./file/scene.spr";	// sprファイル
 #else
-    fileName = "./files/sceneSample.x";		// xファイル
+    fileName = "./file/scene.x";		// xファイル
 #endif
 }
 void FWFileLoaderSample::Init(int argc, char* argv[]) {
@@ -158,14 +158,7 @@ void FWFileLoaderSample::Init(int argc, char* argv[]) {
     UTRef<ImportIf> import = GetSdk()->GetFISdk()->CreateImport();
     GetSdk()->LoadScene(fileName, import);			// ファイルのロード
     GetSdk()->SaveScene("save.spr", import);		// ファイルのセーブテスト
-    GRInit(argc, argv);		// ウィンドウマネジャ初期化
-    CreateWin();			// ウィンドウを作成
-    CreateTimer();			// タイマを作成
 
-    InitCameraView();		// カメラビューの初期化
-    GetSdk()->SetDebugMode(false);						// デバックモードの無効化
-    GetSdk()->GetScene()->EnableRenderAxis(true);		// 座標軸の表示
-    GetSdk()->GetScene()->EnableRenderContact(true);	// 接触領域の表示
 }
 
 void FWFileLoaderSample::InitCameraView() {
@@ -274,6 +267,8 @@ public:
   //PHSpringDesc Hitodesc;
 
   PHSpringDesc oyahitodesc;
+
+  PHSolidIf* cylinder;
 
 
 
@@ -417,6 +412,20 @@ public:
     x90 = Quaterniond::Rot(Rad(90.0), 'x');
     y180 = Quaterniond::Rot(Rad(180.0), 'y');
 
+    //何番目のシーンなのかを取得して、そのシーンについてfindobjectをする
+    /*int n;
+    n=GetSdk()->NScene();
+    DSTR << n << endl;*/
+    //string filename;
+    //filename = "./file/scene.spr";
+    //UTRef<ImportIf> import = GetSdk()->GetFISdk()->CreateImport();
+    //GetSdk()->LoadScene(filename, import);
+    //UTString objectname;
+    //objectname = "soCylinder";
+    //cylinder = GetPHScene()->FindObject(objectname)->Cast();
+
+    //n = GetSdk()->NScene();
+    //DSTR << n << endl;
 
     AddAction(MENU_MAIN, ID_BOX, "drop box");
     AddHotKey(MENU_MAIN, ID_BOX, 'b');
@@ -436,6 +445,8 @@ public:
     //AddHotKey(MENU_MAIN, ID_TOWER, 't');
     AddAction(MENU_MAIN, ID_SHAKE, "shake floor");
     AddHotKey(MENU_MAIN, ID_SHAKE, 'f');
+
+
 
   }
   ~MyApp() {}
@@ -625,11 +636,13 @@ public:
 
     shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
     shapeCapsule->SetDensity(0.1f);
+    shapeCapsule->SetStaticFriction(100.0f);
+    shapeCapsule->SetDynamicFriction(100.0f);
 
     soBone->AddShape(shapeCapsule);
+    
     soBone->SetGravity(false);
-    //soBone->SetDynamical(false);
-    //soBone->SetDynamical(false);
+
     soBone->CompInertia();
 
     return soBone;
@@ -739,6 +752,12 @@ public:
     quad.w = (double)qua.w;
     return quad;
   }
+  double jointLength(Vec3d vec1, Vec3d vec2) {
+      double length;
+      length = (vec1.x - vec2.x) * (vec1.x - vec2.x) + (vec1.y - vec2.y) * (vec1.y - vec2.y) + (vec1.z - vec2.z) * (vec1.z - vec2.z);
+      length = sqrt(length);
+      return length;
+  }
 
   void Drop(int shape, int mat, Vec3d v, Vec3d w, Vec3d p, Quaterniond q) {
       // ステートを解放
@@ -752,10 +771,10 @@ public:
       // 形状の割当て
       if (shape == SHAPE_BOX) {
           CDBoxDesc bd;
-          bd.boxsize = Vec3d(3.0, 10.0, 3.0);
+          bd.boxsize = Vec3d(3.0, 10.0, 3.0);  //単位 m^3
           shapeBox->SetDynamicFriction(10.0f);
           shapeBox->SetStaticFriction(10.0f);
-          shapeBox->SetDensity(0.001f);
+          shapeBox->SetDensity(0.0001f);//単位 kg/m^3
           shapeBox = GetSdk()->GetPHSdk()->CreateShape(bd)->Cast();
           solid->AddShape(shapeBox);
       }
@@ -926,20 +945,60 @@ public:
         }
       }
     }
-    //for (int i = 0; i < 5; i++) {
-    //    for (int j = 0; j < 3; j++) {
-    //        if (!(i == 0 && j == 0)) {
-    //            Balldesc[i][j].poseSocket.Pos() = Vec3d(0.0, 0.0, (fg_pos[i][j][1].x - fg_pos[i][j][0].x)* (fg_pos[i][j][1].x - fg_pos[i][j][0].x) + (fg_pos[i][j][1].y - fg_pos[i][j][0].y)* (fg_pos[i][j][1].y - fg_pos[i][j][0].y)+(fg_pos[i][j][1].x - fg_pos[i][j][0].x) ^ 2) / 2.0;
-    //            Balldesc[i][j].posePlug.Pos() = Vec3d(fg_pos[i][j + 1][0].x - fg_pos[i][j + 1][1].x, fg_pos[i][j + 1][0].y - fg_pos[i][j + 1][1].y, fg_pos[i][j + 1][0].z - fg_pos[i][j + 1][1].z) / 2.0;
-    //            fg_joint[i][j] = GetPHScene()->CreateJoint(fg_obj[i][j], fg_obj[i][j + 1], Balldesc[i][j])->Cast();
-    //        }
-    //    }
-    //}
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (!(i == 0 && j == 0)) {
+                Balldesc[i][j].poseSocket.Pos() = Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1])) / 2.0;
+                Balldesc[i][j].posePlug.Pos() = Vec3d(0.0,0.0, jointLength(fg_pos[i][j+1][0], fg_pos[i][j+1][1])) / 2.0;
+                fg_joint[i][j] = GetPHScene()->CreateJoint(fg_obj[i][j], fg_obj[i][j + 1], Balldesc[i][j])->Cast();
+            }
+        }
+    }
     //palm_middle_obj = CreatePalm_obj();
     //palm_middle_base = CreateBone2();
     //palm_middle_joint_vc= GetPHScene()->CreateJoint(palm_middle_base, palm_middle_obj, Springdesc)->Cast();
 
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 4; j++) {
+            if (!(i == 0 && j == 0)) {
+                GetPHScene()->SetContactMode(fg_base[i][j], PHSceneDesc::MODE_NONE);
+                GetPHScene()->SetContactMode(fg_obj[i][j], soFloor, PHSceneDesc::MODE_NONE);
+            }
+        }
+    }
 
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 4 - 1; j++) {
+            if (!(i == 0 && j == 0)) {
+                GetPHScene()->SetContactMode(fg_obj[i][j], fg_obj[i][j + 1], PHSceneDesc::MODE_NONE);
+            }
+        }
+    }
+    for (int i = 1; i < 5 - 1; i++) {
+        GetPHScene()->SetContactMode(fg_obj[i][0], fg_obj[i + 1][0], PHSceneDesc::MODE_NONE);
+    }
+    for (int i = 0; i < 5 - 1; i++) {
+        GetPHScene()->SetContactMode(fg_obj[i][1], fg_obj[i + 1][1], PHSceneDesc::MODE_NONE);
+    }    
+    for (int i = 0; i < 5 - 1; i++) {
+        GetPHScene()->SetContactMode(fg_obj[i][2], fg_obj[i + 1][2], PHSceneDesc::MODE_NONE);
+    }
+    for (int i = 0; i < 5 - 1; i++) {
+        GetPHScene()->SetContactMode(fg_obj[i][3], fg_obj[i + 1][3], PHSceneDesc::MODE_NONE);
+    }
+    //for (int i = 0; i < 5; i++) {
+    //    for (int j = 0; j < 4; j++) {
+    //        if (!(i == 0 && j == 0)) {
+    //            for (int k = 0; k < 5; k++) {
+    //                for (int l = 0; l < 4; l++) {
+    //                    if (!(k == 0 && l == 0) && !(i == k&&j == l)) {
+    //                        GetPHScene()->SetContactMode(fg_obj[i][j], fg_obj[j][k], PHSceneDesc::MODE_NONE);
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
 
 
     //soOyaBase = CreateBone2();
@@ -1125,26 +1184,7 @@ public:
     GetPHScene()->SetContactMode(soko0b, PHSceneDesc::MODE_NONE);*/
 
 
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (!(i == 0 && j == 0)) {
-                GetPHScene()->SetContactMode(fg_base[i][j], PHSceneDesc::MODE_NONE);
-                GetPHScene()->SetContactMode(fg_obj[i][j], soFloor, PHSceneDesc::MODE_NONE);
-                //GetPHScene()->SetContactMode(fg_obj[i][j], PHSceneDesc::MODE_NONE);
-            }
-        }
-    }
 
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 4 - 1; j++) {
-            if (!(i == 0 && j == 0)) {
-                GetPHScene()->SetContactMode(fg_obj[i][j], fg_obj[i][j+1], PHSceneDesc::MODE_NONE);
-            }
-        }
-    }
-    for (int i = 1; i < 5 - 1; i++) {
-        GetPHScene()->SetContactMode(fg_obj[i][0], fg_obj[i + 1][0], PHSceneDesc::MODE_NONE);
-    }
 
     // 床を揺らす
     if (soFloor && floorShakeAmplitude) {
