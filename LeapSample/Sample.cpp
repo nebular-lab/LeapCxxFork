@@ -404,6 +404,7 @@ public:
   CDCapsuleIf* shapebone;
   Vec3d palm_v;
 
+  float density;
 
 public:
   MyApp() {
@@ -411,6 +412,8 @@ public:
     floorShakeAmplitude = 0.0;
     x90 = Quaterniond::Rot(Rad(90.0), 'x');
     y180 = Quaterniond::Rot(Rad(180.0), 'y');
+
+    density = 0.1f;
 
     //何番目のシーンなのかを取得して、そのシーンについてfindobjectをする
     /*int n;
@@ -530,14 +533,14 @@ public:
     //nail.radius = Vec3d(1.69, 0.179, 1.12)*(double)BlenderToSpr;
     nail.radius = Vec3d(2.5f, 0.179f, 1.12f) * (double)BlenderToSpr;
     shapenail = GetSdk()->GetPHSdk()->CreateShape(nail)->Cast();
-    shapenail->SetDensity(1.0f);
+    shapenail->SetDensity(density);
     shapenail->SetStaticFriction(100.0f);
     shapenail->SetDynamicFriction(100.0f);
 
     CDEllipsoidDesc pad;
     pad.radius = Vec3d(2.79, 1.26, 1.5) * (double)BlenderToSpr;
     shapepad = GetSdk()->GetPHSdk()->CreateShape(pad)->Cast();
-    shapepad->SetDensity(1.0f);
+    shapepad->SetDensity(density);
     shapepad->SetStaticFriction(100.0f);
     shapepad->SetDynamicFriction(100.0f);
 
@@ -545,7 +548,7 @@ public:
     bone.radius = 1.24 * BlenderToSpr;
     bone.length = (2.0f - 1.24f) * 2.0f * BlenderToSpr;
     shapebone = GetSdk()->GetPHSdk()->CreateShape(bone)->Cast();
-    shapebone->SetDensity(1.0f);
+    shapebone->SetDensity(density);
     shapebone->SetStaticFriction(100.0f);
     shapebone->SetDynamicFriction(100.0f);
 
@@ -631,11 +634,13 @@ public:
   PHSolidIf* CreateBone3(Vec3d p, Vec3d n) {
     PHSolidIf* soBone = GetPHScene()->CreateSolid();
     CDCapsuleDesc cd;
-    cd.radius = 1.0f;
+
+    //1.0->2.0に修正
+    cd.radius = 2.0f;
     cd.length = (float)sqrt((p.x - n.x) * (p.x - n.x) + (p.y - n.y) * (p.y - n.y) + (p.z - n.z) * (p.z - n.z));
 
     shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
-    shapeCapsule->SetDensity(0.1f);
+    shapeCapsule->SetDensity(density);
     shapeCapsule->SetStaticFriction(100.0f);
     shapeCapsule->SetDynamicFriction(100.0f);
 
@@ -700,6 +705,7 @@ public:
       soPalm->SetGravity(false);
       return soPalm;
   }
+
 
 
   Vec3d vecvec3(LEAP_VECTOR vec, LEAP_VECTOR vec2) {
@@ -771,10 +777,10 @@ public:
       // 形状の割当て
       if (shape == SHAPE_BOX) {
           CDBoxDesc bd;
-          bd.boxsize = Vec3d(3.0, 10.0, 3.0);  //単位 m^3
+          bd.boxsize = Vec3d(4.0, 4.0, 4.0);  //単位 m^3
           shapeBox->SetDynamicFriction(10.0f);
           shapeBox->SetStaticFriction(10.0f);
-          shapeBox->SetDensity(0.0001f);//単位 kg/m^3
+          shapeBox->SetDensity(0.0000001f);//単位 kg/m^3
           shapeBox = GetSdk()->GetPHSdk()->CreateShape(bd)->Cast();
           solid->AddShape(shapeBox);
       }
@@ -834,7 +840,7 @@ public:
 
     //soPalm = CreateBone();
 
-    //GetFWScene()->EnableRenderAxis(false, false, false);
+    GetFWScene()->EnableRenderAxis(false, false, false);
 
 
     //指先の作成
@@ -912,12 +918,13 @@ public:
 
 
 
-    Springdesc.spring = Vec3d(15000.0, 15000.0, 1500.0);
-    Springdesc.damper = Vec3d(150.0, 150.0, 150.0);
+    Springdesc.spring = Vec3d(10000.0, 10000.0, 10000.0);
+    Springdesc.damper = Vec3d(10.0, 10.0, 10.0);
     Springdesc.springOri = 10000.0;
-    Springdesc.damperOri = 100.0;
+    Springdesc.damperOri = 10.0;
 
-    for(int i=0;i<5;i++){
+    //
+    for(int i=1;i<2;i++){
       for (int j = 0; j < 4; j++) {
         if (!(i == 0 && j == 0)) {
           fg_pos[i][j][0] = vecvec3_2(hand->digits[i].bones[j].prev_joint);
@@ -925,8 +932,8 @@ public:
         }
       }
     }
-
-    for (int i = 0; i < 5; i++) {
+    //
+    for (int i = 1; i < 2; i++) {
       for (int j = 0; j < 4; j++) {
         if (!(i == 0 && j == 0)) {
           
@@ -945,7 +952,9 @@ public:
         }
       }
     }
-    for (int i = 0; i < 5; i++) {
+
+    //
+    for (int i = 1; i < 2; i++) {
         for (int j = 0; j < 3; j++) {
             if (!(i == 0 && j == 0)) {
                 Balldesc[i][j].poseSocket.Pos() = Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1])) / 2.0;
@@ -958,47 +967,17 @@ public:
     //palm_middle_base = CreateBone2();
     //palm_middle_joint_vc= GetPHScene()->CreateJoint(palm_middle_base, palm_middle_obj, Springdesc)->Cast();
 
-    for (int i = 0; i < 5; i++) {
+
+    //
+    GetPHScene()->SetContactMode(&(fg_obj[0][1]), 4 * 5 - 1, PHSceneDesc::MODE_NONE);
+    for (int i = 1; i < 2; i++) {
         for (int j = 0; j < 4; j++) {
             if (!(i == 0 && j == 0)) {
                 GetPHScene()->SetContactMode(fg_base[i][j], PHSceneDesc::MODE_NONE);
-                GetPHScene()->SetContactMode(fg_obj[i][j], soFloor, PHSceneDesc::MODE_NONE);
+                GetPHScene()->SetContactMode(fg_obj[i][j], soFloor, PHSceneDesc::MODE_NONE);                
             }
         }
     }
-
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 4 - 1; j++) {
-            if (!(i == 0 && j == 0)) {
-                GetPHScene()->SetContactMode(fg_obj[i][j], fg_obj[i][j + 1], PHSceneDesc::MODE_NONE);
-            }
-        }
-    }
-    for (int i = 1; i < 5 - 1; i++) {
-        GetPHScene()->SetContactMode(fg_obj[i][0], fg_obj[i + 1][0], PHSceneDesc::MODE_NONE);
-    }
-    for (int i = 0; i < 5 - 1; i++) {
-        GetPHScene()->SetContactMode(fg_obj[i][1], fg_obj[i + 1][1], PHSceneDesc::MODE_NONE);
-    }    
-    for (int i = 0; i < 5 - 1; i++) {
-        GetPHScene()->SetContactMode(fg_obj[i][2], fg_obj[i + 1][2], PHSceneDesc::MODE_NONE);
-    }
-    for (int i = 0; i < 5 - 1; i++) {
-        GetPHScene()->SetContactMode(fg_obj[i][3], fg_obj[i + 1][3], PHSceneDesc::MODE_NONE);
-    }
-    //for (int i = 0; i < 5; i++) {
-    //    for (int j = 0; j < 4; j++) {
-    //        if (!(i == 0 && j == 0)) {
-    //            for (int k = 0; k < 5; k++) {
-    //                for (int l = 0; l < 4; l++) {
-    //                    if (!(k == 0 && l == 0) && !(i == k&&j == l)) {
-    //                        GetPHScene()->SetContactMode(fg_obj[i][j], fg_obj[j][k], PHSceneDesc::MODE_NONE);
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-    //}
 
 
     //soOyaBase = CreateBone2();
@@ -1205,7 +1184,8 @@ public:
         LEAP_HAND* hand = &frame->pHands[0];
         palm_v = vecvec3_2(hand->palm.velocity);
 
-        for (int i = 0; i < 5; i++) {
+        //
+        for (int i = 1; i < 2; i++) {
           for (int j = 0; j < 4; j++) {
             if (!(i == 0 && j == 0)) {
               fg_pos_middle[i][j] = vecvec3(hand->digits[i].bones[j].prev_joint, hand->digits[i].bones[j].next_joint);
@@ -1218,6 +1198,33 @@ public:
             }
           }
         }
+
+        //形状の追加ではなくてfg_objの形状の更新がしたい
+        //solidから形状の取得が出来れば解決する
+        for (int i = 1; i < 2; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (!(i == 0 && j == 0)) {
+                    CDCapsuleDesc cd;
+                    cd.length = jointLength(fg_pos[i][j][0], fg_pos[i][j][1]);
+                    shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
+                    fg_obj[i][j]->AddShape(shapeCapsule);
+
+                    
+                }
+            }
+        }
+
+        for (int i = 1; i < 2; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (!(i == 0 && j == 0)) {
+                    fg_pos[i][j][0] = vecvec3_2(hand->digits[i].bones[j].prev_joint);
+                    fg_pos[i][j][1] = vecvec3_2(hand->digits[i].bones[j].next_joint);
+                    printf("%f,", jointLength(fg_pos[i][j][0], fg_pos[i][j][1]));
+                }
+            }
+        }
+        printf("\n");
+    
 
         //palm_middle_pos = vecvec3_3(hand->palm.position);
         //palm_middle_ori = quaquad(hand->palm.orientation);
