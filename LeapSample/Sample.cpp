@@ -224,11 +224,8 @@ public:
     //ID_TOWER,
     ID_SHAKE,
   };
-  //Quaterniond oyaori[3];
-  //Quaterniond hitoori[4];
-  //Quaterniond nakaori[4];
-  //Quaterniond kusuriori[4];
-  //Quaterniond koori[4];
+
+  int type;
 
   PHSolidIf* fg_base[5][4];
   PHSolidIf* fg_obj[5][4];
@@ -237,6 +234,12 @@ public:
   Quaterniond fg_ori[5][4];
   PHSpringIf* fg_joint_vc[5][4];
   PHBallJointIf* fg_joint[5][3];
+
+  PHSolidIf* fg_base_slide[5][5];
+  PHSolidIf* fg_obj_slide[5][4][2];//0はprev、1は先next
+  PHSpringIf* fg_joint_vc_slide[5][4][2];
+  PHSliderJointIf* fg_slider[5][4];
+  PHSpringDesc spring_slide[5][4][2];
 
   PHSolidIf* palm_middle_base;
   PHSolidIf* palm_middle_obj;
@@ -250,21 +253,12 @@ public:
   //Controller controller;
   int64_t lastFrameID = 0;
   double RealToSpr = 1 / 15;
-  //Vec3d Oya_position;
-  //Quaterniond Oya_orientation;
-  //PHSolidIf* soOyaBase;//Leapからの情報
-  //PHSolidIf* soOyaObj;//実際に触る方
-  //PHSpringIf* Oyajoint;
+
   PHSpringDesc Springdesc;
   PHBallJointDesc Balldesc[5][3];
-  //Posed oyapose;
+  PHSliderJointDesc Sliderdesc;
 
-  //Vec3d Hito_position;
-  //Quaterniond Hito_orientation;
-  //PHSolidIf* soHitoBase;//Leapからの情報
-  //PHSolidIf* soHitoObj;//実際に触る方
-  //PHSpringIf* Hitojoint;
-  //PHSpringDesc Hitodesc;
+
 
   PHSpringDesc oyahitodesc;
 
@@ -272,48 +266,7 @@ public:
 
 
 
-  ////Vec3d oya0;
-  //Vec3d oya1p;
-  //Vec3d oya2p;
-  ////Vec3d oya3p;
-  ////Vec3d hito0p;
-  //Vec3d hito1p;
-  //Vec3d hito2p;
-  //Vec3d hito3p;
-  //Vec3d naka0p;
-  //Vec3d naka1p;
-  //Vec3d naka2p;
-  //Vec3d naka3p;
-  //Vec3d kusuri0p;
-  //Vec3d kusuri1p;
-  //Vec3d kusuri2p;
-  //Vec3d kusuri3p;
 
-  //Vec3d ko0p;
-  //Vec3d ko1p;
-  //Vec3d ko2p;
-  //Vec3d ko3p;
-
-  ////Vec3d oya0n;
-  //Vec3d oya1n;
-  //Vec3d oya2n;
-  //Vec3d oya3n;
-  ////Vec3d hito0n;
-  //Vec3d hito1n;
-  //Vec3d hito2n;
-  //Vec3d hito3n;
-  //Vec3d naka0n;
-  //Vec3d naka1n;
-  //Vec3d naka2n;
-  //Vec3d naka3n;
-  //Vec3d kusuri0n;
-  //Vec3d kusuri1n;
-  //Vec3d kusuri2n;
-  //Vec3d kusuri3n;
-  //Vec3d ko0n;
-  //Vec3d ko1n;
-  //Vec3d ko2n;
-  //Vec3d ko3n;
 
 
   PHSolidIf* jenga1;
@@ -329,65 +282,7 @@ public:
 
 
 
-  ////obj
-
-  //PHSolidIf* sooya1;
-  //PHSolidIf* sooya2;
-  //PHSolidIf* sohito1;
-  //PHSolidIf* sohito2;
-  //PHSolidIf* sohito3;
-  //PHSolidIf* sonaka0;
-  //PHSolidIf* sonaka1;
-  //PHSolidIf* sonaka2;
-  //PHSolidIf* sonaka3;
-  //PHSolidIf* sokusuri0;
-  //PHSolidIf* sokusuri1;
-  //PHSolidIf* sokusuri2;
-  //PHSolidIf* sokusuri3;
-  //PHSolidIf* soko0;
-  //PHSolidIf* soko1;
-  //PHSolidIf* soko2;
-  //PHSolidIf* soko3;
-
-
-
-  ////base
-
-  //PHSolidIf* sooya1b;
-  //PHSolidIf* sooya2b;
-  //PHSolidIf* sohito1b;
-  //PHSolidIf* sohito2b;
-  //PHSolidIf* sohito3b;
-  //PHSolidIf* sonaka0b;
-  //PHSolidIf* sonaka1b;
-  //PHSolidIf* sonaka2b;
-  //PHSolidIf* sonaka3b;
-  //PHSolidIf* sokusuri0b;
-  //PHSolidIf* sokusuri1b;
-  //PHSolidIf* sokusuri2b;
-  //PHSolidIf* sokusuri3b;
-  //PHSolidIf* soko0b;
-  //PHSolidIf* soko1b;
-  //PHSolidIf* soko2b;
-  //PHSolidIf* soko3b;
-
-  //PHSpringIf* oyajoint1;
-  //PHSpringIf* oyajoint2;
-  //PHSpringIf* hitojoint1;
-  //PHSpringIf* hitojoint2;
-  //PHSpringIf* hitojoint3;
-  //PHSpringIf* nakajoint0;
-  //PHSpringIf* nakajoint1;
-  //PHSpringIf* nakajoint2;
-  //PHSpringIf* nakajoint3;
-  //PHSpringIf* kusurijoint0;
-  //PHSpringIf* kusurijoint1;
-  //PHSpringIf* kusurijoint2;
-  //PHSpringIf* kusurijoint3;
-  //PHSpringIf* kojoint0;
-  //PHSpringIf* kojoint1;
-  //PHSpringIf* kojoint2;
-  //PHSpringIf* kojoint3;
+  
 
   //PHSpringIf* oyahito;
   CDShapeIf* shapejenga;
@@ -449,7 +344,9 @@ public:
     AddAction(MENU_MAIN, ID_SHAKE, "shake floor");
     AddHotKey(MENU_MAIN, ID_SHAKE, 'f');
 
-
+    // 0:no slider
+    // 1:slider
+    type = 1;
 
   }
   ~MyApp() {}
@@ -652,6 +549,27 @@ public:
 
     return soBone;
   }
+  PHSolidIf* CreateBoneSlide(Vec3d p, Vec3d n) {
+      PHSolidIf* soBone = GetPHScene()->CreateSolid();
+      CDCapsuleDesc cd;
+
+      //1.0->2.0に修正
+      cd.radius = 2.0f;
+      cd.length = (float)sqrt((p.x - n.x) * (p.x - n.x) + (p.y - n.y) * (p.y - n.y) + (p.z - n.z) * (p.z - n.z));
+      cd.length /= 1.5;
+      shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
+      shapeCapsule->SetDensity(density);
+      shapeCapsule->SetStaticFriction(100.0f);
+      shapeCapsule->SetDynamicFriction(100.0f);
+
+      soBone->AddShape(shapeCapsule);
+
+      soBone->SetGravity(false);
+
+      soBone->CompInertia();
+
+      return soBone;
+  }
   PHSolidIf* CreateBone4() {
     //立方体
     PHSolidIf* soBone = GetPHScene()->CreateSolid();
@@ -838,14 +756,8 @@ public:
 
     soFloor = CreateFloor(true);
 
-    //soPalm = CreateBone();
 
     GetFWScene()->EnableRenderAxis(false, false, false);
-
-
-    //指先の作成
-
-    //親指
 
     printf("手をかざしてお待ちください。\n");
  
@@ -856,278 +768,112 @@ public:
     float tip_width[5] = {0.0};
 
 
-    //float thunb_width;
-    //float index_width;
-    //float middle_width;
-    //float ring_width;
-    //float pinky_width;
-
-    //thunb_width = 20.0;
-    //index_width = 20.0;
-    //middle_width = 20.0;
-    //ring_width = 20.0;
-    //pinky_width = 20.0;
-
     for (int i = 0; i < 5; i++) {
       tip_width[i] = hand->digits[i].distal.width;
       tip_width[i] *= 1.5;
     }
 
-
-    //thunb_width = hand->thumb.distal.width;
-    //index_width = hand->index.distal.width;
-    //middle_width = hand->middle.distal.width;
-    //ring_width = hand->ring.distal.width;
-    //pinky_width = hand->pinky.distal.width;
-
-    //oya1n = vecvec3_2(hand->thumb.intermediate.next_joint);
-    //oya1p = vecvec3_2(hand->thumb.intermediate.prev_joint);
-    //oya2n = vecvec3_2(hand->thumb.proximal.next_joint);
-    //oya2p = vecvec3_2(hand->thumb.proximal.prev_joint);
-    //hito1n = vecvec3_2(hand->index.intermediate.next_joint);
-    //hito1p = vecvec3_2(hand->index.intermediate.prev_joint);
-    //hito2n = vecvec3_2(hand->index.proximal.next_joint);
-    //hito2p = vecvec3_2(hand->index.proximal.prev_joint);
-    //hito3n = vecvec3_2(hand->index.metacarpal.next_joint);
-    //hito3p = vecvec3_2(hand->index.metacarpal.prev_joint);
-    //naka0n = vecvec3_2(hand->middle.distal.next_joint);
-    //naka0p = vecvec3_2(hand->middle.distal.prev_joint);
-    //naka1n = vecvec3_2(hand->middle.intermediate.next_joint);
-    //naka1p = vecvec3_2(hand->middle.intermediate.prev_joint);
-    //naka2n = vecvec3_2(hand->middle.proximal.next_joint);
-    //naka2p = vecvec3_2(hand->middle.proximal.prev_joint);
-    //naka3n = vecvec3_2(hand->middle.metacarpal.next_joint);
-    //naka3p = vecvec3_2(hand->middle.metacarpal.prev_joint);
-    //kusuri0n = vecvec3_2(hand->ring.distal.next_joint);
-    //kusuri0p = vecvec3_2(hand->ring.distal.prev_joint);
-    //kusuri1n = vecvec3_2(hand->ring.intermediate.next_joint);
-    //kusuri1p = vecvec3_2(hand->ring.intermediate.prev_joint);
-    //kusuri2n = vecvec3_2(hand->ring.proximal.next_joint);
-    //kusuri2p = vecvec3_2(hand->ring.proximal.prev_joint);
-    //kusuri3n = vecvec3_2(hand->ring.metacarpal.next_joint);
-    //kusuri3p = vecvec3_2(hand->ring.metacarpal.prev_joint);
-    //ko0n = vecvec3_2(hand->pinky.distal.next_joint);
-    //ko0p = vecvec3_2(hand->pinky.distal.prev_joint);
-    //ko1n = vecvec3_2(hand->pinky.intermediate.next_joint);
-    //ko1p = vecvec3_2(hand->pinky.intermediate.prev_joint);
-    //ko2n = vecvec3_2(hand->pinky.proximal.next_joint);
-    //ko2p = vecvec3_2(hand->pinky.proximal.prev_joint);
-    //ko3n = vecvec3_2(hand->pinky.metacarpal.next_joint);
-    //ko3p = vecvec3_2(hand->pinky.metacarpal.prev_joint);
-
-
-
-
     Springdesc.spring = Vec3d(10000.0, 10000.0, 10000.0);
     Springdesc.damper = Vec3d(10.0, 10.0, 10.0);
     Springdesc.springOri = 10000.0;
     Springdesc.damperOri = 10.0;
-
-    //
-    for(int i=1;i<2;i++){
-      for (int j = 0; j < 4; j++) {
-        if (!(i == 0 && j == 0)) {
-          fg_pos[i][j][0] = vecvec3_2(hand->digits[i].bones[j].prev_joint);
-          fg_pos[i][j][1] = vecvec3_2(hand->digits[i].bones[j].next_joint);
+    if (type == 0) {
+        //
+        for (int i = 1; i < 2; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (!(i == 0 && j == 0)) {
+                    fg_pos[i][j][0] = vecvec3_2(hand->digits[i].bones[j].prev_joint);
+                    fg_pos[i][j][1] = vecvec3_2(hand->digits[i].bones[j].next_joint);
+                }
+            }
         }
-      }
-    }
-    //
-    for (int i = 1; i < 2; i++) {
-      for (int j = 0; j < 4; j++) {
-        if (!(i == 0 && j == 0)) {
-          
-          fg_base[i][j] = CreateBone2();
-          GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base[i][j]);
-          if (j == 3) {//指先
-            fg_obj[i][j] = CreateBone(tip_width[i]);
-          }
-          else {//指の骨
-            fg_obj[i][j] = CreateBone3(fg_pos[i][j][0],fg_pos[i][j][1]);
-          }
-          
-          GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_obj[i][j]);
+        //
+        for (int i = 1; i < 2; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (!(i == 0 && j == 0)) {
 
-          fg_joint_vc[i][j] = GetPHScene()->CreateJoint(fg_base[i][j], fg_obj[i][j], Springdesc)->Cast();
+                    fg_base[i][j] = CreateBone2();
+                    GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base[i][j]);
+                    if (j == 3) {//指先
+                        fg_obj[i][j] = CreateBone(tip_width[i]);
+                    }
+                    else {//指の骨
+                        fg_obj[i][j] = CreateBone3(fg_pos[i][j][0], fg_pos[i][j][1]);
+                    }
+
+                    GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_obj[i][j]);
+
+                    fg_joint_vc[i][j] = GetPHScene()->CreateJoint(fg_base[i][j], fg_obj[i][j], Springdesc)->Cast();
+                }
+            }
         }
-      }
-    }
+        //
+        for (int i = 1; i < 2; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (!(i == 0 && j == 0)) {
+                    Balldesc[i][j].poseSocket.Pos() = Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1])) / 2.0;
+                    Balldesc[i][j].posePlug.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[i][j + 1][0], fg_pos[i][j + 1][1])) / 2.0;
+                    fg_joint[i][j] = GetPHScene()->CreateJoint(fg_obj[i][j], fg_obj[i][j + 1], Balldesc[i][j])->Cast();
+                }
+            }
+        }
+        //palm_middle_obj = CreatePalm_obj();
+        //palm_middle_base = CreateBone2();
+        //palm_middle_joint_vc= GetPHScene()->CreateJoint(palm_middle_base, palm_middle_obj, Springdesc)->Cast();
 
-    //
-    for (int i = 1; i < 2; i++) {
-        for (int j = 0; j < 3; j++) {
-            if (!(i == 0 && j == 0)) {
-                Balldesc[i][j].poseSocket.Pos() = Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1])) / 2.0;
-                Balldesc[i][j].posePlug.Pos() = Vec3d(0.0,0.0, jointLength(fg_pos[i][j+1][0], fg_pos[i][j+1][1])) / 2.0;
-                fg_joint[i][j] = GetPHScene()->CreateJoint(fg_obj[i][j], fg_obj[i][j + 1], Balldesc[i][j])->Cast();
+
+        //
+        GetPHScene()->SetContactMode(&(fg_obj[0][1]), 4 * 5 - 1, PHSceneDesc::MODE_NONE);
+        for (int i = 1; i < 2; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (!(i == 0 && j == 0)) {
+                    GetPHScene()->SetContactMode(fg_base[i][j], PHSceneDesc::MODE_NONE);
+                    GetPHScene()->SetContactMode(fg_obj[i][j], soFloor, PHSceneDesc::MODE_NONE);
+                }
             }
         }
     }
-    //palm_middle_obj = CreatePalm_obj();
-    //palm_middle_base = CreateBone2();
-    //palm_middle_joint_vc= GetPHScene()->CreateJoint(palm_middle_base, palm_middle_obj, Springdesc)->Cast();
+    else if (type == 1) {
 
+        //インターフェース側のsolid作成
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (!(i == 0 && j == 0)) {
+                    fg_base_slide[i][j] = CreateBone2();
+                }
+            }
+        }
+        //ツール側のsolid作成
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (!(i == 0 && j == 0)) {
+                    fg_obj_slide[i][j][0] = CreateBoneSlide(fg_pos[i][j][0], fg_pos[i][j][1]);
+                    fg_obj_slide[i][j][1] = CreateBoneSlide(fg_pos[i][j][0], fg_pos[i][j][1]);
+                }
+            }
+        }
+        //バーチャルカップリング
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (!(i == 0 && j == 0)) {
+                    spring_slide[i][j][0].poseSocket.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1])/2.0);
+                    spring_slide[i][j][1].poseSocket.Pos() = Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0);
 
-    //
-    GetPHScene()->SetContactMode(&(fg_obj[0][1]), 4 * 5 - 1, PHSceneDesc::MODE_NONE);
-    for (int i = 1; i < 2; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (!(i == 0 && j == 0)) {
-                GetPHScene()->SetContactMode(fg_base[i][j], PHSceneDesc::MODE_NONE);
-                GetPHScene()->SetContactMode(fg_obj[i][j], soFloor, PHSceneDesc::MODE_NONE);                
+                    fg_joint_vc_slide[i][j][0] = GetPHScene()->CreateJoint(fg_base_slide[i][j], fg_obj_slide[i][j][0], spring_slide[i][j][0])->Cast();
+                    fg_joint_vc_slide[i][j][1] = GetPHScene()->CreateJoint(fg_base_slide[i][j + 1], fg_obj_slide[i][j][1], spring_slide[i][j][1])->Cast();
+                }
+            }
+        }
+        //スライダージョイント
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (!(i == 0 && j == 0)) {
+                    fg_slider[i][j] = GetPHScene()->CreateJoint(fg_obj_slide[i][j][0], fg_obj_slide[i][j][1], Sliderdesc)->Cast();
+                }
             }
         }
     }
-
-
-    //soOyaBase = CreateBone2();
-    //soOyaBase->SetDynamical(false);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::RED, soOyaBase);
-    //printf("thumb_width=%f\n", thunb_width);
-    ////soOyaObj = CreateBone(thunb_width);
-    //soOyaObj = CreateBone(thunb_width);
-
-    ////soOyaObj->SetDynamical(true);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, soOyaObj);
-    ////soOyaObj->SetMass(1);
-    //Springdesc.spring = Vec3d(1500, 1500, 1500);
-    //Springdesc.damper = Vec3d(15, 15, 15);
-    //Springdesc.springOri = 10000.0;
-    //Springdesc.damperOri = 1000.0;
-    //Oyajoint = GetPHScene()->CreateJoint(soOyaBase, soOyaObj, Springdesc)->Cast();
-
-    ////人差し指
-    //soHitoBase = CreateBone2();
-    //soHitoBase->SetDynamical(false);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::RED, soHitoBase);
-    ////soHitoObj = CreateBone(index_width);
-    //soHitoObj = CreateBone(index_width);
-
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, soHitoObj);
-    ////soHitoObj->SetMass(1);
-    //Hitojoint = GetPHScene()->CreateJoint(soHitoBase, soHitoObj, Springdesc)->Cast();
-
-
-    //oyahitodesc.spring = Vec3d(200, 200, 200);
-    //oyahitodesc.damper = Vec3d(15, 15, 15);
-    //oyahitodesc.springOri = 100;
-    //oyahitodesc.damperOri = 3;
-    //oyahito= GetPHScene()->CreateJoint(soOyaObj, soHitoObj, oyahitodesc)->Cast();
-
-
-    //
-    ////指の作成
-
-    ////obj
-
-
-    //sooya1 = CreateBone3(oya1n,oya1p);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sooya1);   
-    //sooya2 = CreateBone3(oya2n,oya2p);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sooya2);    
-
-
-    //sohito1 = CreateBone3(hito1n,hito1p);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sohito1);
-    //sohito2 = CreateBone3(hito2n,hito2p);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sohito2);
-    //sohito3 = CreateBone3(hito3n,hito3p);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sohito3);
-
-    //sonaka0 = CreateBone5();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sonaka0);
-    //sonaka1 = CreateBone3(naka1n,naka1p);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sonaka1);
-    //sonaka2 = CreateBone3(naka2n,naka2p);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sonaka2);
-    //sonaka3 = CreateBone3(naka3n,naka3p);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sonaka3);
-
-    //sokusuri0 = CreateBone5();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sokusuri0);
-    //sokusuri1 = CreateBone3(kusuri1n,kusuri1p);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sokusuri1);
-    //sokusuri2 = CreateBone3(kusuri2n,kusuri2p);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sokusuri2);
-    //sokusuri3 = CreateBone3(kusuri3n,kusuri3p);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sokusuri3);
-
-    //soko0 = CreateBone5();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, soko0);
-    //soko1 = CreateBone3(ko1n,ko1p);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, soko1);
-    //soko2 = CreateBone3(ko2n,ko2p);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, soko2);
-    //soko3 = CreateBone3(ko3n,ko3p);
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, soko3);
-
-
-    //////base
-
-
-    //sooya1b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sooya1b);
-    //sooya2b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sooya2b);
-
-    //sohito1b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sohito1b);
-    //sohito2b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sohito2b);
-    //sohito3b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sohito3);
-
-    //sonaka0b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sonaka0b);
-    //sonaka1b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sonaka1b);
-    //sonaka2b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sonaka2b);
-    //sonaka3b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sonaka3b);
-
-    //sokusuri0b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sokusuri0b);
-    //sokusuri1b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sokusuri1b);
-    //sokusuri2b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sokusuri2b);
-    //sokusuri3b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, sokusuri3b);
-
-    //soko0b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, soko0b);
-    //soko1b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, soko1b);
-    //soko2b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, soko2b);
-    //soko3b = CreateBone2();
-    //GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, soko3b);
-
-
-    ////joint
-    //oyajoint1 = GetPHScene()->CreateJoint(sooya1b, sooya1, Springdesc)->Cast();
-    //oyajoint2 = GetPHScene()->CreateJoint(sooya2b, sooya2, Springdesc)->Cast();
-    //hitojoint1 = GetPHScene()->CreateJoint(sohito1b, sohito1, Springdesc)->Cast();
-    //hitojoint2 = GetPHScene()->CreateJoint(sohito2b, sohito2, Springdesc)->Cast();
-    //hitojoint3 = GetPHScene()->CreateJoint(sohito3b, sohito3, Springdesc)->Cast();
-    //nakajoint0 = GetPHScene()->CreateJoint(sonaka0b, sonaka0, Springdesc)->Cast();
-    //nakajoint1 = GetPHScene()->CreateJoint(sonaka1b, sonaka1, Springdesc)->Cast();
-    //nakajoint2 = GetPHScene()->CreateJoint(sonaka2b, sonaka2, Springdesc)->Cast();
-    //nakajoint3 = GetPHScene()->CreateJoint(sonaka3b, sonaka3, Springdesc)->Cast();
-    //kusurijoint0 = GetPHScene()->CreateJoint(sokusuri0b, sokusuri0, Springdesc)->Cast();
-    //kusurijoint1 = GetPHScene()->CreateJoint(sokusuri1b, sokusuri1, Springdesc)->Cast();
-    //kusurijoint2 = GetPHScene()->CreateJoint(sokusuri2b, sokusuri2, Springdesc)->Cast();
-    //kusurijoint3 = GetPHScene()->CreateJoint(sokusuri3b, sokusuri3, Springdesc)->Cast();
-    //kojoint0 = GetPHScene()->CreateJoint(soko0b, soko0, Springdesc)->Cast();
-    //kojoint1 = GetPHScene()->CreateJoint(soko1b, soko1, Springdesc)->Cast();
-    //kojoint2 = GetPHScene()->CreateJoint(soko2b, soko2, Springdesc)->Cast();
-    //kojoint3 = GetPHScene()->CreateJoint(soko3b, soko3, Springdesc)->Cast();
-
-
-
-    //GetPHScene()->SetContactMode(soOyaBase,PHSceneDesc::MODE_NONE);
-
+    
   }
 
   // タイマコールバック関数．タイマ周期で呼ばれる
@@ -1135,32 +881,6 @@ public:
     // GetSdk()->SaveScene("test.spr", NULL, FIFileSprIf::GetIfInfoStatic());
 
     SampleApp::OnStep();
-    //printf("a");
-
-    /*GetPHScene()->SetContactMode(sooya1b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(sooya2b, PHSceneDesc::MODE_NONE);
-
-    GetPHScene()->SetContactMode(sohito1b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(sohito2b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(sohito3b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(sonaka0b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(sonaka1b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(sonaka2b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(sonaka3b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(sokusuri0b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(sokusuri1b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(sokusuri2b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(sokusuri3b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(soko0b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(soko1b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(soko2b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(soko3b, PHSceneDesc::MODE_NONE);
-
-    GetPHScene()->SetContactMode(soOyaBase, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(soHitoBase, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(sonaka0b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(sokusuri0b, PHSceneDesc::MODE_NONE);
-    GetPHScene()->SetContactMode(soko0b, PHSceneDesc::MODE_NONE);*/
 
 
 
@@ -1184,46 +904,60 @@ public:
         LEAP_HAND* hand = &frame->pHands[0];
         palm_v = vecvec3_2(hand->palm.velocity);
 
-        //
-        for (int i = 1; i < 2; i++) {
-          for (int j = 0; j < 4; j++) {
-            if (!(i == 0 && j == 0)) {
-              fg_pos_middle[i][j] = vecvec3(hand->digits[i].bones[j].prev_joint, hand->digits[i].bones[j].next_joint);
-              fg_ori[i][j] = quaquad(hand->digits[i].bones[j].rotation);
-              fg_ori[i][j] = x90 * fg_ori[i][j];
-              fg_ori[i][j] = y180 * fg_ori[i][j];
-              fg_base[i][j]->SetFramePosition(fg_pos_middle[i][j]);
-              fg_base[i][j]->SetOrientation(fg_ori[i][j]);
-              //fg_base[i][j]->SetVelocity(palm_v);
-            }
-          }
-        }
-
-        //形状の追加ではなくてfg_objの形状の更新がしたい
-        //solidから形状の取得が出来れば解決する
-        for (int i = 1; i < 2; i++) {
-            for (int j = 0; j < 4; j++) {
-                if (!(i == 0 && j == 0)) {
-                    CDCapsuleDesc cd;
-                    cd.length = jointLength(fg_pos[i][j][0], fg_pos[i][j][1]);
-                    shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
-                    fg_obj[i][j]->AddShape(shapeCapsule);
-
-                    
+        if (type == 0) {
+            //
+            for (int i = 1; i < 2; i++) {
+                for (int j = 0; j < 4; j++) {
+                    if (!(i == 0 && j == 0)) {
+                        fg_pos_middle[i][j] = vecvec3(hand->digits[i].bones[j].prev_joint, hand->digits[i].bones[j].next_joint);
+                        fg_ori[i][j] = quaquad(hand->digits[i].bones[j].rotation);
+                        fg_ori[i][j] = x90 * fg_ori[i][j];
+                        fg_ori[i][j] = y180 * fg_ori[i][j];
+                        fg_base[i][j]->SetFramePosition(fg_pos_middle[i][j]);
+                        fg_base[i][j]->SetOrientation(fg_ori[i][j]);
+                        //fg_base[i][j]->SetVelocity(palm_v);
+                    }
                 }
             }
         }
-
-        for (int i = 1; i < 2; i++) {
-            for (int j = 0; j < 4; j++) {
-                if (!(i == 0 && j == 0)) {
-                    fg_pos[i][j][0] = vecvec3_2(hand->digits[i].bones[j].prev_joint);
-                    fg_pos[i][j][1] = vecvec3_2(hand->digits[i].bones[j].next_joint);
-                    printf("%f,", jointLength(fg_pos[i][j][0], fg_pos[i][j][1]));
+        else if (type == 1) {
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 4; j++) {
+                    if (!(i == 0 && j == 0)) {
+                        fg_pos[i][j][0] = vecvec3_3(hand->digits[i].bones[j].prev_joint);
+                        fg_base_slide[i][j]->SetFramePosition(fg_pos[i][j][0]);
+                    }
                 }
             }
+            for (int i = 0; i < 5; i++) {
+                fg_pos[i][3][1] = vecvec3_3(hand->digits[i].bones[3].next_joint);
+                fg_base_slide[i][3]->SetFramePosition(fg_pos[i][3][1]);
+            }
         }
-        printf("\n");
+
+        //for (int i = 1; i < 2; i++) {
+        //    for (int j = 0; j < 4; j++) {
+        //        if (!(i == 0 && j == 0)) {
+        //            CDCapsuleDesc cd;
+        //            cd.length = jointLength(fg_pos[i][j][0], fg_pos[i][j][1]);
+        //            shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
+        //            fg_obj[i][j]->AddShape(shapeCapsule);
+
+        //            
+        //        }
+        //    }
+        //}
+
+        //for (int i = 1; i < 2; i++) {
+        //    for (int j = 0; j < 4; j++) {
+        //        if (!(i == 0 && j == 0)) {
+        //            fg_pos[i][j][0] = vecvec3_2(hand->digits[i].bones[j].prev_joint);
+        //            fg_pos[i][j][1] = vecvec3_2(hand->digits[i].bones[j].next_joint);
+        //            printf("%f,", jointLength(fg_pos[i][j][0], fg_pos[i][j][1]));
+        //        }
+        //    }
+        //}
+        //printf("\n");
     
 
         //palm_middle_pos = vecvec3_3(hand->palm.position);
@@ -1232,76 +966,6 @@ public:
         //palm_middle_ori = y180 * palm_middle_ori;
         //palm_middle_base->SetFramePosition(palm_middle_pos);
         //palm_middle_base->SetOrientation(palm_middle_ori);
-
-
-        /*Oya_position = vecvec3(hand->thumb.distal.prev_joint, hand->thumb.distal.next_joint);
-        Oya_orientation = quaquad(hand->thumb.distal.rotation);
-        Hito_position = vecvec3(hand->index.distal.prev_joint, hand->index.distal.next_joint);
-        Hito_orientation = quaquad(hand->index.distal.rotation);
-
-
-        Oya_orientation = x90 * Oya_orientation;
-        Oya_orientation = y180 * Oya_orientation;
-
-
-        soOyaBase->SetFramePosition(Oya_position);
-        soOyaBase->SetOrientation(Oya_orientation);
-
-
-
-        Hito_orientation = x90 * Hito_orientation;
-        Hito_orientation = y180 * Hito_orientation;
-
-        soHitoBase->SetFramePosition(Hito_position);
-        soHitoBase->SetOrientation(Hito_orientation);
-
-        oya2p = vecvec3(hand->thumb.proximal.prev_joint, hand->thumb.proximal.next_joint);
-        oya1p = vecvec3(hand->thumb.intermediate.prev_joint, hand->thumb.intermediate.next_joint);
-
-        hito3p = vecvec3(hand->index.metacarpal.prev_joint, hand->index.metacarpal.next_joint);
-        hito2p = vecvec3(hand->index.proximal.prev_joint, hand->index.proximal.next_joint);
-        hito1p = vecvec3(hand->index.intermediate.prev_joint, hand->index.intermediate.next_joint);
-
-        naka3p = vecvec3(hand->middle.metacarpal.prev_joint, hand->middle.metacarpal.next_joint);
-        naka0p = vecvec3(hand->middle.distal.prev_joint, hand->middle.distal.next_joint);
-        naka2p = vecvec3(hand->middle.proximal.prev_joint, hand->middle.proximal.next_joint);
-        naka1p = vecvec3(hand->middle.intermediate.prev_joint, hand->middle.intermediate.next_joint);
-
-        kusuri3p = vecvec3(hand->ring.metacarpal.prev_joint, hand->ring.metacarpal.next_joint);
-        kusuri0p = vecvec3(hand->ring.distal.prev_joint, hand->ring.distal.next_joint);
-        kusuri2p = vecvec3(hand->ring.proximal.prev_joint, hand->ring.proximal.next_joint);
-        kusuri1p = vecvec3(hand->ring.intermediate.prev_joint, hand->ring.intermediate.next_joint);
-
-        ko3p = vecvec3(hand->pinky.metacarpal.prev_joint, hand->pinky.metacarpal.next_joint);
-        ko0p = vecvec3(hand->pinky.distal.prev_joint, hand->pinky.distal.next_joint);
-        ko2p = vecvec3(hand->pinky.proximal.prev_joint, hand->pinky.proximal.next_joint);
-        ko1p = vecvec3(hand->pinky.intermediate.prev_joint, hand->pinky.intermediate.next_joint);
-
-
-
-        sooya1b->SetFramePosition(oya1p);
-        sooya2b->SetFramePosition(oya2p);
-        sohito1b->SetFramePosition(hito1p);
-        sohito2b->SetFramePosition(hito2p);
-        sohito3b->SetFramePosition(hito3p);
-        sonaka0b->SetFramePosition(naka0p);
-        sonaka1b->SetFramePosition(naka1p);
-        sonaka2b->SetFramePosition(naka2p);
-        sonaka3b->SetFramePosition(naka3p);
-        sokusuri0b->SetFramePosition(kusuri0p);
-        sokusuri1b->SetFramePosition(kusuri1p);
-        sokusuri2b->SetFramePosition(kusuri2p);
-        sokusuri3b->SetFramePosition(kusuri3p);
-        soko0b->SetFramePosition(ko0p);
-        soko1b->SetFramePosition(ko1p);
-        soko2b->SetFramePosition(ko2p);
-        soko3b->SetFramePosition(ko3p);
-
-        for (int i = 0; i < 3; i++) {
-          oyaori[i] = quaquad(hand->thumb.bones[i].rotation);
-          oyaori[i] = x90 * oyaori[i];
-          oyaori[i] = y180 * oyaori[i];
-        }*/
       }
     }
 
