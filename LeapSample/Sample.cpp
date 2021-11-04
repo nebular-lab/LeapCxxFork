@@ -240,11 +240,14 @@ public:
     PHHingeJointDesc fg_hinge_desc[5][3];
 
     //type 1
-    PHSolidIf* fg_base_slide[5][5];
-    PHSolidIf* fg_obj_slide[5][4][2];//0はprev、1は先next
+    //0はprevious、1はnext
+    PHSolidIf* fg_base_slide[5][5][2];
+    PHSolidIf* fg_obj_slide[5][4][2]; 
     PHSpringIf* fg_joint_vc_slide[5][4][2];
     PHSliderJointIf* fg_slider[5][4];
     PHSpringDesc spring_slide[5][4][2];
+    PHBallJointDesc fg_ball_desc[5][3];
+    
 
     PHSolidIf* palm_middle_base;
     PHSolidIf* palm_middle_obj;
@@ -753,6 +756,25 @@ public:
         if (shape == SHAPE_COIN) {
             solid->AddShape(shapeCoin);
         }
+
+
+        if (type == 1) {
+
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 4; j++) {
+                    if (!(i == 0 && j == 0)) {
+
+                        GetPHScene()->SetContactMode(fg_base_slide[i][j][0], solid, PHSceneDesc::MODE_NONE);
+                        GetPHScene()->SetContactMode(fg_base_slide[i][j][1], solid, PHSceneDesc::MODE_NONE);
+
+
+                        GetPHScene()->SetContactMode(fg_obj_slide[i][j][0], solid, PHSceneDesc::MODE_LCP);
+                        GetPHScene()->SetContactMode(fg_obj_slide[i][j][1], solid, PHSceneDesc::MODE_LCP);
+                    }
+                }
+            }
+            
+        }
         solid->SetVelocity(v);
         solid->SetAngularVelocity(w);
         solid->SetFramePosition(p);
@@ -793,7 +815,7 @@ public:
             tip_width[i] *= 1.5;
         }
 
-        Springdesc.spring = Vec3d(10000.0, 10000.0, 10000.0);
+        Springdesc.spring = Vec3d(1000.0, 1000.0, 1000.0);
         Springdesc.damper = Vec3d(10.0, 10.0, 10.0);
         Springdesc.springOri = 10000.0;
         Springdesc.damperOri = 10.0;
@@ -876,8 +898,14 @@ public:
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 5; j++) {
                     if (!(i == 0 && j == 0)) {
-                        fg_base_slide[i][j] = CreateBone2();
-                        GetPHScene()->SetContactMode(fg_base_slide[i][j], PHSceneDesc::MODE_NONE);
+                        fg_base_slide[i][j][0] = CreateBone2();
+                        fg_base_slide[i][j][1] = CreateBone2();
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base_slide[i][j][0]);
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, fg_base_slide[i][j][1]);
+
+                        GetPHScene()->SetContactMode(fg_base_slide[i][j][0], PHSceneDesc::MODE_NONE);
+                        GetPHScene()->SetContactMode(fg_base_slide[i][j][1], PHSceneDesc::MODE_NONE);
+
                     }
                 }
             }
@@ -887,28 +915,43 @@ public:
                     if (!(i == 0 && j == 0)) {
                         fg_obj_slide[i][j][0] = CreateBoneSlide(fg_pos[i][j][0], fg_pos[i][j][1]);
                         fg_obj_slide[i][j][1] = CreateBoneSlide(fg_pos[i][j][0], fg_pos[i][j][1]);
+
+                        //printf("fg_obj_slide[%d][%d][0]:%p\n", i, j, &fg_obj_slide[i][j][0]);
+                        //printf("fg_obj_slide[%d][%d][1]:%p\n", i, j, &fg_obj_slide[i][j][1]);
+
+
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_obj_slide[i][j][0]);
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, fg_obj_slide[i][j][1]);
+
+
                         GetPHScene()->SetContactMode(fg_obj_slide[i][j][0], PHSceneDesc::MODE_NONE);
                         GetPHScene()->SetContactMode(fg_obj_slide[i][j][1], PHSceneDesc::MODE_NONE);
                     }
                 }
             }
+            //GetPHScene()->SetContactMode(&(fg_obj_slide[0][1][0]), 5*4*2-2, PHSceneDesc::MODE_NONE);
+
             //バーチャルカップリング
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 4; j++) {
                     if (!(i == 0 && j == 0)) {
-                        //spring_slide[i][j][0].poseSocket.Pos() = Vec3d(0.0, 0.0, 0.0);
-                        //spring_slide[i][j][1].poseSocket.Pos() = Vec3d(0.0, 0.0, 0.0);
-                        //spring_slide[i][j][0].posePlug.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1])/4.0);
-                        //spring_slide[i][j][1].posePlug.Pos() = Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1])/4.0);
 
-                        //fg_joint_vc_slide[i][j][0] = GetPHScene()->CreateJoint(fg_base_slide[i][j], fg_obj_slide[i][j][0], spring_slide[i][j][0])->Cast();
-                        //fg_joint_vc_slide[i][j][1] = GetPHScene()->CreateJoint(fg_base_slide[i][j + 1], fg_obj_slide[i][j][1], spring_slide[i][j][1])->Cast();
+                        spring_slide[i][j][0].posePlug.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1])/4.0);
+                        spring_slide[i][j][1].posePlug.Pos() = Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1])/4.0);
+                        
+                        spring_slide[i][j][0].spring = Vec3d(1000.0, 1000.0, 1000.0);
+                        spring_slide[i][j][0].damper = Vec3d(10.0, 10.0, 10.0);
+                        spring_slide[i][j][0].springOri = 1000.0;
+                        spring_slide[i][j][0].damperOri = 10.0;
 
-                        Springdesc.posePlug.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 4.0);
-                        Springdesc.springOri = 0.0;
-                        Springdesc.damperOri = 0.0;
-                        fg_joint_vc_slide[i][j][0] = GetPHScene()->CreateJoint(fg_base_slide[i][j], fg_obj_slide[i][j][0], Springdesc)->Cast();
-                        fg_joint_vc_slide[i][j][1] = GetPHScene()->CreateJoint(fg_base_slide[i][j + 1], fg_obj_slide[i][j][1], Springdesc)->Cast();
+                        spring_slide[i][j][1].spring = Vec3d(1000.0, 1000.0, 1000.0);
+                        spring_slide[i][j][1].damper = Vec3d(10.0, 10.0, 10.0);
+                        spring_slide[i][j][1].springOri = 1000.0;
+                        spring_slide[i][j][1].damperOri = 10.0;
+
+
+                        fg_joint_vc_slide[i][j][0] = GetPHScene()->CreateJoint(fg_base_slide[i][j][0], fg_obj_slide[i][j][0], spring_slide[i][j][0])->Cast();
+                        fg_joint_vc_slide[i][j][1] = GetPHScene()->CreateJoint(fg_base_slide[i][j][1], fg_obj_slide[i][j][1], spring_slide[i][j][1])->Cast();
                     }
                 }
             }
@@ -922,8 +965,17 @@ public:
                     }
                 }
             }
+            //ボールジョイント
+            for (int i = 0; i < 5; i++) {
+                for (int j = 0; j < 3;j++) {
+                    if (!(i == 0 && j == 0)) {
+                        fg_ball_desc[i][j].poseSocket.Pos() = Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 4.0);
+                        fg_ball_desc[i][j].posePlug.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[i][j+1][0], fg_pos[i][j+1][1]) / 4.0);
+                        fg_joint[i][j] = GetPHScene()->CreateJoint(fg_obj_slide[i][j][1], fg_obj_slide[i][j + 1][0], fg_ball_desc[i][j])->Cast();
+                    }
+                }
+            }
         }
-
     }
 
     // タイマコールバック関数．タイマ周期で呼ばれる
@@ -969,18 +1021,25 @@ public:
                         }
                     }
                 }
+
                 else if (type == 1) {
+
                     for (int i = 0; i < 5; i++) {
                         for (int j = 0; j < 4; j++) {
                             if (!(i == 0 && j == 0)) {
                                 fg_pos[i][j][0] = vecvec3_3(hand->digits[i].bones[j].prev_joint);
-                                fg_base_slide[i][j]->SetFramePosition(fg_pos[i][j][0]);
+                                fg_pos[i][j][1] = vecvec3_3(hand->digits[i].bones[j].next_joint);
+                                fg_ori[i][j] = quaquad(hand->digits[i].bones[j].rotation);
+                                fg_ori[i][j] = x90 * fg_ori[i][j];
+                                fg_ori[i][j] = y180 * fg_ori[i][j];
+
+                                fg_base_slide[i][j][0]->SetFramePosition(fg_pos[i][j][0]);
+                                fg_base_slide[i][j][1]->SetFramePosition(fg_pos[i][j][1]);
+                                fg_base_slide[i][j][0]->SetOrientation(fg_ori[i][j]);
+                                fg_base_slide[i][j][1]->SetOrientation(fg_ori[i][j]);
+
                             }
                         }
-                    }
-                    for (int i = 0; i < 5; i++) {
-                        fg_pos[i][3][1] = vecvec3_3(hand->digits[i].bones[3].next_joint);
-                        fg_base_slide[i][4]->SetFramePosition(fg_pos[i][3][1]);
                     }
                 }
 
