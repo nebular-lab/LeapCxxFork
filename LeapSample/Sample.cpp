@@ -318,7 +318,7 @@ public:
 
         //GetPHScene()->SetNumIteration(75);
 
-        density = 0.3f;
+        density = 300.0f;
 
         //何番目のシーンなのかを取得して、そのシーンについてfindobjectをする
         /*int n;
@@ -525,7 +525,7 @@ public:
     PHSolidIf* CreateBone2() {
         PHSolidIf* soBone = GetPHScene()->CreateSolid();
         CDSphereDesc sd;
-        sd.radius = 1.0f;
+        sd.radius = 5.0f / 1000.0f;
 
         shapeSphere = GetSdk()->GetPHSdk()->CreateShape(sd)->Cast();
 
@@ -543,8 +543,9 @@ public:
         CDCapsuleDesc cd;
 
         //1.0->2.0に修正
-        cd.radius = 1.5f;
+        cd.radius = 7.5f/1000.0f;
         cd.length = (float)sqrt((p.x - n.x) * (p.x - n.x) + (p.y - n.y) * (p.y - n.y) + (p.z - n.z) * (p.z - n.z));
+
 
         shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
         shapeCapsule->SetDensity(density);
@@ -564,13 +565,17 @@ public:
         CDCapsuleDesc cd;
 
         //1.0->2.0に修正
-        cd.radius = 0.5f;
+        cd.radius = 7.5f/1000.0f;
         cd.length = (float)sqrt((p.x - n.x) * (p.x - n.x) + (p.y - n.y) * (p.y - n.y) + (p.z - n.z) * (p.z - n.z));
         cd.length /= 1.5;
+
+        cout << "radius="<<cd.radius << endl;
+        cout << "length=" << cd.length << endl;
+
         shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
         shapeCapsule->SetDensity(density);
-        shapeCapsule->SetStaticFriction(100.0f);
-        shapeCapsule->SetDynamicFriction(100.0f);
+        shapeCapsule->SetStaticFriction(1.0f);
+        shapeCapsule->SetDynamicFriction(1.0f);
 
         soBone->AddShape(shapeCapsule);
 
@@ -657,9 +662,13 @@ public:
     }
     Vec3d vecvec3_2(LEAP_VECTOR vec) {
         Vec3d vec3;
-        vec3.x = (double)(vec.x / 10.0);
-        vec3.y = (double)(vec.y / 10.0);
-        vec3.z = (double)(vec.z / 10.0);
+        //vec3.x = (double)(vec.x / 10.0);
+        //vec3.y = (double)(vec.y / 10.0);
+        //vec3.z = (double)(vec.z / 10.0);
+
+        vec3.x = (double)vec.x / 1000.0;
+        vec3.y = (double)vec.y / 1000.0;
+        vec3.z = (double)vec.z / 1000.0;
 
         return vec3;
     }
@@ -668,13 +677,21 @@ public:
         double x;
         double y;
         double z;
-        x = (double)(vec.x / 10.0);
-        y = (double)(vec.y / 10.0);
-        z = (double)(vec.z / 10.0);
+        //x = (double)(vec.x / 10.0);
+        //y = (double)(vec.y / 10.0);
+        //z = (double)(vec.z / 10.0);
+
+        //vec3.x = -x;
+        //vec3.y = 25.0 - z;
+        //vec3.z = 30.0 - y;
+
+        x = (double)vec.x / 1000.0;
+        y = (double)vec.y / 1000.0;
+        z = (double)vec.z / 1000.0;
 
         vec3.x = -x;
-        vec3.y = 25.0 - z;
-        vec3.z = 30.0 - y;
+        vec3.y = 0.25 - z;
+        vec3.z = 0.3 - y;
 
         return vec3;
     }
@@ -705,10 +722,10 @@ public:
         // 形状の割当て
         if (shape == SHAPE_BOX) {
             CDBoxDesc bd;
-            bd.boxsize = Vec3d(4.0, 4.0, 4.0);  //単位 m^3
-            shapeBox->SetDynamicFriction(10.0f);
-            shapeBox->SetStaticFriction(10.0f);
-            shapeBox->SetDensity(0.0000001f);//単位 kg/m^3
+            bd.boxsize = Vec3d(3.0, 3.0, 3.0)/100.0;  //単位 m^3
+            shapeBox->SetDynamicFriction(1.0f);
+            shapeBox->SetStaticFriction(1.0f);
+            shapeBox->SetDensity(2000.0f);//単位 kg/m^3
             shapeBox = GetSdk()->GetPHSdk()->CreateShape(bd)->Cast();
             solid->AddShape(shapeBox);
         }
@@ -777,6 +794,7 @@ public:
         }
         solid->SetVelocity(v);
         solid->SetAngularVelocity(w);
+        p = Vec3d(0.0, 0.01, 0.0);
         solid->SetFramePosition(p);
         solid->SetOrientation(q);
         solid->CompInertia();
@@ -812,13 +830,13 @@ public:
 
         for (int i = 0; i < 5; i++) {
             tip_width[i] = hand->digits[i].distal.width;
-            tip_width[i] *= 1.5;
+            //tip_width[i] *= 1.5;
         }
 
-        Springdesc.spring = Vec3d(1000.0, 1000.0, 1000.0);
-        Springdesc.damper = Vec3d(10.0, 10.0, 10.0);
-        Springdesc.springOri = 10000.0;
-        Springdesc.damperOri = 10.0;
+        Springdesc.spring = Vec3d(100.0, 100.0, 100.0);
+        Springdesc.damper = Vec3d(1.0, 1.0, 1.0);
+        Springdesc.springOri = 100.0;
+        Springdesc.damperOri = 1.0;
         if (type == 0) {
             //
             for (int i = 0; i < 5; i++) {
@@ -901,7 +919,7 @@ public:
                         fg_base_slide[i][j][0] = CreateBone2();
                         fg_base_slide[i][j][1] = CreateBone2();
                         GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base_slide[i][j][0]);
-                        GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, fg_base_slide[i][j][1]);
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base_slide[i][j][1]);
 
                         GetPHScene()->SetContactMode(fg_base_slide[i][j][0], PHSceneDesc::MODE_NONE);
                         GetPHScene()->SetContactMode(fg_base_slide[i][j][1], PHSceneDesc::MODE_NONE);
@@ -920,8 +938,8 @@ public:
                         //printf("fg_obj_slide[%d][%d][1]:%p\n", i, j, &fg_obj_slide[i][j][1]);
 
 
-                        GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_obj_slide[i][j][0]);
-                        GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, fg_obj_slide[i][j][1]);
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_obj_slide[i][j][0]);
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_obj_slide[i][j][1]);
 
 
                         GetPHScene()->SetContactMode(fg_obj_slide[i][j][0], PHSceneDesc::MODE_NONE);
@@ -939,15 +957,15 @@ public:
                         spring_slide[i][j][0].posePlug.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1])/4.0);
                         spring_slide[i][j][1].posePlug.Pos() = Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1])/4.0);
                         
-                        spring_slide[i][j][0].spring = Vec3d(1000.0, 1000.0, 1000.0);
-                        spring_slide[i][j][0].damper = Vec3d(10.0, 10.0, 10.0);
-                        spring_slide[i][j][0].springOri = 1000.0;
-                        spring_slide[i][j][0].damperOri = 10.0;
+                        spring_slide[i][j][0].spring = Vec3d(100.0, 100.0, 100.0);
+                        spring_slide[i][j][0].damper = Vec3d(1.0, 1.0, 1.0);
+                        spring_slide[i][j][0].springOri = 100.0;
+                        spring_slide[i][j][0].damperOri = 1.0;
 
-                        spring_slide[i][j][1].spring = Vec3d(1000.0, 1000.0, 1000.0);
-                        spring_slide[i][j][1].damper = Vec3d(10.0, 10.0, 10.0);
-                        spring_slide[i][j][1].springOri = 1000.0;
-                        spring_slide[i][j][1].damperOri = 10.0;
+                        spring_slide[i][j][1].spring = Vec3d(100.0, 100.0, 100.0);
+                        spring_slide[i][j][1].damper = Vec3d(1.0, 1.0, 1.0);
+                        spring_slide[i][j][1].springOri = 100.0;
+                        spring_slide[i][j][1].damperOri = 1.0;
 
 
                         fg_joint_vc_slide[i][j][0] = GetPHScene()->CreateJoint(fg_base_slide[i][j][0], fg_obj_slide[i][j][0], spring_slide[i][j][0])->Cast();
@@ -959,8 +977,8 @@ public:
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 4; j++) {
                     if (!(i == 0 && j == 0)) {
-                        Sliderdesc.spring = 1000.0;
-                        Sliderdesc.damper = 10.0;
+                        //Sliderdesc.spring = 1000.0;
+                        //Sliderdesc.damper = 10.0;
                         fg_slider[i][j] = GetPHScene()->CreateJoint(fg_obj_slide[i][j][0], fg_obj_slide[i][j][1], Sliderdesc)->Cast();
                     }
                 }
