@@ -226,7 +226,8 @@ public:
     };
 
     int type;
-
+    int step_count;
+    int leap_count;
     //type 0
     PHSolidIf* fg_base[5][4];
     PHSolidIf* fg_obj[5][4];
@@ -404,7 +405,7 @@ public:
 
         soFloor->AddShape(shapeFloor);
 
-        soFloor->SetShapePose(0, Posed::Trn(22.0, -shapeFloor->GetBoxSize().y / 2, 0));
+        soFloor->SetShapePose(0, Posed::Trn(22.0, -shapeFloor->GetBoxSize().y / 2+0.10, 0));
         if (bWall) {
             soFloor->AddShape(shapeWallZ);
             soFloor->AddShape(shapeWallX);
@@ -574,8 +575,8 @@ public:
 
         shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
         shapeCapsule->SetDensity(density);
-        shapeCapsule->SetStaticFriction(1.0f);
-        shapeCapsule->SetDynamicFriction(1.0f);
+        shapeCapsule->SetStaticFriction(0.7f);
+        shapeCapsule->SetDynamicFriction(0.7f);
 
         soBone->AddShape(shapeCapsule);
 
@@ -646,16 +647,27 @@ public:
         double x;
         double y;
         double z;
-        x = (double)((double)vec.x + (double)vec2.x);
-        y = (double)((double)vec.y + (double)vec2.y);
-        z = (double)((double)vec.z + (double)vec2.z);
+        //x = (double)((double)vec.x + (double)vec2.x);
+        //y = (double)((double)vec.y + (double)vec2.y);
+        //z = (double)((double)vec.z + (double)vec2.z);
+        //x /= 2;
+        //y /= 2;
+        //z /= 2;
+
+        //vec3.x = -x / 10.0;
+        //vec3.y = 25.0 - z / 10.0;
+        //vec3.z = 30.0 - y / 10.0;
+
+        x = (double)((double)vec.x + (double)vec2.x)/1000.0;
+        y = (double)((double)vec.y + (double)vec2.y)/1000.0;
+        z = (double)((double)vec.z + (double)vec2.z)/1000.0;
         x /= 2;
         y /= 2;
         z /= 2;
 
-        vec3.x = -x / 10.0;
-        vec3.y = 25.0 - z / 10.0;
-        vec3.z = 30.0 - y / 10.0;
+        vec3.x = -x;
+        vec3.y = 0.25 - z;
+        vec3.z = 0.30 - y;
 
 
         return vec3;
@@ -723,8 +735,8 @@ public:
         if (shape == SHAPE_BOX) {
             CDBoxDesc bd;
             bd.boxsize = Vec3d(3.0, 3.0, 3.0)/100.0;  //’PˆÊ m^3
-            shapeBox->SetDynamicFriction(1.0f);
-            shapeBox->SetStaticFriction(1.0f);
+            shapeBox->SetDynamicFriction(0.7f);
+            shapeBox->SetStaticFriction(0.7f);
             shapeBox->SetDensity(2000.0f);//’PˆÊ kg/m^3
             shapeBox = GetSdk()->GetPHSdk()->CreateShape(bd)->Cast();
             solid->AddShape(shapeBox);
@@ -794,7 +806,7 @@ public:
         }
         solid->SetVelocity(v);
         solid->SetAngularVelocity(w);
-        p = Vec3d(0.0, 0.01, 0.0);
+        p = Vec3d(0.0, 0.50, 0.0);
         solid->SetFramePosition(p);
         solid->SetOrientation(q);
         solid->CompInertia();
@@ -1002,6 +1014,8 @@ public:
 
         SampleApp::OnStep();
 
+        step_count++;
+        printf("count_step=%d\n", step_count);
 
 
 
@@ -1015,12 +1029,15 @@ public:
 
 
         LEAP_TRACKING_EVENT* frame = GetFrame();
-
+        
         if (frame && (frame->tracking_frame_id > lastFrameID)) {
             lastFrameID = frame->tracking_frame_id;
             //printf("Frame %lli with %i hands.\n", (long long int)frame->tracking_frame_id, frame->nHands);
             for (uint32_t h = 0; h < frame->nHands; h++) {
                 LEAP_HAND* hand = &frame->pHands[0];
+                leap_count++;
+                //printf("hand=%d\n", (int)frame->nHands);
+                printf("count_leap=%d\n",leap_count);
                 palm_v = vecvec3_2(hand->palm.velocity);
 
                 if (type == 0) {
