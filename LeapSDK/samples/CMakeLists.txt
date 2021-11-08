@@ -1,84 +1,71 @@
-cmake_minimum_required(VERSION 3.10)
-project(Samples)
+cmake_minimum_required(VERSION 3.16.3)
 
-if(WIN32)
-  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(CMAKE_LIBRARY_ARCHITECTURE x64)
-  else()
-    set(CMAKE_LIBRARY_ARCHITECTURE x86)
-  endif()
-endif()
+project(leapc_example VERSION "1.0.0" LANGUAGES C)
 
-find_package(LeapSDK 5.0.0 PATHS "${CMAKE_CURRENT_LIST_DIR}/..")
+set(ULTRALEAP_PATH_ROOT "$ENV{ProgramFiles}/Ultraleap")
 
-function(c_sample_executable NAME)
-  add_executable(${NAME} ${NAME}.c ExampleConnection.c ExampleConnection.h ${ARGN})
-  target_include_directories(${NAME} PUBLIC ${Leap_ROOT_DIR}/include)
-  target_link_libraries(${NAME} LeapSDK::LeapC)
-  if(ANDROID)
-    target_link_libraries(${NAME} -pthread -lm)
-  elseif(UNIX AND NOT APPLE)
-    target_link_libraries(${NAME} -lpthread)
-  endif()
-  add_custom_command(TARGET ${NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_PROPERTY:LeapSDK::LeapC,IMPORTED_LOCATION_RELEASE> $<TARGET_FILE_DIR:${NAME}>)
+find_package(LeapSDK
+	5
+	REQUIRED
+	PATHS
+		"${ULTRALEAP_PATH_ROOT}")
+
+add_executable(
+	leapc_example
+	"leapc_main.c")
+
+target_link_libraries(
+	leapc_example
+	PRIVATE
+		LeapSDK::LeapC)
+
+get_target_property(
+	LEAPC_IMPORTED_CONFIG
+	LeapSDK::LeapC
+	IMPORTED_CONFIGURATIONS
+)
+
+get_target_property(
+	LEAPC_SHARED_LIB_PATH
+	LeapSDK::LeapC
+	IMPORTED_LOCATION_${LEAPC_IMPORTED_CONFIG}
+)
+
+add_custom_command(
+	TARGET
+		leapc_example
+	POST_BUILD
+	COMMAND
+		${CMAKE_COMMAND} -E copy
+		${LEAPC_SHARED_LIB_PATH}
+		$<TARGET_FILE_DIR:leapc_example>)
+
+add_library(
+	libExampleConnection
+	OBJECT
+	"ExampleConnection.c")
+
+target_link_libraries(
+	libExampleConnection
+	PUBLIC
+	LeapSDK::LeapC)
+
+target_include_directories(
+	libExampleConnection
+	PUBLIC
+	${CMAKE_CURRENT_SOURCE_DIR})
+
+# Add targets for each sample file.
+function(add_sample sample_name sample_source_file)
+
+  add_executable(${sample_name} ${sample_source_file})
+  set_property(TARGET ${sample_name} PROPERTY FOLDER "Samples")
+  target_link_libraries(${sample_name} PUBLIC libExampleConnection)
+
 endfunction()
 
-c_sample_executable(CallbackSample)
-c_sample_executable(ImageSample)
-c_sample_executable(InterpolationSample)
-c_sample_executable(PollingSample)
-c_sample_executable(RecordPlaybackSample)
 
-if(ANDROID)
-  return()
-endif()
-
-if(MSVC AND MSVC_VERSION VERSION_LESS 1900)
-  message("GL examples link to libraries requiring Visual Studio 2015 or newer, skipping")
-  return()
-endif()
-
-find_path(FreeGLUT_ROOT_DIR NAMES include/GL/freeglut.h HINTS ${CMAKE_SOURCE_DIR}/../3rdparty/${CMAKE_LIBRARY_ARCHITECTURE}/freeglut-3.0.0)
-find_path(Glew_ROOT_DIR NAMES include/GL/glew.h HINTS ${CMAKE_SOURCE_DIR}/../3rdparty/${CMAKE_LIBRARY_ARCHITECTURE}/glew-1.13.0)
-add_library(Glew STATIC IMPORTED)
-if(APPLE)
-  find_library(OPENGL_FRAMEWORK OpenGL REQUIRED)
-  find_library(GLUT_FRAMEWORK GLUT REQUIRED)
-  set_property(TARGET Glew PROPERTY IMPORTED_LOCATION ${Glew_ROOT_DIR}/lib/libglew.a)
-else()
-  add_library(FreeGLUT STATIC IMPORTED)
-  if(UNIX)
-    set_property(TARGET FreeGLUT PROPERTY IMPORTED_LOCATION ${FreeGLUT_ROOT_DIR}/lib/libglut.a)
-    set_property(TARGET Glew PROPERTY IMPORTED_LOCATION ${Glew_ROOT_DIR}/lib/libglew.a)
-  elseif(WIN32)
-    set_property(TARGET FreeGLUT PROPERTY IMPORTED_LOCATION_RELEASE ${FreeGLUT_ROOT_DIR}/lib/freeglut_static.lib)
-    set_property(TARGET FreeGLUT PROPERTY IMPORTED_LOCATION_DEBUG ${FreeGLUT_ROOT_DIR}/lib/freeglut_staticd.lib)
-    set_property(TARGET Glew PROPERTY IMPORTED_LOCATION_RELEASE ${Glew_ROOT_DIR}/lib/libglew32.lib)
-    set_property(TARGET Glew PROPERTY IMPORTED_LOCATION_DEBUG ${Glew_ROOT_DIR}/lib/libglew32d.lib)
-  else()
-    message(FATAL_ERROR "Unsupported target platform")
-  endif()
-endif()
-if(NOT WIN32)
-  find_package(OpenGL REQUIRED)
-endif()
-
-function(gl_sample_executable NAME)
-  c_sample_executable(${NAME} GLutils.c GLutils.h ${ARGN})
-  if(APPLE)
-    target_link_libraries(${NAME} ${OPENGL_FRAMEWORK} ${GLUT_FRAMEWORK})
-  else()
-    target_compile_definitions(${NAME} PRIVATE FREEGLUT_STATIC=1 FREEGLUT_LIB_PRAGMAS=0)
-    target_include_directories(${NAME} PUBLIC ${FreeGLUT_ROOT_DIR}/include ${Glew_ROOT_DIR}/include)
-    target_link_libraries(${NAME} FreeGLUT Glew)
-    if(UNIX AND NOT APPLE)
-      target_link_libraries(${NAME} OpenGL::OpenGL -lm)
-    endif()
-  endif()
-endfunction()
-
-gl_sample_executable(GLUTSample)
-gl_sample_executable(GLUTImageSample)
-gl_sample_executable(GLUTDistortionShaderSample)
-gl_sample_executable(GLUTRectifiedImageSample)
+add_sample("CallbackSample" "CallbackSample.c")
+add_sample("ImageSample" "ImageSample.c")
+add_sample("PollingSample" "PollingSample.c")
+add_sample("InterpolationSample" "InterpolationSample.c")

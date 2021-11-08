@@ -1,12 +1,7 @@
-/******************************************************************************\
-* Copyright (C) 2012-2017 Ultraleap Ltd. All rights reserved.                  *
-* Ultraleap proprietary and confidential. Not for distribution.                *
-* Use subject to the terms of the Leap Motion SDK Agreement available at       *
-* https://developer.leapmotion.com/sdk_agreement, or another agreement         *
-* between Ultraleap and you, your company or other organization.               *
-\******************************************************************************/
-
-#undef __cplusplus
+/* Copyright (C) 2012-2017 Ultraleap Limited. All rights reserved.
+ *
+ * <RELEASE-SPECIFIC-EULA>
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -67,7 +62,7 @@ int main(int argc, char** argv) {
         if(!LEAP_SUCCEEDED(result))
           printf("Couldn't get next frame size: %s\n", ResultString(result));
         if(nextFrameSize > 0){
-          frame = (LEAP_TRACKING_EVENT *)malloc(nextFrameSize);
+          frame = (LEAP_TRACKING_EVENT *)malloc((size_t)nextFrameSize);
           result = LeapRecordingRead(recordingHandle, frame, nextFrameSize);
           if(LEAP_SUCCEEDED(result)){
             printf("Read frame %"PRIu64" with %i hands.\n", frame->tracking_frame_id, frame->nHands);

@@ -1,10 +1,7 @@
-/******************************************************************************\
-* Copyright (C) 2012-2017 Ultraleap Ltd. All rights reserved.                  *
-* Ultraleap proprietary and confidential. Not for distribution.                *
-* Use subject to the terms of the Leap Motion SDK Agreement available at       *
-* https://developer.leapmotion.com/sdk_agreement, or another agreement         *
-* between Ultraleap and you, your company or other organization.               *
-\******************************************************************************/
+/* Copyright (C) 2012-2017 Ultraleap Limited. All rights reserved.
+ *
+ * <RELEASE-SPECIFIC-EULA>
+ */
 
 #include "ExampleConnection.h"
 #include <stdlib.h>
@@ -242,7 +239,7 @@ static void handleHeadPoseEvent(const LEAP_HEAD_POSE_EVENT *head_pose_event) {
 
 /**
  * Services the LeapC message pump by calling LeapPollConnection().
- * The average polling time is determined by the framerate of the Leap Motion service.
+ * The average polling time is determined by the framerate of the Ultraleap Tracking service.
  */
 #if defined(_MSC_VER)
 static void serviceMessageLoop(void * unused){

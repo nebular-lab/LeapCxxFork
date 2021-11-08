@@ -1,12 +1,7 @@
-/******************************************************************************\
-* Copyright (C) 2012-2017 Ultraleap Ltd. All rights reserved.                  *
-* Ultraleap proprietary and confidential. Not for distribution.                *
-* Use subject to the terms of the Leap Motion SDK Agreement available at       *
-* https://developer.leapmotion.com/sdk_agreement, or another agreement         *
-* between Ultraleap and you, your company or other organization.               *
-\******************************************************************************/
-
-#undef __cplusplus
+/* Copyright (C) 2012-2017 Ultraleap Limited. All rights reserved.
+ *
+ * <RELEASE-SPECIFIC-EULA>
+ */
 
 #include <stdio.h>
 #include <stdlib.h>

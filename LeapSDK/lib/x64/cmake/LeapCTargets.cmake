@@ -4,7 +4,7 @@ if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" LESS 2.5)
    message(FATAL_ERROR "CMake >= 2.6.0 required")
 endif()
 cmake_policy(PUSH)
-cmake_policy(VERSION 2.6)
+cmake_policy(VERSION 2.6...3.17)
 #----------------------------------------------------------------
 # Generated CMake target import file.
 #----------------------------------------------------------------
@@ -46,6 +46,7 @@ get_filename_component(_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_FILE}" PATH)
 get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
 get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
 get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
+get_filename_component(_IMPORT_PREFIX "${_IMPORT_PREFIX}" PATH)
 if(_IMPORT_PREFIX STREQUAL "/")
   set(_IMPORT_PREFIX "")
 endif()
@@ -54,7 +55,7 @@ endif()
 add_library(LeapSDK::LeapC SHARED IMPORTED)
 
 set_target_properties(LeapSDK::LeapC PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/include"
+  INTERFACE_INCLUDE_DIRECTORIES "${_IMPORT_PREFIX}/LeapSDK/include"
 )
 
 # Load information for each installed configuration.

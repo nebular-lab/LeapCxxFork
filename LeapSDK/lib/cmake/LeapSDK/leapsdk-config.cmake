@@ -9,11 +9,7 @@ get_filename_component(PACKAGE_PREFIX_DIR "${CMAKE_CURRENT_LIST_DIR}/../../../" 
 
 if(IS_DIRECTORY ${PACKAGE_PREFIX_DIR}/lib/x64 OR
     IS_DIRECTORY ${PACKAGE_PREFIX_DIR}/lib/x86)
-  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(_arch_folder x64)
-  else()
-    set(_arch_folder x86)
-  endif()
+  set(_arch_folder x64)
 endif()
 
 include(${PACKAGE_PREFIX_DIR}/lib/${_arch_folder}/cmake/LeapCTargets.cmake)

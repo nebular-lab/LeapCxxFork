@@ -1,12 +1,7 @@
-/******************************************************************************\
-* Copyright (C) 2012-2017 Ultraleap Ltd. All rights reserved.                  *
-* Ultraleap proprietary and confidential. Not for distribution.                *
-* Use subject to the terms of the Leap Motion SDK Agreement available at       *
-* https://developer.leapmotion.com/sdk_agreement, or another agreement         *
-* between Ultraleap and you, your company or other organization.               *
-\******************************************************************************/
-
-#undef __cplusplus
+/* Copyright (C) 2012-2017 Ultraleap Limited. All rights reserved.
+ *
+ * <RELEASE-SPECIFIC-EULA>
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,7 +22,8 @@ static void OnDevice(const LEAP_DEVICE_INFO *props){
 
 /** Callback for when a frame of tracking data is available. */
 static void OnFrame(const LEAP_TRACKING_EVENT *frame){
-  printf("Frame %lli with %i hands.\n", (long long int)frame->info.frame_id, frame->nHands);
+  if (frame->info.frame_id % 60 == 0)
+    printf("Frame %lli with %i hands.\n", (long long int)frame->info.frame_id, frame->nHands);
 
   for(uint32_t h = 0; h < frame->nHands; h++){
     LEAP_HAND* hand = &frame->pHands[h];
@@ -86,7 +82,7 @@ void OnPointMappingChange(const LEAP_POINT_MAPPING_CHANGE_EVENT *change){
   if (LeapGetPointMappingSize(*connectionHandle, &size) != eLeapRS_Success || !size)
     return;
 
-  LEAP_POINT_MAPPING* pointMapping = (LEAP_POINT_MAPPING*)malloc(size);
+  LEAP_POINT_MAPPING* pointMapping = (LEAP_POINT_MAPPING*)malloc((size_t)size);
   if (!pointMapping)
     return;
 
@@ -108,6 +104,14 @@ void OnHeadPose(const LEAP_HEAD_POSE_EVENT *event) {
     event->head_orientation.x,
     event->head_orientation.y,
     event->head_orientation.z);
+  printf("    Head linear velocity (%f, %f, %f).\n",
+    event->head_linear_velocity.x,
+    event->head_linear_velocity.y,
+    event->head_linear_velocity.z);
+  printf("    Head angular velocity (%f, %f, %f).\n",
+    event->head_angular_velocity.x,
+    event->head_angular_velocity.y,
+    event->head_angular_velocity.z);
  }
 
 int main(int argc, char** argv) {
@@ -129,7 +133,8 @@ int main(int argc, char** argv) {
 
   printf("Press Enter to exit program.\n");
   getchar();
-
+  
+  CloseConnection();
   DestroyConnection();
 
   return 0;

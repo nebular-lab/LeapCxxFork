@@ -1,14 +1,12 @@
-/******************************************************************************\
-* Copyright (C) 2012-2017 Ultraleap Ltd. All rights reserved.                  *
-* Ultraleap proprietary and confidential. Not for distribution.                *
-* Use subject to the terms of the Leap Motion SDK Agreement available at       *
-* https://developer.leapmotion.com/sdk_agreement, or another agreement         *
-* between Ultraleap and you, your company or other organization.               *
-\******************************************************************************/
+/* Copyright (C) 2012-2017 Ultraleap Limited. All rights reserved.
+ *
+ * <RELEASE-SPECIFIC-EULA>
+ */
+
 #ifndef ExampleConnection_h
 #define ExampleConnection_h
 
-#include "../include/LeapC.h"
+#include "LeapC.h"
 
 /* Client functions */
 LEAP_CONNECTION* OpenConnection();
