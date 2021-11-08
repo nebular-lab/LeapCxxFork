@@ -813,6 +813,19 @@ public:
     }
     virtual void BuildScene() {
 
+        PHSceneDesc pd;
+        GetPHScene()->GetDesc(&pd);
+        pd.timeStep = 1.0 / 60;
+        pd.contactTolerance = 0.001 * 0.4;
+        pd.airResistanceRateForAngularVelocity = 0.98;
+        GetPHScene()->SetDesc(&pd);
+        PHConstraintEngineDesc ed;
+        GetPHScene()->GetConstraintEngine()->GetDesc(&ed);
+        ed.freezeThreshold = 0;
+        ed.contactCorrectionRate = 0.5;
+        GetPHScene()->GetConstraintEngine()->SetDesc(&ed);
+
+
         soFloor = CreateFloor(true);
 
 
