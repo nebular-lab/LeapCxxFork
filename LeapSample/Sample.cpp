@@ -7,6 +7,7 @@
 \******************************************************************************/
 
 #include <iostream>
+#include <fstream>
 //#include <Windows.h>
 #include <cstring>
 #include<chrono>
@@ -230,10 +231,11 @@ public:
     int leap_count;
 
     double scale = 3.0;
-    float friction = 0.7;
+    double move_scale = 1.5;
+    float friction = 1.0;
     float density = 1000.0;
 
-    float cube_density = 2500;
+    float cube_density = 2500.0;
     //type 0
     PHSolidIf* fg_base[5][4];
     PHSolidIf* fg_obj[5][4];
@@ -254,6 +256,7 @@ public:
     PHSliderJointIf* fg_slider[5][4];
     PHSpringDesc spring_slide[5][4][2];
     PHBallJointDesc fg_ball_desc[5][3];
+    PH1DJointLimitDesc slider_limit_desc;
 
     PHSpringIf* fg_palm_joint[3][2];
     
@@ -404,16 +407,16 @@ public:
 
         return jenga;
     }
-    /// 床の作成
     PHSolidIf* CreateFloor(bool bWall) {
-
         PHSolidIf* soFloor = GetPHScene()->CreateSolid();
         soFloor->SetName("soFloor");
         soFloor->SetDynamical(false);
-
+        double from_center;
+        double width;
+        from_center = 0.5;
+        width = 0.15;
         soFloor->AddShape(shapeFloor);
-
-        soFloor->SetShapePose(0, Posed::Trn(22.0, -shapeFloor->GetBoxSize().y / 2+0.10, 0));
+        soFloor->SetShapePose(0, Posed::Trn(30.0+from_center+width, -shapeFloor->GetBoxSize().y /2+0.1, 0));
         if (bWall) {
             soFloor->AddShape(shapeWallZ);
             soFloor->AddShape(shapeWallX);
@@ -428,15 +431,70 @@ public:
         soFloor->AddShape(shapeFloor);
         soFloor->AddShape(shapeFloor);
         soFloor->AddShape(shapeFloor);
-        soFloor->SetShapePose(5, Posed::Trn(-22.0, -shapeFloor->GetBoxSize().y / 2, 0));
-        soFloor->SetShapePose(6, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2, -22.0));
-        soFloor->SetShapePose(7, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2, 42.3));
-
+        soFloor->SetShapePose(5, Posed::Trn(-30.0+from_center, -shapeFloor->GetBoxSize().y / 2 + 0.1, 0));
+        soFloor->SetShapePose(6, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2 + 0.1, 20.0+width/2));
+        soFloor->SetShapePose(7, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2 + 0.1, -20.0 - width / 2));
         GetFWScene()->SetSolidMaterial(GRRenderIf::GRAY, soFloor);
         soFloor->CompInertia();
 
         return soFloor;
     }
+    // //床の作成
+    //PHSolidIf* CreateFloor(bool bWall) {
+
+    //    PHSolidIf* soFloor = GetPHScene()->CreateSolid();
+    //    soFloor->SetName("soFloor");
+    //    soFloor->SetDynamical(false);
+
+    //    CDBoxDesc bd1;
+    //    CDBoxDesc bd2;
+    //    CDBoxDesc bd3;
+    //    CDBoxDesc bd4;
+    //    bd1.boxsize = Vec3d(11.0, 1.0, 5.0)*0.001*scale*100;
+    //    bd2.boxsize = Vec3d(5.0, 1.0, 6.0) * 0.001 * scale*100;
+    //    bd3.boxsize = Vec3d(10.0, 1.0, 6.0) * 0.001 * scale*100;
+    //    bd4.boxsize = Vec3d(6.0, 1.0, 5.0) * 0.001 * scale*100;
+
+    //    shapeFloor= GetSdk()->GetPHSdk()->CreateShape(bd1)->Cast();
+    //    soFloor->AddShape(shapeFloor);
+    //    soFloor->SetShapePose(0, Posed::Trn(-2.5, 0, 3.0) * 0.001 * scale*100);
+
+    //    shapeFloor = GetSdk()->GetPHSdk()->CreateShape(bd2)->Cast();
+    //    soFloor->AddShape(shapeFloor);
+    //    soFloor->SetShapePose(1, Posed::Trn(5.5, 0, 2.5) * 0.001 * scale*100);
+
+    //    shapeFloor = GetSdk()->GetPHSdk()->CreateShape(bd3)->Cast();
+    //    soFloor->AddShape(shapeFloor);
+    //    soFloor->SetShapePose(2, Posed::Trn(-3.0, 0, -2.5) * 0.001 * scale*100);
+
+    //    shapeFloor = GetSdk()->GetPHSdk()->CreateShape(bd4)->Cast();
+    //    soFloor->AddShape(shapeFloor);
+    //    soFloor->SetShapePose(3, Posed::Trn(5.0, 0, -3.0) * 0.001 * scale*100);
+
+    //    soFloor->SetShapePose(0, Posed::Trn(22.0, -shapeFloor->GetBoxSize().y / 2+0.10, 0));
+    //    if (bWall) {
+    //        soFloor->AddShape(shapeWallZ);
+    //        soFloor->AddShape(shapeWallX);
+    //        soFloor->AddShape(shapeWallZ);
+    //        soFloor->AddShape(shapeWallX);
+    //        double y = shapeWallZ->GetBoxSize().y / 2 - shapeFloor->GetBoxSize().y;
+    //        soFloor->SetShapePose(1, Posed::Trn(-(shapeFloor->GetBoxSize().x + shapeWallZ->GetBoxSize().x) / 2, y, 0));
+    //        soFloor->SetShapePose(2, Posed::Trn(0, y, -(shapeFloor->GetBoxSize().z + shapeWallX->GetBoxSize().z) / 2));
+    //        soFloor->SetShapePose(3, Posed::Trn((shapeFloor->GetBoxSize().x + shapeWallZ->GetBoxSize().x) / 2, y, 0));
+    //        soFloor->SetShapePose(4, Posed::Trn(0, y, (shapeFloor->GetBoxSize().z + shapeWallX->GetBoxSize().z) / 2));
+    //    }
+    //    soFloor->AddShape(shapeFloor);
+    //    soFloor->AddShape(shapeFloor);
+    //    soFloor->AddShape(shapeFloor);
+    //    soFloor->SetShapePose(5, Posed::Trn(-22.0, -shapeFloor->GetBoxSize().y / 2, 0));
+    //    soFloor->SetShapePose(6, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2, -22.0));
+    //    soFloor->SetShapePose(7, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2, 42.3));
+
+    //    GetFWScene()->SetSolidMaterial(GRRenderIf::GRAY, soFloor);
+    //    soFloor->CompInertia();
+
+    //    return soFloor;
+    //}
 
     //指先
     PHSolidIf* CreateBone(float width) {
@@ -447,26 +505,26 @@ public:
 
         CDEllipsoidDesc nail;
         //nail.radius = Vec3d(1.69, 0.179, 1.12)*(double)BlenderToSpr;
-        nail.radius = Vec3d(2.5f, 0.179f, 1.12f) * (double)BlenderToSpr;
+        nail.radius = Vec3d(1.69f, 0.179f, 1.12f) * (double)BlenderToSpr;
         shapenail = GetSdk()->GetPHSdk()->CreateShape(nail)->Cast();
         shapenail->SetDensity(density);
-        shapenail->SetStaticFriction(100.0f);
-        shapenail->SetDynamicFriction(100.0f);
+        shapenail->SetStaticFriction(friction);
+        shapenail->SetDynamicFriction(friction);
 
         CDEllipsoidDesc pad;
         pad.radius = Vec3d(2.79, 1.26, 1.5) * (double)BlenderToSpr;
         shapepad = GetSdk()->GetPHSdk()->CreateShape(pad)->Cast();
         shapepad->SetDensity(density);
-        shapepad->SetStaticFriction(100.0f);
-        shapepad->SetDynamicFriction(100.0f);
+        shapepad->SetStaticFriction(friction);
+        shapepad->SetDynamicFriction(friction);
 
         CDCapsuleDesc bone;
         bone.radius = 1.24 * BlenderToSpr;
         bone.length = (2.0f - 1.24f) * 2.0f * BlenderToSpr;
         shapebone = GetSdk()->GetPHSdk()->CreateShape(bone)->Cast();
         shapebone->SetDensity(density);
-        shapebone->SetStaticFriction(100.0f);
-        shapebone->SetDynamicFriction(100.0f);
+        shapebone->SetStaticFriction(friction);
+        shapebone->SetDynamicFriction(friction);
 
         soBone->AddShape(shapenail);
         soBone->AddShape(shapepad);
@@ -502,17 +560,17 @@ public:
         CDEllipsoidDesc pad;
         pad.radius = Vec3d(2.79, 1.26, 1.5) * (double)BlenderToSpr;
         shapepad = GetSdk()->GetPHSdk()->CreateShape(pad)->Cast();
-        shapepad->SetDensity(1.0f);
-        shapepad->SetStaticFriction(1.0f);
-        shapepad->SetDynamicFriction(1.0f);
+        shapepad->SetDensity(density);
+        shapepad->SetStaticFriction(friction);
+        shapepad->SetDynamicFriction(friction);
 
         CDCapsuleDesc bone;
         bone.radius = 1.24f * BlenderToSpr;
         bone.length = (2.0f - 1.24f) * 2.0f * BlenderToSpr;
         shapebone = GetSdk()->GetPHSdk()->CreateShape(bone)->Cast();
-        shapebone->SetDensity(1.0f);
-        //shapebone->SetStaticFriction(2.5);
-        //shapebone->SetDynamicFriction(2.5);
+        shapebone->SetDensity(density);
+        shapebone->SetStaticFriction(friction);
+        shapebone->SetDynamicFriction(friction);
 
         //soBone->AddShape(shapenail);
         soBone->AddShape(shapepad);
@@ -523,8 +581,8 @@ public:
         soBone->SetShapePose(0, Posed(Vec3d(0.0, 0.0, 0.0) * (double)BlenderToSpr, Quaterniond::Rot(Rad(-90.0), 'y')));
         soBone->SetShapePose(1, Posed(Vec3d(0.0, 0.0, 0.38 * 2) * (double)BlenderToSpr, Quaterniond::Rot(Rad(0.0), 'y')));//180かも
 
-        //soBone->CompInertia();
-        soBone->SetMass(1.0f);
+        soBone->CompInertia();
+        //soBone->SetMass(1.0f);
         //soBone->SetGravity(false);
         return soBone;
 
@@ -534,7 +592,7 @@ public:
     PHSolidIf* CreateBone2() {
         PHSolidIf* soBone = GetPHScene()->CreateSolid();
         CDSphereDesc sd;
-        sd.radius = 5.0f / 1000.0f * (float)scale;
+        sd.radius = 3.0f / 1000.0f * (float)scale;
 
         shapeSphere = GetSdk()->GetPHSdk()->CreateShape(sd)->Cast();
 
@@ -638,12 +696,12 @@ public:
     }
     PHSolidIf* CreatePalm_obj() {
         PHSolidIf* soPalm = GetPHScene()->CreateSolid();
-        CDEllipsoidIf* shapepalm;
-        CDEllipsoidDesc palm;
-        palm.radius = Vec3d(3.5, 1.0, 4.0);
+        CDBoxIf* shapepalm;
+        CDBoxDesc palm;
+        palm.boxsize = Vec3d(3.5, 1.0, 4.0)/1000.0*scale;
         shapepalm = GetSdk()->GetPHSdk()->CreateShape(palm)->Cast();
         soPalm->AddShape(shapepalm);
-        soPalm->SetShapePose(0, Posed(Vec3d(0.0, 0.0, 2.5), Quaterniond::Rot(Rad(0.0), 'y')));
+        soPalm->SetShapePose(0, Posed(Vec3d(0.0, 0.0, 2.5)/1000.0*scale, Quaterniond::Rot(Rad(0.0), 'y')));
         soPalm->SetGravity(false);
         return soPalm;
     }
@@ -674,7 +732,7 @@ public:
         z /= 2;
 
         vec3.x = -x * scale;
-        vec3.y = (0.30 - z) * scale;
+        vec3.y = (0.50 - z) * scale;
         vec3.z = (0.30 - y) * scale;
 
 
@@ -710,7 +768,7 @@ public:
         z = (double)vec.z / 1000.0;
 
         vec3.x = -x * scale;
-        vec3.y = (0.30 - z) * scale;
+        vec3.y = (0.50 - z) * scale;
         vec3.z = (0.30 - y) * scale;
 
         return vec3;
@@ -742,7 +800,7 @@ public:
         // 形状の割当て
         if (shape == SHAPE_BOX) {
             CDBoxDesc bd;
-            bd.boxsize = Vec3d(4.5, 4.5, 4.5)/100.0 * scale;  //単位 m^3
+            bd.boxsize = Vec3d(1.5, 1.5, 1.5)/100.0 * scale;  //単位 m^3
             shapeBox->SetDynamicFriction(friction);
             shapeBox->SetStaticFriction(friction);
             shapeBox->SetDensity(cube_density);//単位 kg/m^3
@@ -825,7 +883,7 @@ public:
         }
         solid->SetVelocity(v);
         solid->SetAngularVelocity(w);
-        p = Vec3d(0.0, 1.0, 0.0);
+        p = Vec3d(0.0, 0.5, 0.0);
         solid->SetFramePosition(p);
         solid->SetOrientation(q);
         solid->CompInertia();
@@ -849,7 +907,7 @@ public:
         GetCurrentWin()->GetTrackball()->SetPosition(Vec3d(0.0,2.5,10.0));
 
         GetFWScene()->EnableRenderAxis(false, false, false);
-
+        GetFWScene()->EnableRenderForce(false, false);
         printf("手をかざしてお待ちください。\n");
 
         int detect;
@@ -863,7 +921,12 @@ public:
                 detect = 1;
             }
         }
-
+        std::ofstream writing_file;
+        std::string filename = "sample.txt";
+        writing_file.open(filename, std::ios::app);
+        std::string writing_text = "test";
+        writing_file << writing_text << std::endl;
+        writing_file.close();
 
         //LEAP_TRACKING_EVENT* frame = GetFrame();
         LEAP_HAND* hand = &frame->pHands[0];
@@ -876,11 +939,14 @@ public:
             tip_width[i] = hand->digits[i].distal.width;
             //tip_width[i] *= 1.5;
         }
-
-        Springdesc.spring = Vec3d(10000.0, 10000.0, 10000.0);
-        Springdesc.damper = Vec3d(10.0, 10.0, 10.0);
-        Springdesc.springOri = 10000.0;
-        Springdesc.damperOri = 10.0;
+        double spring;
+        double damper;
+        spring = 100.0;
+        damper = 10.0;
+        //Springdesc.spring = Vec3d(spring, spring, spring);
+        //Springdesc.damper = Vec3d(damper, damper, damper);
+        //Springdesc.springOri = spring;
+        //Springdesc.damperOri = damper;
         if (type == 0) {
             //
             for (int i = 0; i < 5; i++) {
@@ -962,8 +1028,8 @@ public:
                     if (!(i == 0 && j == 0)) {
                         fg_base_slide[i][j][0] = CreateBone2();
                         fg_base_slide[i][j][1] = CreateBone2();
-                        GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base_slide[i][j][0]);
-                        GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base_slide[i][j][1]);
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, fg_base_slide[i][j][0]);
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, fg_base_slide[i][j][1]);
 
                         GetPHScene()->SetContactMode(fg_base_slide[i][j][0], PHSceneDesc::MODE_NONE);
                         GetPHScene()->SetContactMode(fg_base_slide[i][j][1], PHSceneDesc::MODE_NONE);
@@ -971,13 +1037,22 @@ public:
                     }
                 }
             }
+            //palm_middle_base = CreateBone2();
+            //Get
+
             //ツール側のsolid作成
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 4; j++) {
                     if (!(i == 0 && j == 0)) {
-                        fg_obj_slide[i][j][0] = CreateBoneSlide(fg_pos[i][j][0], fg_pos[i][j][1]);
-                        fg_obj_slide[i][j][1] = CreateBoneSlide(fg_pos[i][j][0], fg_pos[i][j][1]);
-
+                        if (j == 3) {
+                            fg_obj_slide[i][j][0]= CreateBoneSlide(fg_pos[i][j][0], fg_pos[i][j][1]);
+                            fg_obj_slide[i][j][1] = CreateBoneNo(tip_width[i]*0.013*scale);
+                            }
+                        else
+                        {
+                            fg_obj_slide[i][j][0] = CreateBoneSlide(fg_pos[i][j][0], fg_pos[i][j][1]);
+                            fg_obj_slide[i][j][1] = CreateBoneSlide(fg_pos[i][j][0], fg_pos[i][j][1]);
+                        }
                         //printf("fg_obj_slide[%d][%d][0]:%p\n", i, j, &fg_obj_slide[i][j][0]);
                         //printf("fg_obj_slide[%d][%d][1]:%p\n", i, j, &fg_obj_slide[i][j][1]);
 
@@ -988,6 +1063,10 @@ public:
 
                         GetPHScene()->SetContactMode(fg_obj_slide[i][j][0], PHSceneDesc::MODE_NONE);
                         GetPHScene()->SetContactMode(fg_obj_slide[i][j][1], PHSceneDesc::MODE_NONE);
+
+                        GetPHScene()->SetContactMode(fg_obj_slide[i][j][0],soFloor ,PHSceneDesc::MODE_LCP);
+                        GetPHScene()->SetContactMode(fg_obj_slide[i][j][1],soFloor, PHSceneDesc::MODE_LCP);
+
                     }
                 }
             }
@@ -1017,13 +1096,15 @@ public:
                     }
                 }
             }
+            slider_limit_desc.range = Vec2d(0.0, 0.0);
             //スライダージョイント
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 4; j++) {
                     if (!(i == 0 && j == 0)) {
-                        //Sliderdesc.spring = 1000.0;
-                        //Sliderdesc.damper = 10.0;
+                        Sliderdesc.spring = 1000.0;
+                        Sliderdesc.damper = 10.0;
                         fg_slider[i][j] = GetPHScene()->CreateJoint(fg_obj_slide[i][j][0], fg_obj_slide[i][j][1], Sliderdesc)->Cast();
+                        fg_slider[i][j]->CreateLimit(slider_limit_desc);
                     }
                 }
             }
@@ -1036,6 +1117,14 @@ public:
                         fg_joint[i][j] = GetPHScene()->CreateJoint(fg_obj_slide[i][j][1], fg_obj_slide[i][j + 1][0], fg_ball_desc[i][j])->Cast();
                     }
                 }
+            }
+            PHBallJointIf* fg_joint_palm[3][2];
+            PHBallJointDesc palm_ball_desc[3][2];
+            for (int i = 0; i < 3; i++) {
+                palm_ball_desc[i][0].poseSocket.Pos() = Vec3d(0.0, 0.0, -jointLength(fg_pos[i+1][0][0], fg_pos[i+1][0][1]) / 4.0);
+                palm_ball_desc[i][0].posePlug.Pos() = Vec3d(-8.5f / 1000.0f * (float)scale*2, 0.0, -jointLength(fg_pos[i + 2][0][0], fg_pos[i + 2][0][1]) / 4.0);// + fg_pos[i + 1][0][1] - fg_pos[i + 2][0][1]
+                fg_joint_palm[i][0] = GetPHScene()->CreateJoint(fg_obj_slide[i+1][0][1], fg_obj_slide[i+2][0][1], palm_ball_desc[i][0])->Cast();
+                
             }
         }
     }
@@ -1108,6 +1197,17 @@ public:
                             }
                         }
                     }
+                    //PHSolidPairForLCPIf* solidpair;
+                    //int state;
+                    //bool swaped;
+                    //solidpair =GetPHScene()->GetSolidPair(fg_base_slide[2][2][0], fg_base_slide[2][2][1], swaped);
+                    //solidpair->GetContactState(0, 0);
+                    //cout<<fg_base_slide[2][2][0]->GetFramePosition()<<endl;
+                    //if () {
+                    //    for (int i = 0; i < 5; i++) {
+
+                    //    }
+                    //}
                 }
 
                 //for (int i = 1; i < 2; i++) {
