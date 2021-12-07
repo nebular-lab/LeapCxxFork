@@ -234,7 +234,8 @@ public:
     double move_scale = 1.5;
     float friction = 1.0;
     float density = 1000.0;
-
+    int contact = 0;
+    int sorf = 0;//sucsess or failureで命名　0:タスク中　1:success 2:failure
     float cube_density = 2500.0;
     //type 0
     PHSolidIf* fg_base[5][4];
@@ -277,6 +278,8 @@ public:
     PHSpringDesc Springdesc;
     PHBallJointDesc Balldesc[5][3];
     PHSliderJointDesc Sliderdesc;
+
+    PHSolidIf* solid;
 
 
 
@@ -793,14 +796,15 @@ public:
         states->ReleaseState(GetPHScene());
 
         // 剛体を作成
-        PHSolidIf* solid = GetPHScene()->CreateSolid();
+        //solid= GetPHScene()->CreateSolid();
+        /*PHSolidIf* solid = GetPHScene()->CreateSolid();*/
         // マテリアルを設定
         GetFWScene()->SetSolidMaterial(mat, solid);
-
+        
         // 形状の割当て
         if (shape == SHAPE_BOX) {
             CDBoxDesc bd;
-            bd.boxsize = Vec3d(1.5, 1.5, 1.5)/100.0 * scale;  //単位 m^3
+            bd.boxsize = Vec3d(4.0, 7.0, 4.0)/100.0 * scale;  //単位 m^3
             shapeBox->SetDynamicFriction(friction);
             shapeBox->SetStaticFriction(friction);
             shapeBox->SetDensity(cube_density);//単位 kg/m^3
@@ -901,7 +905,9 @@ public:
         ed.freezeThreshold = 0;
         ed.contactCorrectionRate = 0.5;
         GetPHScene()->GetConstraintEngine()->SetDesc(&ed);
-
+        GetPHScene()->SetGravity(Vec3f(0.0f, -9.8f*0.5f, 0.0f));	// 重力を設定
+        GetPHScene()->SetTimeStep(0.02);
+        GetPHScene()->SetNumIteration(75);
 
         soFloor = CreateFloor(true);
         GetCurrentWin()->GetTrackball()->SetPosition(Vec3d(0.0,2.5,10.0));
@@ -921,6 +927,8 @@ public:
                 detect = 1;
             }
         }
+
+        //ファイル入出力メモ
         std::ofstream writing_file;
         std::string filename = "sample.txt";
         writing_file.open(filename, std::ios::app);
@@ -928,6 +936,7 @@ public:
         writing_file << writing_text << std::endl;
         writing_file.close();
 
+        solid = GetPHScene()->CreateSolid();
         //LEAP_TRACKING_EVENT* frame = GetFrame();
         LEAP_HAND* hand = &frame->pHands[0];
         //printf("hand is detected\n");
@@ -1196,7 +1205,45 @@ public:
 
                             }
                         }
+                        PHSolidPairForLCPIf* solidpair;
+                        bool swaped;
+                        int state;
+                        solidpair = GetPHScene()->GetSolidPair(fg_obj_slide[0][3][0],solid, swaped);
+                        state=solidpair->GetContactState(0, 0);
+                        clock_t start, end;
+                        if (state == 1 || state == 2) {
+                            start = clock();
+                        }
+
+
+                        //成功or失敗したらcubeを落とす
+                        Vec3d cube_pos;
+                        cube_pos = solid->GetFramePosition();
+                        if (sorf==0 && cube_pos.x > 0.5 && cube_pos.x<0.65 && cube_pos.z>-0.075 && cube_pos.z<0.075 && cube_pos.y>-2.0 && cube_pos.y < -1.0) {
+                            end = clock();
+                            std::ofstream writing_file;
+                            std::string filename = "sample.txt";
+                            writing_file.open(filename, std::ios::app);
+                            //std::string writing_text = "test";
+                            writing_file << ((float)end - start) / CLOCKS_PER_SEC << std::endl;
+                            writing_file.close();
+                            sorf = 1;
+                        }
+                        //if () {
+                        //    sorf = 2;
+                        //}
+                        if (sorf==1||sorf==2) {
+                            Vec3d v, w(0.0, 0.0, 0.2), p(0.5, 10, 0.0);
+                            static Quaterniond q = Quaterniond::Rot(Rad(0.0), 'y');
+                            q = Quaterniond::Rot(Rad(90), 'y') * q;
+                            Drop(SHAPE_BOX, GRRenderIf::RED, v, w, p, q);
+                            sorf = 0;
+                        }
+
                     }
+                    
+
+
                     //PHSolidPairForLCPIf* solidpair;
                     //int state;
                     //bool swaped;
