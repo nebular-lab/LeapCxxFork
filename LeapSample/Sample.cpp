@@ -174,11 +174,12 @@ public:
 
     double scale = 3.0;
     double move_scale = 1.5;
-    float friction = 1.0;
+    float friction = 100.0;
     float density = 1000.0;
     int contact = 0;
     int sorf = 0;//sucsess or failureで命名　0:タスク中　1:success 2:failure
     float cube_density = 2500.0;
+
     //type 0
     PHSolidIf* fg_base[5][4];
     PHSolidIf* fg_obj[5][4];
@@ -234,23 +235,14 @@ public:
 
 
 
-    PHSolidIf* jenga1;
-    PHSolidIf* jenga2;
-    PHSolidIf* jenga3;
-    PHSolidIf* jenga4;
-    PHSolidIf* jenga5;
-    PHSolidIf* jenga6;
-    PHSolidIf* jenga7;
-    PHSolidIf* jenga8;
-    PHSolidIf* jenga9;
 
 
 
 
 
 
-    //PHSpringIf* oyahito;
-    CDShapeIf* shapejenga;
+
+
 
     PHSolidIf* judge;
 
@@ -262,7 +254,7 @@ public:
     CDEllipsoidIf* shapenail;
     CDEllipsoidIf* shapepad;
     CDCapsuleIf* shapebone;
-    Vec3d palm_v;
+
 
     
 
@@ -328,30 +320,8 @@ public:
         return thin;
     }
 
-    PHSolidIf* CreateJenga() {
-        PHSolidIf* jenga = GetPHScene()->CreateSolid();
-        CDBoxDesc bd;
-        bd.boxsize = Vec3d(2.8, 2.8, 8.5);
-        shapejenga = GetSdk()->GetPHSdk()->CreateShape(bd)->Cast();
-        shapejenga->SetStaticFriction(100.0f);
-        shapejenga->SetDynamicFriction(100.0f);
-        //shapejenga->SetDensity(100.0);
-        jenga->AddShape(shapejenga);
-        jenga->SetDynamical(false);
-        return jenga;
-    }
-    PHSolidIf* CreateJenga2() {
-        PHSolidIf* jenga = GetPHScene()->CreateSolid();
-        CDBoxDesc bd;
-        bd.boxsize = Vec3d(2.9, 2.9, 8.7);
-        shapejenga = GetSdk()->GetPHSdk()->CreateShape(bd)->Cast();
-        shapejenga->SetStaticFriction(10.0f);
-        shapejenga->SetDynamicFriction(10.0f);
-        //shapejenga->SetDensity(100.0);
-        jenga->AddShape(shapejenga);
 
-        return jenga;
-    }
+
     PHSolidIf* CreateFloor(bool bWall) {
         PHSolidIf* soFloor = GetPHScene()->CreateSolid();
         soFloor->SetName("soFloor");
@@ -384,62 +354,7 @@ public:
 
         return soFloor;
     }
-    // //床の作成
-    //PHSolidIf* CreateFloor(bool bWall) {
 
-    //    PHSolidIf* soFloor = GetPHScene()->CreateSolid();
-    //    soFloor->SetName("soFloor");
-    //    soFloor->SetDynamical(false);
-
-    //    CDBoxDesc bd1;
-    //    CDBoxDesc bd2;
-    //    CDBoxDesc bd3;
-    //    CDBoxDesc bd4;
-    //    bd1.boxsize = Vec3d(11.0, 1.0, 5.0)*0.001*scale*100;
-    //    bd2.boxsize = Vec3d(5.0, 1.0, 6.0) * 0.001 * scale*100;
-    //    bd3.boxsize = Vec3d(10.0, 1.0, 6.0) * 0.001 * scale*100;
-    //    bd4.boxsize = Vec3d(6.0, 1.0, 5.0) * 0.001 * scale*100;
-
-    //    shapeFloor= GetSdk()->GetPHSdk()->CreateShape(bd1)->Cast();
-    //    soFloor->AddShape(shapeFloor);
-    //    soFloor->SetShapePose(0, Posed::Trn(-2.5, 0, 3.0) * 0.001 * scale*100);
-
-    //    shapeFloor = GetSdk()->GetPHSdk()->CreateShape(bd2)->Cast();
-    //    soFloor->AddShape(shapeFloor);
-    //    soFloor->SetShapePose(1, Posed::Trn(5.5, 0, 2.5) * 0.001 * scale*100);
-
-    //    shapeFloor = GetSdk()->GetPHSdk()->CreateShape(bd3)->Cast();
-    //    soFloor->AddShape(shapeFloor);
-    //    soFloor->SetShapePose(2, Posed::Trn(-3.0, 0, -2.5) * 0.001 * scale*100);
-
-    //    shapeFloor = GetSdk()->GetPHSdk()->CreateShape(bd4)->Cast();
-    //    soFloor->AddShape(shapeFloor);
-    //    soFloor->SetShapePose(3, Posed::Trn(5.0, 0, -3.0) * 0.001 * scale*100);
-
-    //    soFloor->SetShapePose(0, Posed::Trn(22.0, -shapeFloor->GetBoxSize().y / 2+0.10, 0));
-    //    if (bWall) {
-    //        soFloor->AddShape(shapeWallZ);
-    //        soFloor->AddShape(shapeWallX);
-    //        soFloor->AddShape(shapeWallZ);
-    //        soFloor->AddShape(shapeWallX);
-    //        double y = shapeWallZ->GetBoxSize().y / 2 - shapeFloor->GetBoxSize().y;
-    //        soFloor->SetShapePose(1, Posed::Trn(-(shapeFloor->GetBoxSize().x + shapeWallZ->GetBoxSize().x) / 2, y, 0));
-    //        soFloor->SetShapePose(2, Posed::Trn(0, y, -(shapeFloor->GetBoxSize().z + shapeWallX->GetBoxSize().z) / 2));
-    //        soFloor->SetShapePose(3, Posed::Trn((shapeFloor->GetBoxSize().x + shapeWallZ->GetBoxSize().x) / 2, y, 0));
-    //        soFloor->SetShapePose(4, Posed::Trn(0, y, (shapeFloor->GetBoxSize().z + shapeWallX->GetBoxSize().z) / 2));
-    //    }
-    //    soFloor->AddShape(shapeFloor);
-    //    soFloor->AddShape(shapeFloor);
-    //    soFloor->AddShape(shapeFloor);
-    //    soFloor->SetShapePose(5, Posed::Trn(-22.0, -shapeFloor->GetBoxSize().y / 2, 0));
-    //    soFloor->SetShapePose(6, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2, -22.0));
-    //    soFloor->SetShapePose(7, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2, 42.3));
-
-    //    GetFWScene()->SetSolidMaterial(GRRenderIf::GRAY, soFloor);
-    //    soFloor->CompInertia();
-
-    //    return soFloor;
-    //}
 
     //指先
     PHSolidIf* CreateBone(float width) {
@@ -534,7 +449,7 @@ public:
     }
 
     //fg_base用のsolid
-    PHSolidIf* CreateBone2() {
+    PHSolidIf* CreateBone_base() {
         PHSolidIf* soBone = GetPHScene()->CreateSolid();
         CDSphereDesc sd;
         sd.radius = 3.0f / 1000.0f * (float)scale;
@@ -746,7 +661,7 @@ public:
         // 形状の割当て
         if (shape == SHAPE_BOX) {
             CDBoxDesc bd;
-            bd.boxsize = Vec3d(4.0, 7.0, 4.0)/100.0 * scale;  //単位 m^3
+            bd.boxsize = Vec3d(2.0, 6.0, 2.0)/100.0 * scale;  //単位 m^3
             shapeBox->SetDynamicFriction(friction);
             shapeBox->SetStaticFriction(friction);
             shapeBox->SetDensity(cube_density);//単位 kg/m^3
@@ -855,7 +770,8 @@ public:
         GetCurrentWin()->GetTrackball()->SetPosition(Vec3d(0.0,2.5,10.0));
 
         GetFWScene()->EnableRenderAxis(false, false, false);
-        GetFWScene()->EnableRenderForce(false, false);
+        //GetFWScene()->EnableRenderForce(false, false);
+        GetFWScene()->SetForceScale(0.001f, 0.001f);
         printf("手をかざしてお待ちください。\n");
 
         int detect;
@@ -892,12 +808,12 @@ public:
         }
         double spring;
         double damper;
-        spring = 100.0;
+        spring = 1000.0;
         damper = 10.0;
-        //Springdesc.spring = Vec3d(spring, spring, spring);
-        //Springdesc.damper = Vec3d(damper, damper, damper);
-        //Springdesc.springOri = spring;
-        //Springdesc.damperOri = damper;
+        Springdesc.spring = Vec3d(spring, spring, spring);
+        Springdesc.damper = Vec3d(damper, damper, damper);
+        Springdesc.springOri = spring;
+        Springdesc.damperOri = damper;
         if (type == 0) {
             //
             for (int i = 0; i < 5; i++) {
@@ -913,7 +829,7 @@ public:
                 for (int j = 0; j < 4; j++) {
                     if (!(i == 0 && j == 0)) {
 
-                        fg_base[i][j] = CreateBone2();
+                        fg_base[i][j] = CreateBone_base();
                         GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base[i][j]);
                         if (j == 3) {//指先
                             fg_obj[i][j] = CreateBone(tip_width[i]);
@@ -938,20 +854,6 @@ public:
                     }
                 }
             }
-            //for (int i = 0; i < 5; i++) {
-            //	for (int j = 1; j < 3; j++) {
-            //		if (!(i == 0 && j == 0)) {
-            //			fg_hinge_desc[i][j].poseSocket.Pos()= Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1])) / 2.0;
-            //			fg_hinge_desc[i][j].posePlug.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[i][j + 1][0], fg_pos[i][j + 1][1])) / 2.0;
-            //			fg_joint[i][j] = GetPHScene()->CreateJoint(fg_obj[i][j], fg_obj[i][j + 1], fg_hinge_desc[i][j])->Cast();
-            //		}
-            //	}
-            //}
-            //palm_middle_obj = CreatePalm_obj();
-            //palm_middle_base = CreateBone2();
-            //palm_middle_joint_vc= GetPHScene()->CreateJoint(palm_middle_base, palm_middle_obj, Springdesc)->Cast();
-
-
             //
             GetPHScene()->SetContactMode(&(fg_obj[0][1]), 4 * 5 - 1, PHSceneDesc::MODE_NONE);
             for (int i = 0; i < 5; i++) {
@@ -977,8 +879,8 @@ public:
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 5; j++) {
                     if (!(i == 0 && j == 0)) {
-                        fg_base_slide[i][j][0] = CreateBone2();
-                        fg_base_slide[i][j][1] = CreateBone2();
+                        fg_base_slide[i][j][0] = CreateBone_base();
+                        fg_base_slide[i][j][1] = CreateBone_base();
                         GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, fg_base_slide[i][j][0]);
                         GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, fg_base_slide[i][j][1]);
 
@@ -988,8 +890,7 @@ public:
                     }
                 }
             }
-            //palm_middle_base = CreateBone2();
-            //Get
+
 
             //ツール側のsolid作成
             for (int i = 0; i < 5; i++) {
@@ -1004,12 +905,23 @@ public:
                             fg_obj_slide[i][j][0] = CreateBoneSlide(fg_pos[i][j][0], fg_pos[i][j][1]);
                             fg_obj_slide[i][j][1] = CreateBoneSlide(fg_pos[i][j][0], fg_pos[i][j][1]);
                         }
-                        //printf("fg_obj_slide[%d][%d][0]:%p\n", i, j, &fg_obj_slide[i][j][0]);
-                        //printf("fg_obj_slide[%d][%d][1]:%p\n", i, j, &fg_obj_slide[i][j][1]);
+                        if (j == 0) {
+                            GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_obj_slide[i][j][0]);
+                            GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_obj_slide[i][j][1]);
+                        }
+                        else if(j==1){
+                            GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE, fg_obj_slide[i][j][0]);
+                            GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE, fg_obj_slide[i][j][1]);
+                        }
+                        else if (j == 2) {
+                            GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, fg_obj_slide[i][j][0]);
+                            GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, fg_obj_slide[i][j][1]);
+                        }
+                        else if(j==3){
+                            GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_obj_slide[i][j][0]);
+                            GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_obj_slide[i][j][1]);
+                        }
 
-
-                        GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_obj_slide[i][j][0]);
-                        GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_obj_slide[i][j][1]);
 
 
                         GetPHScene()->SetContactMode(fg_obj_slide[i][j][0], PHSceneDesc::MODE_NONE);
@@ -1048,6 +960,9 @@ public:
                 }
             }
             slider_limit_desc.range = Vec2d(0.0, 0.0);
+            //slider_limit_desc.
+            slider_limit_desc.spring = 1000000000000.0;
+            slider_limit_desc.damper = 1000000000000.0;
             //スライダージョイント
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 4; j++) {
@@ -1056,6 +971,7 @@ public:
                         Sliderdesc.damper = 10.0;
                         fg_slider[i][j] = GetPHScene()->CreateJoint(fg_obj_slide[i][j][0], fg_obj_slide[i][j][1], Sliderdesc)->Cast();
                         fg_slider[i][j]->CreateLimit(slider_limit_desc);
+                        //fg_slider[i][j]->SetTargetPosition()
                     }
                 }
             }
@@ -1077,6 +993,10 @@ public:
                 fg_joint_palm[i][0] = GetPHScene()->CreateJoint(fg_obj_slide[i+1][0][1], fg_obj_slide[i+2][0][1], palm_ball_desc[i][0])->Cast();
                 
             }
+            //形の値の変更
+            CDCapsuleIf* cp= fg_obj_slide[1][1][1]->GetShape(0)->Cast();
+            cp->SetLength(1.0f);
+            fg_obj_slide[1][1][1]->InvalidateBbox();
         }
     }
 
@@ -1110,7 +1030,7 @@ public:
                 leap_count++;
                 //printf("hand=%d\n", (int)frame->nHands);
                 printf("count_leap=%d\n",leap_count);
-                palm_v = vecvec3_2(hand->palm.velocity);
+
 
                 if (type == 0) {
                     //
@@ -1123,7 +1043,7 @@ public:
                                 fg_ori[i][j] = y180 * fg_ori[i][j];
                                 fg_base[i][j]->SetFramePosition(fg_pos_middle[i][j]);
                                 fg_base[i][j]->SetOrientation(fg_ori[i][j]);
-                                //fg_base[i][j]->SetVelocity(palm_v);
+
                             }
                         }
                     }
@@ -1150,8 +1070,9 @@ public:
                         PHSolidPairForLCPIf* solidpair;
                         bool swaped;
                         int state;
-                        //solidpair = GetPHScene()->GetSolidPair(fg_obj_slide[0][3][0],solid, swaped);
+                        solidpair = GetPHScene()->GetSolidPair(fg_obj_slide[0][3][0],solid, swaped);
                         //state=solidpair->GetContactState(0, 0);
+                        //cout << state << endl();
                         clock_t start, end;
                         //if (state == 1 || state == 2) {
                         //    start = clock();
@@ -1198,98 +1119,8 @@ public:
                     //    }
                     //}
                 }
-
-                //for (int i = 1; i < 2; i++) {
-                //    for (int j = 0; j < 4; j++) {
-                //        if (!(i == 0 && j == 0)) {
-                //            CDCapsuleDesc cd;
-                //            cd.length = jointLength(fg_pos[i][j][0], fg_pos[i][j][1]);
-                //            shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
-                //            fg_obj[i][j]->AddShape(shapeCapsule);
-
-                //            
-                //        }
-                //    }
-                //}
-
-                //for (int i = 1; i < 2; i++) {
-                //    for (int j = 0; j < 4; j++) {
-                //        if (!(i == 0 && j == 0)) {
-                //            fg_pos[i][j][0] = vecvec3_2(hand->digits[i].bones[j].prev_joint);
-                //            fg_pos[i][j][1] = vecvec3_2(hand->digits[i].bones[j].next_joint);
-                //            printf("%f,", jointLength(fg_pos[i][j][0], fg_pos[i][j][1]));
-                //        }
-                //    }
-                //}
-                //printf("\n");
-
-
-                //palm_middle_pos = vecvec3_3(hand->palm.position);
-                //palm_middle_ori = quaquad(hand->palm.orientation);
-                //palm_middle_ori = x90 * palm_middle_ori;
-                //palm_middle_ori = y180 * palm_middle_ori;
-                //palm_middle_base->SetFramePosition(palm_middle_pos);
-                //palm_middle_base->SetOrientation(palm_middle_ori);
             }
         }
-
-        //ここでフレーム処理
-        //ConnectionCallbacks.on_frame = &OnFrame;
-
-
-        //const Frame frame = controller.frame();
-
-        //
-        //HandList hands = frame.hands();
-        ////FingerList fingers = frame.fingers();
-
-        //for (HandList::const_iterator hl = hands.begin(); hl != hands.end(); ++hl) {
-        //  // Get the first hand
-        //  const Hand hand = *hl;
-        //  spr_palm[0] = double(hand.palmPosition()[0]/10);
-        //  spr_palm[1] = double(hand.palmPosition()[1]/10);
-        //  spr_palm[2] = double(hand.palmPosition()[2]/10);
-
-        //  cout << hand.direction() << hand.palmNormal() << endl;
-        //}
-
-        //
-        //for (auto finger : frame.fingers()) {
-        //  if (finger.type() == Leap::Finger::Type::TYPE_THUMB) {
-        //    for (int t = Leap::Bone::TYPE_METACARPAL;
-        //      t <= (int)Leap::Bone::TYPE_DISTAL; ++t) {
-        //      // 末節骨(指先の骨)
-        //      if (t == 3) {
-        //        auto bone = finger.bone((Leap::Bone::Type)t);
-        //        
-        //        spr_oya3[0] = double(bone.prevJoint()[0] / 10);
-        //        spr_oya3[1] = double(bone.prevJoint()[1] / 10);
-        //        spr_oya3[2] = double(bone.prevJoint()[2] / 10);
-        //      }
-
-        //    }
-        //  }
-        // 
-        //  
-        //  if (finger.type() == Leap::Finger::Type::TYPE_INDEX) {
-        //    for (int t = Leap::Bone::TYPE_METACARPAL;
-        //      t <= (int)Leap::Bone::TYPE_DISTAL; ++t) {
-        //      // 末節骨(指先の骨)
-        //      if (t == 3) {
-        //        auto bone = finger.bone((Leap::Bone::Type)t);
-        //        spr_hito3[0] = double(bone.prevJoint()[0] / 10);
-        //        spr_hito3[1] = double(bone.prevJoint()[1] / 10);
-        //        spr_hito3[2] = double(bone.prevJoint()[2] / 10);
-        //      }
-        //    }
-        //  }
-        //  
-        //}
-        //GetFWScene()->SetSolidMaterial(GRRenderIf::RED, soPalm);
-
-
-
-
     }
 
     // 描画関数．描画要求が来たときに呼ばれる
@@ -1319,84 +1150,43 @@ public:
                 //cout << ((float)end - start) / CLOCKS_PER_SEC << endl;
             }
             if (id == ID_ROUNDCONE) {
-                //Drop(SHAPE_ROUNDCONE, GRRenderIf::BLUE, v, w, p, q);
-                //message = "round cone dropped.";
-                jenga1 = CreateJenga();
-                jenga1->SetFramePosition(Vec3d(1.5, 1.5, 4.5));
-                jenga2 = CreateJenga();
+                Drop(SHAPE_ROUNDCONE, GRRenderIf::BLUE, v, w, p, q);
+                message = "round cone dropped.";
 
-                jenga2->SetFramePosition(Vec3d(4.5, 1.5, 4.5));
-                jenga3 = CreateJenga();
-
-                jenga3->SetFramePosition(Vec3d(7.5, 1.5, 4.5));
-                jenga4 = CreateJenga();
-
-                jenga4->SetFramePosition(Vec3d(4.5, 4.5, 1.5));
-                jenga4->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
-                jenga6 = CreateJenga();
-
-                jenga6->SetFramePosition(Vec3d(4.5, 4.5, 7.5));
-                jenga6->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
-                jenga7 = CreateJenga();
-
-                jenga7->SetFramePosition(Vec3d(1.5, 7.5, 4.5));
-                jenga8 = CreateJenga();
-
-                jenga8->SetFramePosition(Vec3d(4.5, 7.5, 4.5));
-                jenga9 = CreateJenga();
-
-                jenga9->SetFramePosition(Vec3d(7.5, 7.5, 4.5));
             }
             if (id == ID_SPHERE) {
-                //Drop(SHAPE_SPHERE, GRRenderIf::YELLOW, v, w, p, q);
-                //message = "sphere dropped.";
-                jenga5 = CreateJenga2();
-                jenga5->SetMass(1.0);
-                jenga5->SetFramePosition(Vec3d(4.8, 4.5, 4.5));
-                jenga5->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
-                GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, jenga5);
+                Drop(SHAPE_SPHERE, GRRenderIf::YELLOW, v, w, p, q);
+                message = "sphere dropped.";
+
             }
             if (id == ID_ELLIPSOID) {
                 Drop(SHAPE_ELLIPSOID, GRRenderIf::LIGHTGREEN, v, w, p, q);
                 message = "sphere dropped.";
             }
             if (id == ID_ROCK) {
-                //Drop(SHAPE_ROCK, GRRenderIf::ORANGE, v, w, p, q);
-                //message = "random polyhedron dropped.";
-                CreateThin();
+                Drop(SHAPE_ROCK, GRRenderIf::ORANGE, v, w, p, q);
+                message = "random polyhedron dropped.";
+
             }
             if (id == ID_BLOCK) {
-                //Drop(SHAPE_BLOCK, GRRenderIf::CYAN, v, w, p, q);
-                //message = "composite block dropped.";
-                jenga1 = CreateJenga();
-                jenga1->SetFramePosition(Vec3d(4.5, 1.5, 1.5));
-                jenga1->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
-                jenga2 = CreateJenga();
-                jenga2->SetFramePosition(Vec3d(4.5, 1.5, 7.5));
-                jenga2->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
-                jenga3 = CreateJenga();
-                jenga3->SetFramePosition(Vec3d(10.5, 1.5, 4.5));
-                jenga4 = CreateJenga();
-                jenga4->SetFramePosition(Vec3d(-1.5, 1.5, 4.5));
+                Drop(SHAPE_BLOCK, GRRenderIf::CYAN, v, w, p, q);
+                message = "composite block dropped.";
+
             }
 
             if (id == ID_SHAKE) {
-                //std::cout << "F: shake floor." << std::endl;
-                //if (floorShakeAmplitude == 0.0) {
-                //  floorShakeAmplitude = 2.5;
-                //  message = "floor shaken.";
-                //}
-                //else {
-                //  floorShakeAmplitude = 0;
-                //  soFloor->SetFramePosition(Vec3d(0, 0, 0));
-                //  soFloor->SetVelocity(Vec3d(0, 0, 0));
-                //  message = "floor stopped.";
-                //}
-                jenga5 = CreateJenga2();
-                jenga5->SetMass(1.0);
-                jenga5->SetFramePosition(Vec3d(4.5, 1.5, 4.5));
-                jenga5->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
-                GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, jenga5);
+                std::cout << "F: shake floor." << std::endl;
+                if (floorShakeAmplitude == 0.0) {
+                  floorShakeAmplitude = 2.5;
+                  message = "floor shaken.";
+                }
+                else {
+                  floorShakeAmplitude = 0;
+                  soFloor->SetFramePosition(Vec3d(0, 0, 0));
+                  soFloor->SetVelocity(Vec3d(0, 0, 0));
+                  message = "floor stopped.";
+                }
+
             }
         }
         SampleApp::OnAction(menu, id);
