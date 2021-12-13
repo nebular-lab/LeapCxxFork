@@ -1168,12 +1168,13 @@ public:
                         bool swaped;
                         int state;
                         solidpair = GetPHScene()->GetSolidPair(fg_obj_slide[0][3][0],solid, swaped);
-                        //state=solidpair->GetContactState(0, 0);
-                        //cout << state << endl();
+                        if (solidpair && solidpair->GetSolid(0)->NShape() && solidpair->GetSolid(1)->NShape()) {
+                            state = solidpair->GetContactState(0, 0);
+                        }
                         clock_t start, end;
-                        //if (state == 1 || state == 2) {
-                        //    start = clock();
-                        //}
+                        if (state == 1 || state == 2) {
+                            start = clock();
+                        }
 
 
                         //¬Œ÷or¸”s‚µ‚½‚çcube‚ğ—‚Æ‚·
