@@ -225,7 +225,7 @@ public:
     PHBallJointDesc Balldesc[5][3];
     PHSliderJointDesc Sliderdesc;
 
-    PHSolidIf* solid;
+    PHSolidIf* cube;//落とす物体
 
     PHSpringDesc oyahitodesc;
 
@@ -292,7 +292,8 @@ public:
         // 0:no slider
         // 1:slider
         // 2:delete sliderjoint
-        // 3:0の改良
+        // 3:0の改良。指先にしか当たり判定が無い
+        // 4:オートで操作（未実装）
         //type = 2;
 
     }
@@ -440,7 +441,7 @@ public:
     PHSolidIf* CreateBone_base() {
         PHSolidIf* soBone = GetPHScene()->CreateSolid();
         CDSphereDesc sd;
-        sd.radius = 3.0f / 1000.0f * (float)scale;
+        sd.radius = 1.0f / 100.0f * (float)scale;
 
         shapeSphere = GetSdk()->GetPHSdk()->CreateShape(sd)->Cast();
 
@@ -544,6 +545,7 @@ public:
         soBone->AddShape(shapeBone);
 
         soBone->SetGravity(false);
+        soBone->CompInertia();
         return soBone;
     }
     //sphere
@@ -668,7 +670,7 @@ public:
         //solid= GetPHScene()->CreateSolid();
         /*PHSolidIf* solid = GetPHScene()->CreateSolid();*/
         // マテリアルを設定
-        GetFWScene()->SetSolidMaterial(mat, solid);
+        GetFWScene()->SetSolidMaterial(mat, cube);
         
         // 形状の割当て
         if (shape == SHAPE_BOX) {
@@ -678,7 +680,7 @@ public:
             shapeBox->SetStaticFriction(friction);
             shapeBox->SetDensity(cube_density);//単位 kg/m^3
             shapeBox = GetSdk()->GetPHSdk()->CreateShape(bd)->Cast();
-            solid->AddShape(shapeBox);
+            cube->AddShape(shapeBox);
         }
 
         if (shape == SHAPE_CAPSULE) {
@@ -689,14 +691,14 @@ public:
             shapeCapsule->SetStaticFriction(friction);
             shapeCapsule->SetDensity(cube_density);
             shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
-            solid->AddShape(shapeCapsule);
+            cube->AddShape(shapeCapsule);
 
         }
 
         if (shape == SHAPE_ROUNDCONE)
-            solid->AddShape(shapeRoundCone);
+            cube->AddShape(shapeRoundCone);
         if (shape == SHAPE_SPHERE)
-            solid->AddShape(shapeSphere);
+            cube->AddShape(shapeSphere);
         if (shape == SHAPE_ELLIPSOID){
             //solid->AddShape(shapeEllipsoid);
             CDBoxDesc bd;
@@ -705,7 +707,7 @@ public:
             shapeBox->SetStaticFriction(friction);
             shapeBox->SetDensity(cube_density);//単位 kg/m^3
             shapeBox = GetSdk()->GetPHSdk()->CreateShape(bd)->Cast();
-            solid->AddShape(shapeBox);
+            cube->AddShape(shapeBox);
 
         }
             
@@ -719,21 +721,21 @@ public:
                 }
                 md.vertices.push_back(v);
             }
-            solid->AddShape(GetSdk()->GetPHSdk()->CreateShape(md));
+            cube->AddShape(GetSdk()->GetPHSdk()->CreateShape(md));
         }
         if (shape == SHAPE_BLOCK) {
             for (int i = 0; i < 7; i++)
-                solid->AddShape(shapeBox);
+                cube->AddShape(shapeBox);
             Posed pose;
-            pose.Pos() = ShapeScale() * Vec3d(3, 0, 0); solid->SetShapePose(1, pose);
-            pose.Pos() = ShapeScale() * Vec3d(-3, 0, 0); solid->SetShapePose(2, pose);
-            pose.Pos() = ShapeScale() * Vec3d(0, 3, 0); solid->SetShapePose(3, pose);
-            pose.Pos() = ShapeScale() * Vec3d(0, -3, 0); solid->SetShapePose(4, pose);
-            pose.Pos() = ShapeScale() * Vec3d(0, 0, 3); solid->SetShapePose(5, pose);
-            pose.Pos() = ShapeScale() * Vec3d(0, 0, -3); solid->SetShapePose(6, pose);
+            pose.Pos() = ShapeScale() * Vec3d(3, 0, 0); cube->SetShapePose(1, pose);
+            pose.Pos() = ShapeScale() * Vec3d(-3, 0, 0); cube->SetShapePose(2, pose);
+            pose.Pos() = ShapeScale() * Vec3d(0, 3, 0); cube->SetShapePose(3, pose);
+            pose.Pos() = ShapeScale() * Vec3d(0, -3, 0); cube->SetShapePose(4, pose);
+            pose.Pos() = ShapeScale() * Vec3d(0, 0, 3); cube->SetShapePose(5, pose);
+            pose.Pos() = ShapeScale() * Vec3d(0, 0, -3); cube->SetShapePose(6, pose);
         }
         if (shape == SHAPE_COIN) {
-            solid->AddShape(shapeCoin);
+            cube->AddShape(shapeCoin);
         }
 
 
@@ -743,13 +745,13 @@ public:
                 for (int j = 0; j < 4; j++) {
                     if (!(i == 0 && j == 0)) {
 
-                        GetPHScene()->SetContactMode(fg_base_slide[i][j][0], solid, PHSceneDesc::MODE_NONE);
-                        GetPHScene()->SetContactMode(fg_base_slide[i][j][1], solid, PHSceneDesc::MODE_NONE);
+                        GetPHScene()->SetContactMode(fg_base_slide[i][j][0], cube, PHSceneDesc::MODE_NONE);
+                        GetPHScene()->SetContactMode(fg_base_slide[i][j][1], cube, PHSceneDesc::MODE_NONE);
 
-                        GetPHScene()->SetContactMode(fg_obj_slide[i][j][0], solid, PHSceneDesc::MODE_LCP);
-                        GetPHScene()->SetContactMode(fg_obj_slide[i][j][1], solid, PHSceneDesc::MODE_LCP);
+                        GetPHScene()->SetContactMode(fg_obj_slide[i][j][0], cube, PHSceneDesc::MODE_LCP);
+                        GetPHScene()->SetContactMode(fg_obj_slide[i][j][1], cube, PHSceneDesc::MODE_LCP);
                         if (j == 3) {
-                            GetPHScene()->SetContactMode(fg_obj[i][j], solid, PHSceneDesc::MODE_LCP);
+                            GetPHScene()->SetContactMode(fg_obj[i][j], cube, PHSceneDesc::MODE_LCP);
                         }
 
                     }
@@ -757,12 +759,12 @@ public:
             }
             
         }
-        solid->SetVelocity(v);
-        solid->SetAngularVelocity(w);
+        cube->SetVelocity(v);
+        cube->SetAngularVelocity(w);
         p = Vec3d(0.0, 0.25, 0.0);
-        solid->SetFramePosition(p);
-        solid->SetOrientation(q);
-        solid->CompInertia();
+        cube->SetFramePosition(p);
+        cube->SetOrientation(q);
+        cube->CompInertia();
     }
     virtual void BuildScene() {
 
@@ -788,21 +790,21 @@ public:
         //GetFWScene()->EnableRenderForce(false, false);
         GetFWScene()->SetForceScale(0.001f, 0.001f);
         printf("手をかざしてお待ちください。\n");
-
+        cout << "0:no slider\n1:slider\n2:delete sliderjoint\n3:0の改良。指先にしか当たり判定が無い\n4:オートで操作（未実装）" << endl;
         cout << "type = ";
         cin >> type;
 
         int detect;
         LEAP_TRACKING_EVENT* frame;
 
-        detect = 0;
-        while (detect == 0) {
-            frame = GetFrame();
-            printf("%d\n", (int)frame->nHands);
-            if ((int)frame->nHands > 0) {
-                detect = 1;
-            }
-        }
+        //detect = 0;
+        //while (detect == 0) {
+        //    frame = GetFrame();
+        //    printf("%d\n", (int)frame->nHands);
+        //    if ((int)frame->nHands > 0) {
+        //        detect = 1;
+        //    }
+        //}
 
         //ファイル入出力メモ
         std::ofstream writing_file;
@@ -812,7 +814,7 @@ public:
         writing_file << writing_text << std::endl;
         writing_file.close();
 
-        solid = GetPHScene()->CreateSolid();
+        cube = GetPHScene()->CreateSolid();
         //LEAP_TRACKING_EVENT* frame = GetFrame();
         LEAP_HAND* hand = &frame->pHands[0];
         //printf("hand is detected\n");
@@ -1195,6 +1197,39 @@ public:
                 }
             }
         }
+        if (type == 4) {
+            //base
+            fg_base[0][3] = CreateBone_base();
+            GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_base[0][3]);
+            fg_base[1][3] = CreateBone_base();
+            GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_base[1][3]);
+
+            GetPHScene()->SetContactMode(fg_base[0][3], PHSceneDesc::MODE_NONE);
+            GetPHScene()->SetContactMode(fg_base[1][3], PHSceneDesc::MODE_NONE);
+
+
+            //tool
+            fg_obj[0][3] = CreateBoneSphere();
+            GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE, fg_obj[0][3]);
+
+            fg_obj[1][3] = CreateBoneSphere();
+            GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE, fg_obj[1][3]);
+
+            GetPHScene()->SetContactMode(fg_obj[0][3], PHSceneDesc::MODE_NONE);
+            GetPHScene()->SetContactMode(fg_obj[1][3], PHSceneDesc::MODE_NONE);
+
+            //virtual coupling
+            fg_joint_vc[0][3] = GetPHScene()->CreateJoint(fg_base[0][3], fg_obj[0][3], Springdesc)->Cast();
+            fg_joint_vc[1][3] = GetPHScene()->CreateJoint(fg_base[1][3], fg_obj[1][3], Springdesc)->Cast();
+
+            //初期位置
+            fg_base[0][3]->SetFramePosition(Vec3d(0.0, 0.2, 3.0));
+            fg_base[1][3]->SetFramePosition(Vec3d(0.0, 0.2, -3.0));
+
+            fg_obj[0][3]->SetFramePosition(Vec3d(0.0, 0.2, 3.0));
+            fg_obj[1][3]->SetFramePosition(Vec3d(0.0, 0.2, -3.0));
+
+        }
     }
 
     // タイマコールバック関数．タイマ周期で呼ばれる
@@ -1265,7 +1300,7 @@ public:
                         bool swaped;
                         int state;
                         state = 0;
-                        solidpair = GetPHScene()->GetSolidPair(fg_obj_slide[0][3][0],solid, swaped);
+                        solidpair = GetPHScene()->GetSolidPair(fg_obj_slide[0][3][0],cube, swaped);
                         if (solidpair && solidpair->GetSolid(0)->NShape() && solidpair->GetSolid(1)->NShape()) {
                             state = solidpair->GetContactState(0, 0);
                         }
@@ -1277,7 +1312,7 @@ public:
 
                         //成功or失敗したらcubeを落とす
                         Vec3d cube_pos;
-                        cube_pos = solid->GetFramePosition();
+                        cube_pos = cube->GetFramePosition();
                         if (sorf==0 && cube_pos.x > 0.5 && cube_pos.x<0.65 && cube_pos.z>-0.075 && cube_pos.z<0.075 && cube_pos.y>-2.0 && cube_pos.y < -1.0) {
                             end = clock();
                             std::ofstream writing_file;
@@ -1336,7 +1371,7 @@ public:
                         PHSolidPairForLCPIf* solidpair;
                         bool swaped;
                         int state;
-                        solidpair = GetPHScene()->GetSolidPair(fg_obj_slide[0][3][0], solid, swaped);
+                        solidpair = GetPHScene()->GetSolidPair(fg_obj_slide[0][3][0], cube, swaped);
                         //state=solidpair->GetContactState(0, 0);
                         //cout << state << endl();
                         clock_t start, end;
@@ -1347,7 +1382,7 @@ public:
 
                         //成功or失敗したらcubeを落とす
                         Vec3d cube_pos;
-                        cube_pos = solid->GetFramePosition();
+                        cube_pos = cube->GetFramePosition();
                         if (sorf == 0 && cube_pos.x > 0.5 && cube_pos.x<0.65 && cube_pos.z>-0.075 && cube_pos.z<0.075 && cube_pos.y>-2.0 && cube_pos.y < -1.0) {
                             end = clock();
                             std::ofstream writing_file;
@@ -1418,7 +1453,7 @@ public:
                     PHSolidPairForLCPIf* solidpair;
                     bool swaped;
                     int state;
-                    solidpair = GetPHScene()->GetSolidPair(fg_obj[0][3], solid, swaped);
+                    solidpair = GetPHScene()->GetSolidPair(fg_obj[0][3], cube, swaped);
                     //state=solidpair->GetContactState(0, 0);
                     //cout << state << endl();
                     clock_t start, end;
@@ -1429,7 +1464,7 @@ public:
 
                     //成功or失敗したらcubeを落とす
                     Vec3d cube_pos;
-                    cube_pos = solid->GetFramePosition();
+                    cube_pos = cube->GetFramePosition();
                     if (sorf == 0 && cube_pos.x > 0.5 && cube_pos.x<0.65 && cube_pos.z>-0.075 && cube_pos.z<0.075 && cube_pos.y>-2.0 && cube_pos.y < -1.0) {
                         end = clock();
                         std::ofstream writing_file;
@@ -1450,6 +1485,29 @@ public:
                         Drop(SHAPE_BOX, GRRenderIf::RED, v, w, p, q);
                         sorf = 0;
                     }
+                }
+                if (type == 4) {
+                    Vec3d cube_pos;
+                    Vec3d fg_pos[2];
+                    Vec3d fg_obj_pos[2];
+                    cube_pos = cube->GetFramePosition();
+                    cout << cube_pos << endl;
+                    if (cube->GetMass()>0) {
+                        printf("solid\n");
+                        cube_pos = cube->GetFramePosition();
+                        fg_pos[0] = fg_base[0][3]->GetFramePosition();
+                        fg_pos[1] = fg_base[1][3]->GetFramePosition();
+                        
+                        fg_base[0][3]->SetFramePosition(fg_pos[0] + (cube_pos - fg_pos[0]) / jointLength(cube_pos, fg_pos[0])*0.001);
+                        fg_base[1][3]->SetFramePosition(fg_pos[1] + (cube_pos - fg_pos[1]) / jointLength(cube_pos, fg_pos[1]) * 0.001);
+
+                    }
+                    fg_obj_pos[0] = fg_obj[0][3]->GetFramePosition();
+                    //if (jointLength(fg_obj_pos[0],fg_pos[0])>0.05) {
+                    //    fg_base[0][3]->SetFramePosition(Vec3d(fg_pos[0].x, fg_pos[0].y + 0.001, fg_pos[0].z));
+                    //    fg_base[1][3]->SetFramePosition(Vec3d(fg_pos[1].x, fg_pos[1].y + 0.001, fg_pos[1].z));
+
+                    //}
                 }
             }
         }
