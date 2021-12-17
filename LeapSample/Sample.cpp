@@ -797,14 +797,14 @@ public:
         int detect;
         LEAP_TRACKING_EVENT* frame;
 
-        //detect = 0;
-        //while (detect == 0) {
-        //    frame = GetFrame();
-        //    printf("%d\n", (int)frame->nHands);
-        //    if ((int)frame->nHands > 0) {
-        //        detect = 1;
-        //    }
-        //}
+        detect = 0;
+        while (detect == 0) {
+            frame = GetFrame();
+            printf("%d\n", (int)frame->nHands);
+            if ((int)frame->nHands > 0) {
+                detect = 1;
+            }
+        }
 
         //ファイル入出力メモ
         std::ofstream writing_file;
