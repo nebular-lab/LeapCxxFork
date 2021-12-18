@@ -180,6 +180,9 @@ public:
     int sorf = 0;//sucsess or failureÇ≈ñΩñºÅ@0:É^ÉXÉNíÜÅ@1:success 2:failure
     float cube_density = 2500.0;
 
+    LEAP_TRACKING_EVENT* frame;
+    LEAP_HAND* hand;
+
     //type 0
     PHSolidIf* fg_base[5][4];
     PHSolidIf* fg_obj[5][4];
@@ -795,46 +798,41 @@ public:
         cin >> type;
 
         int detect;
-        LEAP_TRACKING_EVENT* frame;
-
-        detect = 0;
-        while (detect == 0) {
-            frame = GetFrame();
-            printf("%d\n", (int)frame->nHands);
-            if ((int)frame->nHands > 0) {
-                detect = 1;
+        //LEAP_TRACKING_EVENT* frame;
+        if (type != 4) {
+            detect = 0;
+            while (detect == 0) {
+                frame = GetFrame();
+                printf("%d\n", (int)frame->nHands);
+                if ((int)frame->nHands > 0) {
+                    detect = 1;
+                }
             }
+            hand = &frame->pHands[0];
         }
-
-        //ÉtÉ@ÉCÉãì¸èoóÕÉÅÉÇ
-        std::ofstream writing_file;
-        std::string filename = "sample.txt";
-        writing_file.open(filename, std::ios::app);
-        std::string writing_text = "test";
-        writing_file << writing_text << std::endl;
-        writing_file.close();
-
         cube = GetPHScene()->CreateSolid();
         //LEAP_TRACKING_EVENT* frame = GetFrame();
-        LEAP_HAND* hand = &frame->pHands[0];
+        
         //printf("hand is detected\n");
 
         float tip_width[5] = { 0.0 };
 
 
-        for (int i = 0; i < 5; i++) {
-            tip_width[i] = hand->digits[i].distal.width;
-            //tip_width[i] *= 1.5;
-        }
+
         double spring;
         double damper;
-        spring = 1000.0;
+        spring = 10000.0;
         damper = 10.0;
         Springdesc.spring = Vec3d(spring, spring, spring);
         Springdesc.damper = Vec3d(damper, damper, damper);
         Springdesc.springOri = spring;
         Springdesc.damperOri = damper;
         if (type == 0) {
+
+            for (int i = 0; i < 5; i++) {
+                tip_width[i] = hand->digits[i].distal.width;
+                //tip_width[i] *= 1.5;
+            }
             //
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 4; j++) {
@@ -886,6 +884,11 @@ public:
             }
         }
         else if (type == 1) {
+
+            for (int i = 0; i < 5; i++) {
+                tip_width[i] = hand->digits[i].distal.width;
+                //tip_width[i] *= 1.5;
+            }
 
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 4; j++) {
@@ -1018,7 +1021,10 @@ public:
             //fg_obj_slide[1][1][1]->InvalidateBbox();
         }
         else if (type == 2) {
-
+            for (int i = 0; i < 5; i++) {
+                tip_width[i] = hand->digits[i].distal.width;
+                //tip_width[i] *= 1.5;
+            }
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 4; j++) {
                     if (!(i == 0 && j == 0)) {
@@ -1198,6 +1204,11 @@ public:
             }
         }
         if (type == 4) {
+            Vec3d v, w(0.0, 0.0, 0.2), p(0.5, 10, 0.0);
+            static Quaterniond q = Quaterniond::Rot(Rad(0.0), 'y');
+            q = Quaterniond::Rot(Rad(90), 'y') * q;
+            Drop(SHAPE_BOX, GRRenderIf::RED, v, w, p, q);
+            
             //base
             fg_base[0][3] = CreateBone_base();
             GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_base[0][3]);
@@ -1238,11 +1249,6 @@ public:
 
         SampleApp::OnStep();
 
-        step_count++;
-        printf("count_step=%d\n", step_count);
-
-
-
         // è∞ÇóhÇÁÇ∑
         if (soFloor && floorShakeAmplitude) {
             double time = GetFWScene()->GetPHScene()->GetCount() * GetFWScene()->GetPHScene()->GetTimeStep();
@@ -1251,127 +1257,230 @@ public:
             soFloor->SetVelocity(Vec3d(floorShakeAmplitude * omega * cos(time * omega), 0, 0));
         }
 
+        if (type == 4) {
+            Vec3d cube_pos;
+            Vec3d fg_pos[2];
+            Vec3d fg_obj_pos[2];
 
-        LEAP_TRACKING_EVENT* frame = GetFrame();
-        
-        if (frame && (frame->tracking_frame_id > lastFrameID)) {
-            lastFrameID = frame->tracking_frame_id;
-            //printf("Frame %lli with %i hands.\n", (long long int)frame->tracking_frame_id, frame->nHands);
-            for (uint32_t h = 0; h < frame->nHands; h++) {
-                LEAP_HAND* hand = &frame->pHands[0];
+            cube_pos = cube->GetFramePosition();
+
+            fg_pos[0] = fg_base[0][3]->GetFramePosition();
+            fg_pos[1] = fg_base[1][3]->GetFramePosition();
+
+            fg_base[0][3]->SetFramePosition(fg_pos[0] + (cube_pos - fg_pos[0]) / jointLength(cube_pos, fg_pos[0]) * 0.001);
+            fg_base[1][3]->SetFramePosition(fg_pos[1] + (cube_pos - fg_pos[1]) / jointLength(cube_pos, fg_pos[1]) * 0.001);
 
 
-                if (type == 0) {
-                    //
-                    for (int i = 0; i < 5; i++) {
-                        for (int j = 0; j < 4; j++) {
-                            if (!(i == 0 && j == 0)) {
-                                fg_pos_middle[i][j] = vecvec3(hand->digits[i].bones[j].prev_joint, hand->digits[i].bones[j].next_joint);
-                                fg_ori[i][j] = quaquad(hand->digits[i].bones[j].rotation);
-                                fg_ori[i][j] = x90 * fg_ori[i][j];
-                                fg_ori[i][j] = y180 * fg_ori[i][j];
-                                fg_base[i][j]->SetFramePosition(fg_pos_middle[i][j]);
-                                fg_base[i][j]->SetOrientation(fg_ori[i][j]);
+            fg_obj_pos[0] = fg_obj[0][3]->GetFramePosition();
+            //if (jointLength(fg_obj_pos[0],fg_pos[0])>0.05) {
+            //    fg_base[0][3]->SetFramePosition(Vec3d(fg_pos[0].x, fg_pos[0].y + 0.001, fg_pos[0].z));
+            //    fg_base[1][3]->SetFramePosition(Vec3d(fg_pos[1].x, fg_pos[1].y + 0.001, fg_pos[1].z));
 
+            //}
+        }
+        else {
+            frame = GetFrame();
+
+            if (frame && (frame->tracking_frame_id > lastFrameID)) {
+                lastFrameID = frame->tracking_frame_id;
+                //printf("Frame %lli with %i hands.\n", (long long int)frame->tracking_frame_id, frame->nHands);
+                for (uint32_t h = 0; h < frame->nHands; h++) {
+                    LEAP_HAND* hand = &frame->pHands[0];
+
+
+                    if (type == 0) {
+                        //
+                        for (int i = 0; i < 5; i++) {
+                            for (int j = 0; j < 4; j++) {
+                                if (!(i == 0 && j == 0)) {
+                                    fg_pos_middle[i][j] = vecvec3(hand->digits[i].bones[j].prev_joint, hand->digits[i].bones[j].next_joint);
+                                    fg_ori[i][j] = quaquad(hand->digits[i].bones[j].rotation);
+                                    fg_ori[i][j] = x90 * fg_ori[i][j];
+                                    fg_ori[i][j] = y180 * fg_ori[i][j];
+                                    fg_base[i][j]->SetFramePosition(fg_pos_middle[i][j]);
+                                    fg_base[i][j]->SetOrientation(fg_ori[i][j]);
+
+                                }
                             }
                         }
                     }
-                }
 
-                else if (type == 1) {
+                    else if (type == 1) {
 
-                    for (int i = 0; i < 5; i++) {
-                        for (int j = 0; j < 4; j++) {
-                            if (!(i == 0 && j == 0)) {
-                                fg_pos[i][j][0] = vecvec3_3(hand->digits[i].bones[j].prev_joint);
-                                fg_pos[i][j][1] = vecvec3_3(hand->digits[i].bones[j].next_joint);
-                                fg_ori[i][j] = quaquad(hand->digits[i].bones[j].rotation);
-                                fg_ori[i][j] = x90 * fg_ori[i][j];
-                                fg_ori[i][j] = y180 * fg_ori[i][j];
+                        for (int i = 0; i < 5; i++) {
+                            for (int j = 0; j < 4; j++) {
+                                if (!(i == 0 && j == 0)) {
+                                    fg_pos[i][j][0] = vecvec3_3(hand->digits[i].bones[j].prev_joint);
+                                    fg_pos[i][j][1] = vecvec3_3(hand->digits[i].bones[j].next_joint);
+                                    fg_ori[i][j] = quaquad(hand->digits[i].bones[j].rotation);
+                                    fg_ori[i][j] = x90 * fg_ori[i][j];
+                                    fg_ori[i][j] = y180 * fg_ori[i][j];
 
-                                fg_base_slide[i][j][0]->SetFramePosition(fg_pos[i][j][0]);
-                                fg_base_slide[i][j][1]->SetFramePosition(fg_pos[i][j][1]);
-                                fg_base_slide[i][j][0]->SetOrientation(fg_ori[i][j]);
-                                fg_base_slide[i][j][1]->SetOrientation(fg_ori[i][j]);
+                                    fg_base_slide[i][j][0]->SetFramePosition(fg_pos[i][j][0]);
+                                    fg_base_slide[i][j][1]->SetFramePosition(fg_pos[i][j][1]);
+                                    fg_base_slide[i][j][0]->SetOrientation(fg_ori[i][j]);
+                                    fg_base_slide[i][j][1]->SetOrientation(fg_ori[i][j]);
 
+                                }
                             }
-                        }
-                        PHSolidPairForLCPIf* solidpair;
-                        bool swaped;
-                        int state;
-                        state = 0;
-                        solidpair = GetPHScene()->GetSolidPair(fg_obj_slide[0][3][0],cube, swaped);
-                        if (solidpair && solidpair->GetSolid(0)->NShape() && solidpair->GetSolid(1)->NShape()) {
-                            state = solidpair->GetContactState(0, 0);
-                        }
-                        clock_t start, end;
-                        if (state == 1 || state == 2) {
-                            start = clock();
+                            PHSolidPairForLCPIf* solidpair;
+                            bool swaped;
+                            int state;
+                            state = 0;
+                            solidpair = GetPHScene()->GetSolidPair(fg_obj_slide[0][3][0], cube, swaped);
+                            if (solidpair && solidpair->GetSolid(0)->NShape() && solidpair->GetSolid(1)->NShape()) {
+                                state = solidpair->GetContactState(0, 0);
+                            }
+                            clock_t start, end;
+                            if (state == 1 || state == 2) {
+                                start = clock();
+                            }
+
+
+                            //ê¨å˜oré∏îsÇµÇΩÇÁcubeÇóéÇ∆Ç∑
+                            Vec3d cube_pos;
+                            cube_pos = cube->GetFramePosition();
+                            if (sorf == 0 && cube_pos.x > 0.5 && cube_pos.x<0.65 && cube_pos.z>-0.075 && cube_pos.z<0.075 && cube_pos.y>-2.0 && cube_pos.y < -1.0) {
+                                end = clock();
+                                std::ofstream writing_file;
+                                std::string filename = "sample.txt";
+                                writing_file.open(filename, std::ios::app);
+                                //std::string writing_text = "test";
+                                writing_file << ((float)end - start) / CLOCKS_PER_SEC << std::endl;
+                                writing_file.close();
+                                sorf = 1;
+                            }
+                            //if () {
+                            //    sorf = 2;
+                            //}
+                            if (sorf == 1 || sorf == 2) {
+                                Vec3d v, w(0.0, 0.0, 0.2), p(0.5, 10, 0.0);
+                                static Quaterniond q = Quaterniond::Rot(Rad(0.0), 'y');
+                                q = Quaterniond::Rot(Rad(90), 'y') * q;
+                                Drop(SHAPE_BOX, GRRenderIf::RED, v, w, p, q);
+                                sorf = 0;
+                            }
+
                         }
 
 
-                        //ê¨å˜oré∏îsÇµÇΩÇÁcubeÇóéÇ∆Ç∑
-                        Vec3d cube_pos;
-                        cube_pos = cube->GetFramePosition();
-                        if (sorf==0 && cube_pos.x > 0.5 && cube_pos.x<0.65 && cube_pos.z>-0.075 && cube_pos.z<0.075 && cube_pos.y>-2.0 && cube_pos.y < -1.0) {
-                            end = clock();
-                            std::ofstream writing_file;
-                            std::string filename = "sample.txt";
-                            writing_file.open(filename, std::ios::app);
-                            //std::string writing_text = "test";
-                            writing_file << ((float)end - start) / CLOCKS_PER_SEC << std::endl;
-                            writing_file.close();
-                            sorf = 1;
-                        }
+
+                        //PHSolidPairForLCPIf* solidpair;
+                        //int state;
+                        //bool swaped;
+                        //solidpair =GetPHScene()->GetSolidPair(fg_base_slide[2][2][0], fg_base_slide[2][2][1], swaped);
+                        //solidpair->GetContactState(0, 0);
+                        //cout<<fg_base_slide[2][2][0]->GetFramePosition()<<endl;
                         //if () {
-                        //    sorf = 2;
+                        //    for (int i = 0; i < 5; i++) {
+
+                        //    }
                         //}
-                        if (sorf==1||sorf==2) {
-                            Vec3d v, w(0.0, 0.0, 0.2), p(0.5, 10, 0.0);
-                            static Quaterniond q = Quaterniond::Rot(Rad(0.0), 'y');
-                            q = Quaterniond::Rot(Rad(90), 'y') * q;
-                            Drop(SHAPE_BOX, GRRenderIf::RED, v, w, p, q);
-                            sorf = 0;
+                    }
+                    else if (type == 2) {
+
+                        for (int i = 0; i < 5; i++) {
+                            for (int j = 0; j < 4; j++) {
+                                if (!(i == 0 && j == 0)) {
+                                    fg_pos[i][j][0] = vecvec3_3(hand->digits[i].bones[j].prev_joint);
+                                    fg_pos[i][j][1] = vecvec3_3(hand->digits[i].bones[j].next_joint);
+                                    fg_ori[i][j] = quaquad(hand->digits[i].bones[j].rotation);
+                                    fg_ori[i][j] = x90 * fg_ori[i][j];
+                                    fg_ori[i][j] = y180 * fg_ori[i][j];
+
+                                    fg_base_slide[i][j][0]->SetFramePosition(fg_pos[i][j][0]);
+                                    fg_base_slide[i][j][1]->SetFramePosition(fg_pos[i][j][1]);
+                                    fg_base_slide[i][j][0]->SetOrientation(fg_ori[i][j]);
+                                    fg_base_slide[i][j][1]->SetOrientation(fg_ori[i][j]);
+
+                                }
+                            }
+                            PHSolidPairForLCPIf* solidpair;
+                            bool swaped;
+                            int state;
+                            solidpair = GetPHScene()->GetSolidPair(fg_obj_slide[0][3][0], cube, swaped);
+                            //state=solidpair->GetContactState(0, 0);
+                            //cout << state << endl();
+                            clock_t start, end;
+                            //if (state == 1 || state == 2) {
+                            //    start = clock();
+                            //}
+
+
+                            //ê¨å˜oré∏îsÇµÇΩÇÁcubeÇóéÇ∆Ç∑
+                            Vec3d cube_pos;
+                            cube_pos = cube->GetFramePosition();
+                            if (sorf == 0 && cube_pos.x > 0.5 && cube_pos.x<0.65 && cube_pos.z>-0.075 && cube_pos.z<0.075 && cube_pos.y>-2.0 && cube_pos.y < -1.0) {
+                                end = clock();
+                                std::ofstream writing_file;
+                                std::string filename = "sample.txt";
+                                writing_file.open(filename, std::ios::app);
+                                //std::string writing_text = "test";
+                                writing_file << ((float)end - start) / CLOCKS_PER_SEC << std::endl;
+                                writing_file.close();
+                                sorf = 1;
+                            }
+                            //if () {
+                            //    sorf = 2;
+                            //}
+                            if (sorf == 1 || sorf == 2) {
+                                Vec3d v, w(0.0, 0.0, 0.2), p(0.5, 10, 0.0);
+                                static Quaterniond q = Quaterniond::Rot(Rad(0.0), 'y');
+                                q = Quaterniond::Rot(Rad(90), 'y') * q;
+                                Drop(SHAPE_BOX, GRRenderIf::RED, v, w, p, q);
+                                sorf = 0;
+                            }
+
                         }
 
+
+
+                        //PHSolidPairForLCPIf* solidpair;
+                        //int state;
+                        //bool swaped;
+                        //solidpair =GetPHScene()->GetSolidPair(fg_base_slide[2][2][0], fg_base_slide[2][2][1], swaped);
+                        //solidpair->GetContactState(0, 0);
+                        //cout<<fg_base_slide[2][2][0]->GetFramePosition()<<endl;
+                        //if () {
+                        //    for (int i = 0; i < 5; i++) {
+
+                        //    }
+                        //}
                     }
-                    
+                    else if (type == 3) {
 
+                        for (int i = 0; i < 5; i++) {
+                            for (int j = 0; j < 4; j++) {
+                                if (!(i == 0 && j == 0)) {
+                                    fg_pos[i][j][0] = vecvec3_3(hand->digits[i].bones[j].prev_joint);
+                                    fg_pos[i][j][1] = vecvec3_3(hand->digits[i].bones[j].next_joint);
+                                    fg_ori[i][j] = quaquad(hand->digits[i].bones[j].rotation);
+                                    fg_ori[i][j] = x90 * fg_ori[i][j];
+                                    fg_ori[i][j] = y180 * fg_ori[i][j];
 
-                    //PHSolidPairForLCPIf* solidpair;
-                    //int state;
-                    //bool swaped;
-                    //solidpair =GetPHScene()->GetSolidPair(fg_base_slide[2][2][0], fg_base_slide[2][2][1], swaped);
-                    //solidpair->GetContactState(0, 0);
-                    //cout<<fg_base_slide[2][2][0]->GetFramePosition()<<endl;
-                    //if () {
-                    //    for (int i = 0; i < 5; i++) {
+                                    fg_base_slide[i][j][0]->SetFramePosition(fg_pos[i][j][0]);
+                                    fg_base_slide[i][j][1]->SetFramePosition(fg_pos[i][j][1]);
+                                    fg_base_slide[i][j][0]->SetOrientation(fg_ori[i][j]);
+                                    fg_base_slide[i][j][1]->SetOrientation(fg_ori[i][j]);
 
-                    //    }
-                    //}
-                }
-                else if (type == 2) {
+                                    fg_joint_vc_slide[i][j][0]->SetPlugPose(Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
+                                    fg_joint_vc_slide[i][j][1]->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
 
-                    for (int i = 0; i < 5; i++) {
-                        for (int j = 0; j < 4; j++) {
-                            if (!(i == 0 && j == 0)) {
-                                fg_pos[i][j][0] = vecvec3_3(hand->digits[i].bones[j].prev_joint);
-                                fg_pos[i][j][1] = vecvec3_3(hand->digits[i].bones[j].next_joint);
-                                fg_ori[i][j] = quaquad(hand->digits[i].bones[j].rotation);
-                                fg_ori[i][j] = x90 * fg_ori[i][j];
-                                fg_ori[i][j] = y180 * fg_ori[i][j];
-
-                                fg_base_slide[i][j][0]->SetFramePosition(fg_pos[i][j][0]);
-                                fg_base_slide[i][j][1]->SetFramePosition(fg_pos[i][j][1]);
-                                fg_base_slide[i][j][0]->SetOrientation(fg_ori[i][j]);
-                                fg_base_slide[i][j][1]->SetOrientation(fg_ori[i][j]);
-
+                                }
+                            }
+                        }
+                        for (int i = 0; i < 2; i++) {
+                            for (int j = 0; j < 3; j++) {
+                                if (!(i == 0 && j == 0)) {
+                                    fg_joint[i][j]->SetSocketPose(Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
+                                    fg_joint[i][j]->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[i][j + 1][0], fg_pos[i][j + 1][1]) / 2.0));
+                                }
                             }
                         }
                         PHSolidPairForLCPIf* solidpair;
                         bool swaped;
                         int state;
-                        solidpair = GetPHScene()->GetSolidPair(fg_obj_slide[0][3][0], cube, swaped);
+                        solidpair = GetPHScene()->GetSolidPair(fg_obj[0][3], cube, swaped);
                         //state=solidpair->GetContactState(0, 0);
                         //cout << state << endl();
                         clock_t start, end;
@@ -1403,111 +1512,8 @@ public:
                             Drop(SHAPE_BOX, GRRenderIf::RED, v, w, p, q);
                             sorf = 0;
                         }
-
                     }
 
-
-
-                    //PHSolidPairForLCPIf* solidpair;
-                    //int state;
-                    //bool swaped;
-                    //solidpair =GetPHScene()->GetSolidPair(fg_base_slide[2][2][0], fg_base_slide[2][2][1], swaped);
-                    //solidpair->GetContactState(0, 0);
-                    //cout<<fg_base_slide[2][2][0]->GetFramePosition()<<endl;
-                    //if () {
-                    //    for (int i = 0; i < 5; i++) {
-
-                    //    }
-                    //}
-                }
-                else if (type == 3) {
-
-                    for (int i = 0; i < 5; i++) {
-                        for (int j = 0; j < 4; j++) {
-                            if (!(i == 0 && j == 0)) {
-                                fg_pos[i][j][0] = vecvec3_3(hand->digits[i].bones[j].prev_joint);
-                                fg_pos[i][j][1] = vecvec3_3(hand->digits[i].bones[j].next_joint);
-                                fg_ori[i][j] = quaquad(hand->digits[i].bones[j].rotation);
-                                fg_ori[i][j] = x90 * fg_ori[i][j];
-                                fg_ori[i][j] = y180 * fg_ori[i][j];
-
-                                fg_base_slide[i][j][0]->SetFramePosition(fg_pos[i][j][0]);
-                                fg_base_slide[i][j][1]->SetFramePosition(fg_pos[i][j][1]);
-                                fg_base_slide[i][j][0]->SetOrientation(fg_ori[i][j]);
-                                fg_base_slide[i][j][1]->SetOrientation(fg_ori[i][j]);
-
-                                fg_joint_vc_slide[i][j][0]->SetPlugPose(Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
-                                fg_joint_vc_slide[i][j][1]->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
-
-                            }
-                        }
-                    }
-                    for (int i = 0; i < 2; i++) {
-                        for (int j = 0; j < 3; j++) {
-                            if (!(i == 0 && j == 0)) {
-                                fg_joint[i][j]->SetSocketPose(Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
-                                fg_joint[i][j]->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[i][j + 1][0], fg_pos[i][j + 1][1]) / 2.0));
-                            }
-                        }
-                    }
-                    PHSolidPairForLCPIf* solidpair;
-                    bool swaped;
-                    int state;
-                    solidpair = GetPHScene()->GetSolidPair(fg_obj[0][3], cube, swaped);
-                    //state=solidpair->GetContactState(0, 0);
-                    //cout << state << endl();
-                    clock_t start, end;
-                    //if (state == 1 || state == 2) {
-                    //    start = clock();
-                    //}
-
-
-                    //ê¨å˜oré∏îsÇµÇΩÇÁcubeÇóéÇ∆Ç∑
-                    Vec3d cube_pos;
-                    cube_pos = cube->GetFramePosition();
-                    if (sorf == 0 && cube_pos.x > 0.5 && cube_pos.x<0.65 && cube_pos.z>-0.075 && cube_pos.z<0.075 && cube_pos.y>-2.0 && cube_pos.y < -1.0) {
-                        end = clock();
-                        std::ofstream writing_file;
-                        std::string filename = "sample.txt";
-                        writing_file.open(filename, std::ios::app);
-                        //std::string writing_text = "test";
-                        writing_file << ((float)end - start) / CLOCKS_PER_SEC << std::endl;
-                        writing_file.close();
-                        sorf = 1;
-                    }
-                    //if () {
-                    //    sorf = 2;
-                    //}
-                    if (sorf == 1 || sorf == 2) {
-                        Vec3d v, w(0.0, 0.0, 0.2), p(0.5, 10, 0.0);
-                        static Quaterniond q = Quaterniond::Rot(Rad(0.0), 'y');
-                        q = Quaterniond::Rot(Rad(90), 'y') * q;
-                        Drop(SHAPE_BOX, GRRenderIf::RED, v, w, p, q);
-                        sorf = 0;
-                    }
-                }
-                if (type == 4) {
-                    Vec3d cube_pos;
-                    Vec3d fg_pos[2];
-                    Vec3d fg_obj_pos[2];
-                    cube_pos = cube->GetFramePosition();
-                    cout << cube_pos << endl;
-                    if (cube->GetMass()>0) {
-                        printf("solid\n");
-                        cube_pos = cube->GetFramePosition();
-                        fg_pos[0] = fg_base[0][3]->GetFramePosition();
-                        fg_pos[1] = fg_base[1][3]->GetFramePosition();
-                        
-                        fg_base[0][3]->SetFramePosition(fg_pos[0] + (cube_pos - fg_pos[0]) / jointLength(cube_pos, fg_pos[0])*0.001);
-                        fg_base[1][3]->SetFramePosition(fg_pos[1] + (cube_pos - fg_pos[1]) / jointLength(cube_pos, fg_pos[1]) * 0.001);
-
-                    }
-                    fg_obj_pos[0] = fg_obj[0][3]->GetFramePosition();
-                    //if (jointLength(fg_obj_pos[0],fg_pos[0])>0.05) {
-                    //    fg_base[0][3]->SetFramePosition(Vec3d(fg_pos[0].x, fg_pos[0].y + 0.001, fg_pos[0].z));
-                    //    fg_base[1][3]->SetFramePosition(Vec3d(fg_pos[1].x, fg_pos[1].y + 0.001, fg_pos[1].z));
-
-                    //}
                 }
             }
         }
