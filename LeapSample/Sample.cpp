@@ -17,6 +17,8 @@
 #include <Springhead.h>
 #include <Framework/SprFWApp.h>
 #include "../src/Samples/SampleApp.h"
+#include <string>
+#include <sstream>
 extern "C" {
 #include "ExampleConnection.h"
 }
@@ -174,10 +176,10 @@ public:
 
     double scale = 3.0;
     double move_scale = 1.5;
-    float friction = 100.0;
+    float friction = 1.0;
     float density = 1000.0;
     int contact = 0;
-    int sorf = 0;//sucsess or failureで命名　0:タスク中　1:success 2:failure
+    int sorf = 0;//sucsess or failureの頭文字　0:タスク中　1:success 2:failure
     float cube_density = 2500.0;
 
     LEAP_TRACKING_EVENT* frame;
@@ -444,7 +446,7 @@ public:
     PHSolidIf* CreateBone_base() {
         PHSolidIf* soBone = GetPHScene()->CreateSolid();
         CDSphereDesc sd;
-        sd.radius = 1.0f / 100.0f * (float)scale;
+        sd.radius = 10.0f / 1000.0f * (float)scale;
 
         shapeSphere = GetSdk()->GetPHSdk()->CreateShape(sd)->Cast();
 
@@ -556,7 +558,7 @@ public:
         PHSolidIf* soBone = GetPHScene()->CreateSolid();
         CDSphereIf* Bone5;
         CDSphereDesc sd;
-        sd.radius = 3.0/100.0;
+        sd.radius = 10.0/1000.0*scale;
 
         Bone5 = GetSdk()->GetPHSdk()->CreateShape(sd)->Cast();
         Bone5->SetStaticFriction(friction);
@@ -564,10 +566,29 @@ public:
         Bone5->SetDensity(density);
 
         soBone->AddShape(Bone5);
-        //soBone->SetMass(1.0);
-        //soBone->SetGravity(false);
-        //soBone->SetFramePosition(Vec3d(0, 0, 0));
+        soBone->SetGravity(false);
         //soBone->CompInertia();
+
+        return soBone;
+    }
+    PHSolidIf* CreateBoneSphereShift() {
+        PHSolidIf* soBone = GetPHScene()->CreateSolid();
+        CDSphereIf* Bone5;
+        CDSphereDesc sd;
+        sd.radius = 1.0 / 100.0*scale;
+
+        Bone5 = GetSdk()->GetPHSdk()->CreateShape(sd)->Cast();
+        Bone5->SetStaticFriction(friction);
+        Bone5->SetDynamicFriction(friction);
+        Bone5->SetDensity(density);
+
+        soBone->AddShape(Bone5);
+
+        //soBone->CompInertia();
+        Vec3d shift;
+        shift = Vec3d(0.0, 0.0, -0.02);
+        soBone->SetCenterOfMass(shift);
+
 
         return soBone;
     }
@@ -798,12 +819,12 @@ public:
         cin >> type;
 
         int detect;
-        //LEAP_TRACKING_EVENT* frame;
+        LEAP_TRACKING_EVENT* frame;
         if (type != 4) {
             detect = 0;
             while (detect == 0) {
                 frame = GetFrame();
-                printf("%d\n", (int)frame->nHands);
+                //printf("%d\n", (int)frame->nHands);
                 if ((int)frame->nHands > 0) {
                     detect = 1;
                 }
@@ -1160,7 +1181,8 @@ public:
                 for (int j = 0; j < 4; j++) {
                     if (!(i == 0 && j == 0)) {
                         if (j == 3) {
-                            fg_obj[i][j] = CreateBoneRoundCone(fg_pos[i][j][0], fg_pos[i][j][1]);
+                            //fg_obj[i][j] = CreateBoneCapsule(fg_pos[i][j][0], fg_pos[i][j][1]);
+                            fg_obj[i][j] = CreateBoneSphere();
                         }
                         else {
                             fg_obj[i][j] = CreateBoneCapsule(fg_pos[i][j][0], fg_pos[i][j][1]);
@@ -1204,11 +1226,25 @@ public:
             }
         }
         if (type == 4) {
+            //cubeの設置
             Vec3d v, w(0.0, 0.0, 0.2), p(0.5, 10, 0.0);
             static Quaterniond q = Quaterniond::Rot(Rad(0.0), 'y');
             q = Quaterniond::Rot(Rad(90), 'y') * q;
-            Drop(SHAPE_BOX, GRRenderIf::RED, v, w, p, q);
-            
+            CDBoxDesc bd;
+            bd.boxsize = Vec3d(4.0, 8.0, 4.0) / 100.0 * scale;  //単位 m^3
+            shapeBox->SetDynamicFriction(friction);
+            shapeBox->SetStaticFriction(friction);
+            shapeBox->SetDensity(cube_density);//単位 kg/m^3
+            shapeBox = GetSdk()->GetPHSdk()->CreateShape(bd)->Cast();
+            cube->AddShape(shapeBox);
+            cube->SetVelocity(v);
+            cube->SetAngularVelocity(w);
+            p = Vec3d(0.0, 0.25, 0.0);
+            cube->SetFramePosition(p);
+            cube->SetOrientation(q);
+            cube->CompInertia();
+
+
             //base
             fg_base[0][3] = CreateBone_base();
             GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_base[0][3]);
@@ -1220,25 +1256,30 @@ public:
 
 
             //tool
-            fg_obj[0][3] = CreateBoneSphere();
+            //fg_obj[0][3] = CreateBoneSphere();
+            fg_obj[0][3] = CreateBoneCapsule(Vec3d(0.2, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0));
             GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE, fg_obj[0][3]);
 
-            fg_obj[1][3] = CreateBoneSphere();
+            //fg_obj[1][3] = CreateBoneSphere();
+            fg_obj[1][3] = CreateBoneCapsule(Vec3d(0.2, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0));
+
             GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE, fg_obj[1][3]);
 
             GetPHScene()->SetContactMode(fg_obj[0][3], PHSceneDesc::MODE_NONE);
             GetPHScene()->SetContactMode(fg_obj[1][3], PHSceneDesc::MODE_NONE);
+            GetPHScene()->SetContactMode(fg_obj[0][3],cube, PHSceneDesc::MODE_LCP);
+            GetPHScene()->SetContactMode(fg_obj[1][3],cube, PHSceneDesc::MODE_LCP);
 
             //virtual coupling
             fg_joint_vc[0][3] = GetPHScene()->CreateJoint(fg_base[0][3], fg_obj[0][3], Springdesc)->Cast();
             fg_joint_vc[1][3] = GetPHScene()->CreateJoint(fg_base[1][3], fg_obj[1][3], Springdesc)->Cast();
 
             //初期位置
-            fg_base[0][3]->SetFramePosition(Vec3d(0.0, 0.2, 3.0));
-            fg_base[1][3]->SetFramePosition(Vec3d(0.0, 0.2, -3.0));
+            fg_base[0][3]->SetFramePosition(Vec3d(0.0, 0.2, 1.0));
+            fg_base[1][3]->SetFramePosition(Vec3d(0.0, 0.2, -1.0));
 
-            fg_obj[0][3]->SetFramePosition(Vec3d(0.0, 0.2, 3.0));
-            fg_obj[1][3]->SetFramePosition(Vec3d(0.0, 0.2, -3.0));
+            fg_obj[0][3]->SetFramePosition(Vec3d(0.0, 0.2, 1.0));
+            fg_obj[1][3]->SetFramePosition(Vec3d(0.0, 0.2, -1.0));
 
         }
     }
@@ -1272,11 +1313,16 @@ public:
 
 
             fg_obj_pos[0] = fg_obj[0][3]->GetFramePosition();
-            //if (jointLength(fg_obj_pos[0],fg_pos[0])>0.05) {
-            //    fg_base[0][3]->SetFramePosition(Vec3d(fg_pos[0].x, fg_pos[0].y + 0.001, fg_pos[0].z));
-            //    fg_base[1][3]->SetFramePosition(Vec3d(fg_pos[1].x, fg_pos[1].y + 0.001, fg_pos[1].z));
-
-            //}
+            if (jointLength(fg_obj_pos[0],fg_pos[0])>0.05) {
+                if (fg_pos[0].y < 0.7) {
+                    fg_base[0][3]->SetFramePosition(Vec3d(fg_pos[0].x, fg_pos[0].y + 0.001, fg_pos[0].z));
+                    fg_base[1][3]->SetFramePosition(Vec3d(fg_pos[1].x, fg_pos[1].y + 0.001, fg_pos[1].z));
+                }
+            }
+            if (fg_pos[0].y >= 0.65) {
+                fg_base[0][3]->SetFramePosition(Vec3d(fg_pos[0].x, fg_pos[0].y , fg_pos[0].z+0.001));
+                fg_base[1][3]->SetFramePosition(Vec3d(fg_pos[1].x, fg_pos[1].y , fg_pos[1].z-0.001));
+            }
         }
         else {
             frame = GetFrame();
@@ -1448,7 +1494,7 @@ public:
                         //}
                     }
                     else if (type == 3) {
-
+                        
                         for (int i = 0; i < 5; i++) {
                             for (int j = 0; j < 4; j++) {
                                 if (!(i == 0 && j == 0)) {
@@ -1477,6 +1523,7 @@ public:
                                 }
                             }
                         }
+
                         PHSolidPairForLCPIf* solidpair;
                         bool swaped;
                         int state;
@@ -1487,6 +1534,16 @@ public:
                         //if (state == 1 || state == 2) {
                         //    start = clock();
                         //}
+
+                        Vec3d fg_v;
+                        Vec3d fg_a_v;
+                        fg_v = fg_obj[0][3]->GetVelocity();
+                        fg_a_v = fg_obj[0][3]->GetAngularVelocity();
+
+                        std::string csv_filename = "test.csv";
+                        std::ofstream ofs_csv_file;
+                        ofs_csv_file.open(csv_filename, std::ios::app);
+                        ofs_csv_file << fg_v.x << ',' << fg_v.y << ',' << fg_v.z << ',' << fg_a_v.x <<','<< fg_a_v.y <<','<< fg_a_v.z << endl;
 
 
                         //成功or失敗したらcubeを落とす
