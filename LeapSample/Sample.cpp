@@ -481,6 +481,30 @@ public:
 
         return soBone;
     }
+    //fg_obj用のsolid(カプセル)を回転
+    PHSolidIf* CreateBoneCapsuleRound(Vec3d p, Vec3d n, Quaterniond q) {
+        PHSolidIf* soBone = GetPHScene()->CreateSolid();
+        CDCapsuleDesc cd;
+
+        //8.5
+        cd.radius = 8.5f / 1000.0f * (float)scale;
+        cd.length = (float)sqrt((p.x - n.x) * (p.x - n.x) + (p.y - n.y) * (p.y - n.y) + (p.z - n.z) * (p.z - n.z));
+        cd.length /= 2.0;
+
+        shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
+        shapeCapsule->SetDensity(density);
+        shapeCapsule->SetStaticFriction(friction);
+        shapeCapsule->SetDynamicFriction(friction);
+
+        soBone->AddShape(shapeCapsule);
+        
+        soBone->SetShapePose(0, Posed(Vec3d(), q));
+        soBone->SetGravity(false);
+
+        soBone->CompInertia();
+
+        return soBone;
+    }
     //fg_obj用のsolid(roundcone)
     PHSolidIf* CreateBoneRoundCone(Vec3d p, Vec3d n) {
         PHSolidIf* soBone = GetPHScene()->CreateSolid();
@@ -814,7 +838,7 @@ public:
         //GetFWScene()->EnableRenderForce(false, false);
         GetFWScene()->SetForceScale(0.001f, 0.001f);
         printf("手をかざしてお待ちください。\n");
-        cout << "0:no slider\n1:slider\n2:delete sliderjoint\n3:0の改良。指先にしか当たり判定が無い\n4:オートで操作（未実装）" << endl;
+        cout << "0:no slider\n1:slider\n2:delete sliderjoint\n3:0の改良。指先にしか当たり判定が無い\n4:オートで操作" << endl;
         cout << "type = ";
         cin >> type;
 
@@ -1257,13 +1281,16 @@ public:
 
             //tool
             //fg_obj[0][3] = CreateBoneSphere();
-            fg_obj[0][3] = CreateBoneCapsule(Vec3d(0.2, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0));
-            GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE, fg_obj[0][3]);
-
+            //fg_obj[0][3] = CreateBoneCapsule(Vec3d(0.2, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0));
+            fg_obj[0][3] = CreateBoneCapsuleRound(Vec3d(0.2, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0), Quaterniond::Rot(Rad(-30.0), 'x'));
+           
             //fg_obj[1][3] = CreateBoneSphere();
-            fg_obj[1][3] = CreateBoneCapsule(Vec3d(0.2, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0));
+            //fg_obj[1][3] = CreateBoneCapsule(Vec3d(0.2, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0));
+            fg_obj[1][3] = CreateBoneCapsuleRound(Vec3d(0.2, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0), Quaterniond::Rot(Rad(30.0), 'x'));
 
+            GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE, fg_obj[0][3]);
             GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE, fg_obj[1][3]);
+ 
 
             GetPHScene()->SetContactMode(fg_obj[0][3], PHSceneDesc::MODE_NONE);
             GetPHScene()->SetContactMode(fg_obj[1][3], PHSceneDesc::MODE_NONE);
