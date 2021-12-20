@@ -314,6 +314,11 @@ static void* serviceMessageLoop(void * unused){
         printf("Unhandled message type %i.\n", msg.type);
     } //switch on msg.type
   }
+  pollingThread = INVALID_HANDLE_VALUE;
+  if (pollingThread != INVALID_HANDLE_VALUE) {
+      CloseHandle(pollingThread);
+      pollingThread = INVALID_HANDLE_VALUE;
+  }
 #if !defined(_MSC_VER)
   return NULL;
 #endif
