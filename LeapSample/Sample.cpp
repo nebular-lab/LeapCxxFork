@@ -176,11 +176,11 @@ public:
 
     double scale = 3.0;
     double move_scale = 1.5;
-    float friction = 1.0;
+    float friction = 100.0;
     float density = 1000.0;
     int contact = 0;
     int sorf = 0;//sucsess or failureの頭文字　0:タスク中　1:success 2:failure
-    float cube_density = 2500.0;
+    float cube_density = 2000.0;
 
     LEAP_TRACKING_EVENT* frame;
     LEAP_HAND* hand;
@@ -298,7 +298,7 @@ public:
         // 1:slider
         // 2:delete sliderjoint
         // 3:0の改良。指先にしか当たり判定が無い
-        // 4:オートで操作（未実装）
+        // 4:オートで操作
         //type = 2;
 
     }
@@ -446,7 +446,7 @@ public:
     PHSolidIf* CreateBone_base() {
         PHSolidIf* soBone = GetPHScene()->CreateSolid();
         CDSphereDesc sd;
-        sd.radius = 10.0f / 1000.0f * (float)scale;
+        sd.radius = 8.5f / 1000.0f * (float)scale;
 
         shapeSphere = GetSdk()->GetPHSdk()->CreateShape(sd)->Cast();
 
@@ -723,7 +723,7 @@ public:
         // 形状の割当て
         if (shape == SHAPE_BOX) {
             CDBoxDesc bd;
-            bd.boxsize = Vec3d(4.0, 8.0, 4.0)/100.0 * scale;  //単位 m^3
+            bd.boxsize = Vec3d(4.0, 6.0, 4.0)/100.0 * scale;  //単位 m^3
             shapeBox->SetDynamicFriction(friction);
             shapeBox->SetStaticFriction(friction);
             shapeBox->SetDensity(cube_density);//単位 kg/m^3
@@ -828,7 +828,7 @@ public:
         ed.contactCorrectionRate = 0.5;
         GetPHScene()->GetConstraintEngine()->SetDesc(&ed);
         GetPHScene()->SetGravity(Vec3f(0.0f, -9.8f*0.5f, 0.0f));	// 重力を設定
-        GetPHScene()->SetTimeStep(0.02);
+        GetPHScene()->SetTimeStep(0.015);
         GetPHScene()->SetNumIteration(75);
 
         soFloor = CreateFloor(true);
@@ -838,7 +838,7 @@ public:
         //GetFWScene()->EnableRenderForce(false, false);
         GetFWScene()->SetForceScale(0.001f, 0.001f);
         printf("手をかざしてお待ちください。\n");
-        cout << "0:no slider\n1:slider\n2:delete sliderjoint\n3:0の改良。指先にしか当たり判定が無い\n4:オートで操作" << endl;
+        cout << "0:no slider\n1:slider\n2:delete sliderjoint\n3:contact on fingertip only\n4:auto\n5:two finger" << endl;
         cout << "type = ";
         cin >> type;
 
@@ -868,8 +868,8 @@ public:
         double damper;
         spring = 10000.0;
         damper = 10.0;
-        Springdesc.spring = Vec3d(spring, spring, spring);
-        Springdesc.damper = Vec3d(damper, damper, damper);
+        Springdesc.spring = 0.3*Vec3d(spring, spring, spring);
+        Springdesc.damper = 0.3*Vec3d(damper, damper, damper);
         Springdesc.springOri = spring;
         Springdesc.damperOri = damper;
         if (type == 0) {
@@ -1197,6 +1197,8 @@ public:
                     if (!(i == 0 && j == 0)) {
                         fg_base_slide[i][j][0] = CreateBone_base();
                         fg_base_slide[i][j][1] = CreateBone_base();
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, fg_base_slide[i][j][0]);
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN, fg_base_slide[i][j][1]);
                     }
                 }
             }
@@ -1212,6 +1214,8 @@ public:
                             fg_obj[i][j] = CreateBoneCapsule(fg_pos[i][j][0], fg_pos[i][j][1]);
 
                         }
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE,fg_obj[i][j]);
+
                         GetPHScene()->SetContactMode(fg_obj[i][j], PHSceneDesc::MODE_NONE);
                     }
                 }
@@ -1310,6 +1314,35 @@ public:
 
             fg_obj[0][3]->SetFramePosition(Vec3d(0.0, 0.2, 1.0));
             fg_obj[1][3]->SetFramePosition(Vec3d(0.0, 0.2, -1.0));
+
+        }
+        if (type == 5) {
+
+            //interface object
+            fg_base[0][3] = CreateBone_base();
+            GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_base[0][3]);
+            fg_base[1][3] = CreateBone_base();
+            GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_base[1][3]);
+
+            GetPHScene()->SetContactMode(fg_base[0][3], PHSceneDesc::MODE_NONE);
+            GetPHScene()->SetContactMode(fg_base[1][3], PHSceneDesc::MODE_NONE);
+
+            //tool object
+
+            fg_obj[0][3] = CreateBoneSphere();
+            fg_obj[1][3] = CreateBoneSphere();
+
+            GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE, fg_obj[0][3]);
+            GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE, fg_obj[1][3]);
+
+            GetPHScene()->SetContactMode(fg_obj[0][3], PHSceneDesc::MODE_NONE);
+            GetPHScene()->SetContactMode(fg_obj[1][3], PHSceneDesc::MODE_NONE);
+            GetPHScene()->SetContactMode(fg_obj[0][3], cube, PHSceneDesc::MODE_LCP);
+            GetPHScene()->SetContactMode(fg_obj[1][3], cube, PHSceneDesc::MODE_LCP);
+
+            //virtual coupling
+            fg_joint_vc[0][3] = GetPHScene()->CreateJoint(fg_base[0][3], fg_obj[0][3], Springdesc)->Cast();
+            fg_joint_vc[1][3] = GetPHScene()->CreateJoint(fg_base[1][3], fg_obj[1][3], Springdesc)->Cast();
 
         }
     }
@@ -1616,7 +1649,46 @@ public:
                             sorf = 0;
                         }
                     }
+                    else if (type == 5) {
+                        // finger position from leapmotion
+                        fg_pos[0][3][1] = vecvec3_3(hand->digits[0].bones[3].next_joint);
+                        fg_pos[1][3][1] = vecvec3_3(hand->digits[1].bones[3].next_joint);
 
+                        // finger rotation from leapmotion
+                        fg_ori[0][3] = quaquad(hand->digits[0].bones[3].rotation);
+                        fg_ori[0][3] = x90 * fg_ori[0][3];
+                        fg_ori[0][3] = y180 * fg_ori[0][3];
+                        fg_ori[1][3] = quaquad(hand->digits[1].bones[3].rotation);
+                        fg_ori[1][3] = x90 * fg_ori[1][3];
+                        fg_ori[1][3] = y180 * fg_ori[1][3];
+
+                        // Update position and orientation
+                        fg_base[0][3]->SetFramePosition(fg_pos[0][3][1]);
+                        fg_base[1][3]->SetFramePosition(fg_pos[1][3][1]);
+                        fg_base[0][3]->SetOrientation(fg_ori[0][3]);
+                        fg_base[1][3]->SetOrientation(fg_ori[1][3]);
+
+                        // If the cube falls into the hole, set again
+                        Vec3d cube_pos;
+                        cube_pos = cube->GetFramePosition();
+                        if (sorf == 0 && cube_pos.x > 0.5 && cube_pos.x<0.65 && cube_pos.z>-0.075 && cube_pos.z<0.075 && cube_pos.y>-2.0 && cube_pos.y < -1.0) {
+                            end = clock();
+                            std::ofstream writing_file;
+                            std::string filename = "sample.txt";
+                            writing_file.open(filename, std::ios::app);
+                            //std::string writing_text = "test";
+                            writing_file << ((float)end - start) / CLOCKS_PER_SEC << std::endl;
+                            writing_file.close();
+                            sorf = 1;
+                        }
+                        if (sorf == 1 || sorf == 2) {
+                            Vec3d v, w(0.0, 0.0, 0.2), p(0.5, 10, 0.0);
+                            static Quaterniond q = Quaterniond::Rot(Rad(0.0), 'y');
+                            q = Quaterniond::Rot(Rad(90), 'y') * q;
+                            Drop(SHAPE_BOX, GRRenderIf::RED, v, w, p, q);
+                            sorf = 0;
+                        }
+                    }
                 }
             }
         }
