@@ -174,13 +174,13 @@ public:
     int step_count;
     int leap_count;
 
-    double scale = 3.0;
+    double scale = 2.0;
     double move_scale = 1.5;
     float friction = 100.0;
     float density = 1000.0;
     int contact = 0;
     int sorf = 0;//sucsess or failureの頭文字　0:タスク中　1:success 2:failure
-    float cube_density = 2000.0;
+    float cube_density = 1000.0;
 
     LEAP_TRACKING_EVENT* frame;
     LEAP_HAND* hand;
@@ -323,7 +323,7 @@ public:
         double from_center;
         double width;
         from_center = 0.5;
-        width = 0.15;
+        width = 0.25;
         soFloor->AddShape(shapeFloor);
         soFloor->SetShapePose(0, Posed::Trn(30.0+from_center+width, -shapeFloor->GetBoxSize().y /2+0.1, 0));
         if (bWall) {
@@ -343,6 +343,11 @@ public:
         soFloor->SetShapePose(5, Posed::Trn(-30.0+from_center, -shapeFloor->GetBoxSize().y / 2 + 0.1, 0));
         soFloor->SetShapePose(6, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2 + 0.1, 20.0+width/2));
         soFloor->SetShapePose(7, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2 + 0.1, -20.0 - width / 2));
+        CDBoxDesc wz;
+        wz = Vec3d(0.1, 0.7, 40.0);
+        shapeWallZ = GetSdk()->GetPHSdk()->CreateShape(wz)->Cast();
+        soFloor->AddShape(shapeWallZ);
+        soFloor->SetShapePose(8, Posed::Trn(0.3, 0, 0));
         GetFWScene()->SetSolidMaterial(GRRenderIf::GRAY, soFloor);
         soFloor->CompInertia();
 
@@ -389,8 +394,7 @@ public:
         soBone->SetShapePose(1, Posed(Vec3d(0.0, 0.0, 0.0) * (double)BlenderToSpr, Quaterniond::Rot(Rad(-90.0), 'y')));
         soBone->SetShapePose(2, Posed(Vec3d(0.0, 0.0, 0.38 * 2.0) * (double)BlenderToSpr, Quaterniond::Rot(Rad(0.0), 'y')));//180かも
 
-        soBone->CompInertia();
-        //soBone->SetMass(1.0f);
+        //soBone->CompInertia();
         soBone->SetGravity(false);
         return soBone;
 
@@ -446,7 +450,7 @@ public:
     PHSolidIf* CreateBone_base() {
         PHSolidIf* soBone = GetPHScene()->CreateSolid();
         CDSphereDesc sd;
-        sd.radius = 8.5f / 1000.0f * (float)scale;
+        sd.radius = 1.0f / 1000.0f * (float)scale;
 
         shapeSphere = GetSdk()->GetPHSdk()->CreateShape(sd)->Cast();
 
@@ -477,7 +481,7 @@ public:
 
         soBone->SetGravity(false);
 
-        soBone->CompInertia();
+        //soBone->CompInertia();
 
         return soBone;
     }
@@ -723,7 +727,7 @@ public:
         // 形状の割当て
         if (shape == SHAPE_BOX) {
             CDBoxDesc bd;
-            bd.boxsize = Vec3d(4.0, 6.0, 4.0)/100.0 * scale;  //単位 m^3
+            bd.boxsize = Vec3d(4.0, 4.0, 4.0)/100.0 * scale;  //単位 m^3
             shapeBox->SetDynamicFriction(friction);
             shapeBox->SetStaticFriction(friction);
             shapeBox->SetDensity(cube_density);//単位 kg/m^3
@@ -868,10 +872,11 @@ public:
         double damper;
         spring = 10000.0;
         damper = 10.0;
-        Springdesc.spring = 0.3*Vec3d(spring, spring, spring);
-        Springdesc.damper = 0.3*Vec3d(damper, damper, damper);
+        Springdesc.spring = 0.5*Vec3d(spring, spring, spring);
+        Springdesc.damper = 0.5*Vec3d(damper, damper, damper);
         Springdesc.springOri = spring;
         Springdesc.damperOri = damper;
+
         if (type == 0) {
 
             for (int i = 0; i < 5; i++) {
@@ -1208,7 +1213,8 @@ public:
                     if (!(i == 0 && j == 0)) {
                         if (j == 3) {
                             //fg_obj[i][j] = CreateBoneCapsule(fg_pos[i][j][0], fg_pos[i][j][1]);
-                            fg_obj[i][j] = CreateBoneSphere();
+                            //fg_obj[i][j] = CreateBoneSphere();
+                            fg_obj[i][j] = CreateBone(0.45);
                         }
                         else {
                             fg_obj[i][j] = CreateBoneCapsule(fg_pos[i][j][0], fg_pos[i][j][1]);
@@ -1226,16 +1232,17 @@ public:
                     if (!(i == 0 && j == 0)) {
                         spring_slide[i][j][0].posePlug.Pos() = Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0);
                         spring_slide[i][j][1].posePlug.Pos() = Vec3d(0.0, 0.0,  jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0);
-                        
-                        spring_slide[i][j][0].spring = Vec3d(1000.0, 1000.0, 1000.0);
-                        spring_slide[i][j][0].damper = Vec3d(10.0, 10.0, 10.0);
-                        spring_slide[i][j][0].springOri = 1000.0;
-                        spring_slide[i][j][0].damperOri = 10.0;
+                        spring = 10000.0;
+                        damper = 10.0;
+                        spring_slide[i][j][0].spring = 0.1*Vec3d(spring, spring, spring);
+                        spring_slide[i][j][0].damper = 0.1*Vec3d(damper, damper, damper);
+                        spring_slide[i][j][0].springOri = spring;
+                        spring_slide[i][j][0].damperOri = damper;
 
-                        spring_slide[i][j][1].spring = Vec3d(1000.0, 1000.0, 1000.0);
-                        spring_slide[i][j][1].damper = Vec3d(10.0, 10.0, 10.0);
-                        spring_slide[i][j][1].springOri = 1000.0;
-                        spring_slide[i][j][1].damperOri = 10.0;
+                        spring_slide[i][j][1].spring = 0.1*Vec3d(spring, spring, spring);
+                        spring_slide[i][j][1].damper = 0.1*Vec3d(damper, damper, damper);
+                        spring_slide[i][j][1].springOri = spring;
+                        spring_slide[i][j][1].damperOri = damper;
                         
                         fg_joint_vc_slide[i][j][0] = GetPHScene()->CreateJoint(fg_base_slide[i][j][0], fg_obj[i][j], spring_slide[i][j][0])->Cast();
                         fg_joint_vc_slide[i][j][1] = GetPHScene()->CreateJoint(fg_base_slide[i][j][1], fg_obj[i][j], spring_slide[i][j][1])->Cast();
@@ -1285,7 +1292,7 @@ public:
 
             //tool側の剛体の作成
             // 
-            // sphereは球、capsuleは長さ0.2の長さのカプセル、capsuleRoundは0.2の長さのカプセルと回転させられる
+            // sphereは球、capsuleは長さ0.2の長さのカプセル、capsuleRoundは0.2の長さのカプセルを回転させられる
             // 
             //fg_obj[0][3] = CreateBoneSphere();
             //fg_obj[0][3] = CreateBoneCapsule(Vec3d(0.2, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0));
@@ -1401,6 +1408,7 @@ public:
             if (fg_pos[0].y >= 0.65) {
                 fg_base[0][3]->SetFramePosition(Vec3d(fg_pos[0].x, fg_pos[0].y , fg_pos[0].z+0.001));
                 fg_base[1][3]->SetFramePosition(Vec3d(fg_pos[1].x, fg_pos[1].y , fg_pos[1].z-0.001));
+                BuildScene();
             }
         }
         else {
