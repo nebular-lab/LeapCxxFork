@@ -176,9 +176,10 @@ public:
 
     double scale = 2.0;
     double move_scale = 1.5;
-    float friction = 100.0;
+    float friction = 1.0;
     float fingerfriction = 2.5;
-    float jengafriction = 1.0;
+    float jengafriction =1.0;
+    float jengafriction_green = 1.0;
     float density = 1000.0;
     int contact = 0;
     int sorf = 0;//sucsess or failureの頭文字　0:タスク中　1:success 2:failure
@@ -243,6 +244,7 @@ public:
 
     PHSolidIf* jenga[9];
     double jenga_x, jenga_y, jenga_z;
+    int isjenga=0;
 
     PHSolidIf* box[16];
 
@@ -489,8 +491,8 @@ public:
 
         shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
         shapeCapsule->SetDensity(density);
-        shapeCapsule->SetStaticFriction(friction);
-        shapeCapsule->SetDynamicFriction(friction);
+        shapeCapsule->SetStaticFriction(fingerfriction);
+        shapeCapsule->SetDynamicFriction(fingerfriction);
 
         soBone->AddShape(shapeCapsule);
 
@@ -670,6 +672,8 @@ public:
         return jenga;
     }
     PHSolidIf* Createjenga_2() {
+        //green
+
         PHSolidIf* jenga;
         CDBoxIf* shapejenga;
         CDBoxDesc jengadesc;
@@ -678,8 +682,8 @@ public:
         jenga_z = 4.0;
         jengadesc.boxsize = Vec3d(jenga_x * 0.95, jenga_y * 0.95, jenga_z * 0.95) / 100.0 * scale;
         shapejenga = GetSdk()->GetPHSdk()->CreateShape(jengadesc)->Cast();
-        shapejenga->SetStaticFriction(jengafriction);
-        shapejenga->SetDynamicFriction(jengafriction);
+        shapejenga->SetStaticFriction(jengafriction_green);
+        shapejenga->SetDynamicFriction(jengafriction_green);
         shapejenga->SetDensity(cube_density);
 
 
@@ -951,6 +955,7 @@ public:
 
         soFloor = CreateFloor(true);
         GetCurrentWin()->GetTrackball()->SetPosition(Vec3d(0.0,2.5,10.0));
+        GetCurrentWin()->GetTrackball()->SetTarget(Vec3d(6.0, 0.0, -6.0) / 100.0 * scale);
 
         GetFWScene()->EnableRenderAxis(false, false, false);
         //GetFWScene()->EnableRenderForce(false, false);
@@ -1786,6 +1791,16 @@ public:
                             Drop(SHAPE_BOX, GRRenderIf::RED, v, w, p, q);
                             sorf = 0;
                         }
+                        if (isjenga==1&&jenga[4]->GetFramePosition().x > 6.0 / 100.0 * scale) {
+                            end = clock();
+                            std::ofstream writing_file;
+                            std::string filename = "sample.txt";
+                            writing_file.open(filename, std::ios::app);
+                            //std::string writing_text = "test";
+                            writing_file << "成功"<<((float)end - start) / CLOCKS_PER_SEC << std::endl;
+                            writing_file.close();
+                            start = clock();
+                        }
                     }
                     else if (type == 5) {
                         // finger position from leapmotion
@@ -1858,9 +1873,14 @@ public:
                 for (int i = 0; i < 9; i++) {
                     if (i == 4) {
                         jenga[i] = Createjenga_2();
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::GREEN,jenga[i]);
+
                     }
                     else {
                         jenga[i] = Createjenga();
+                        isjenga = 1;
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::RED, jenga[i]);
+
                     }
                 }
 
@@ -1873,7 +1893,7 @@ public:
 
                 jenga[3]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0,jenga_y / 2+jenga_y, jenga_z) / 100.0 * scale);
                 jenga[3]->SetOrientation(Quaterniond::Rot(Rad(0.0), 'y'));
-                jenga[4]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0.4,jenga_y / 2+jenga_y, 0) / 100.0 * scale);
+                jenga[4]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0.7,jenga_y / 2+jenga_y, 0) / 100.0 * scale);
                 jenga[4]->SetOrientation(Quaterniond::Rot(Rad(0.0), 'y'));
                 jenga[5]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0,jenga_y / 2+jenga_y, -jenga_z) / 100.0 * scale);
                 jenga[5]->SetOrientation(Quaterniond::Rot(Rad(0.0), 'y'));
@@ -1913,7 +1933,7 @@ public:
                 std::string filename = "sample.txt";
                 writing_file.open(filename, std::ios::app);
                 //std::string writing_text = "test";
-                writing_file << ((float)end - start) / CLOCKS_PER_SEC << std::endl;
+                writing_file <<"リセット" <<((float)end - start) / CLOCKS_PER_SEC << std::endl;
                 writing_file.close();
 
                 jenga[4]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0.4, jenga_y / 2 + jenga_y, 0) / 100.0 * scale);
@@ -1932,6 +1952,8 @@ public:
                     }
                     else {
                         jenga[i] = Createjenga();
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::RED, jenga[i]);
+
                     }
                 }
                 jenga[0]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0, jenga_y / 2, jenga_z) / 100.0 * scale);
@@ -1940,9 +1962,9 @@ public:
                 jenga[1]->SetOrientation(Quaterniond::Rot(Rad(0.0), 'y'));
                 jenga[2]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0, jenga_y / 2, -jenga_z) / 100.0 * scale);
                 jenga[2]->SetOrientation(Quaterniond::Rot(Rad(0.0), 'y'));
-                jenga[3]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(jenga_x/2+jenga_z/2, jenga_y / 2, 0) / 100.0 * scale);
+                jenga[3]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(jenga_x/2+jenga_z/2-0.3, jenga_y / 2, 0) / 100.0 * scale);
                 jenga[3]->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
-                jenga[4]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(-jenga_x / 2 - jenga_z / 2, jenga_y / 2, 0) / 100.0 * scale);
+                jenga[4]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(-jenga_x / 2 - jenga_z / 2-0.3, jenga_y / 2, 0) / 100.0 * scale);
                 jenga[4]->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
 
                 for (int i = 0; i < 5; i++) {
