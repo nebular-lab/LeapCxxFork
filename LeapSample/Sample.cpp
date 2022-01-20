@@ -177,10 +177,17 @@ public:
     double scale = 2.0;
     double move_scale = 1.5;
     float friction = 100.0;
+    float fingerfriction = 2.5;
+    float jengafriction = 1.0;
     float density = 1000.0;
     int contact = 0;
     int sorf = 0;//sucsess or failureの頭文字　0:タスク中　1:success 2:failure
-    float cube_density = 1000.0;
+    float cube_density = 2500.0;
+
+
+    clock_t start=clock();
+    clock_t end = clock();
+
 
     LEAP_TRACKING_EVENT* frame;
     LEAP_HAND* hand;
@@ -230,7 +237,14 @@ public:
     PHBallJointDesc Balldesc[5][3];
     PHSliderJointDesc Sliderdesc;
 
+    CDSphereIf* cs;
+
     PHSolidIf* cube;//落とす物体
+
+    PHSolidIf* jenga[9];
+    double jenga_x, jenga_y, jenga_z;
+
+    PHSolidIf* box[16];
 
     PHSpringDesc oyahitodesc;
 
@@ -240,7 +254,7 @@ public:
     Quaterniond x90;
     Quaterniond y180;
 
-    clock_t start, end;
+
     CDBoxIf* shapeBoxBone;
     CDEllipsoidIf* shapenail;
     CDEllipsoidIf* shapepad;
@@ -323,9 +337,10 @@ public:
         double from_center;
         double width;
         from_center = 0.5;
-        width = 0.25;
+        width = 0;
         soFloor->AddShape(shapeFloor);
-        soFloor->SetShapePose(0, Posed::Trn(30.0+from_center+width, -shapeFloor->GetBoxSize().y /2+0.1, 0));
+        //soFloor->SetShapePose(0, Posed::Trn(30.0 + from_center + width, -shapeFloor->GetBoxSize().y / 2 + 0.1, 0));
+        soFloor->SetShapePose(0, Posed::Trn(0, -shapeFloor->GetBoxSize().y /2+0.1, 0));
         if (bWall) {
             soFloor->AddShape(shapeWallZ);
             soFloor->AddShape(shapeWallX);
@@ -337,17 +352,19 @@ public:
             soFloor->SetShapePose(3, Posed::Trn((shapeFloor->GetBoxSize().x + shapeWallZ->GetBoxSize().x) / 2, y, 0));
             soFloor->SetShapePose(4, Posed::Trn(0, y, (shapeFloor->GetBoxSize().z + shapeWallX->GetBoxSize().z) / 2));
         }
-        soFloor->AddShape(shapeFloor);
-        soFloor->AddShape(shapeFloor);
-        soFloor->AddShape(shapeFloor);
-        soFloor->SetShapePose(5, Posed::Trn(-30.0+from_center, -shapeFloor->GetBoxSize().y / 2 + 0.1, 0));
-        soFloor->SetShapePose(6, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2 + 0.1, 20.0+width/2));
-        soFloor->SetShapePose(7, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2 + 0.1, -20.0 - width / 2));
-        CDBoxDesc wz;
-        wz = Vec3d(0.1, 0.7, 40.0);
-        shapeWallZ = GetSdk()->GetPHSdk()->CreateShape(wz)->Cast();
-        soFloor->AddShape(shapeWallZ);
-        soFloor->SetShapePose(8, Posed::Trn(0.3, 0, 0));
+
+        //soFloor->AddShape(shapeFloor);
+        //soFloor->AddShape(shapeFloor);
+        //soFloor->AddShape(shapeFloor);
+        //soFloor->SetShapePose(5, Posed::Trn(-30.0+from_center, -shapeFloor->GetBoxSize().y / 2 + 0.1, 0));
+        //soFloor->SetShapePose(6, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2 + 0.1, 20.0+width/2));
+        //soFloor->SetShapePose(7, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2 + 0.1, -20.0 - width / 2));
+        // 
+        //CDBoxDesc wz;
+        //wz = Vec3d(0.1, 0.7, 40.0);
+        //shapeWallZ = GetSdk()->GetPHSdk()->CreateShape(wz)->Cast();
+        //soFloor->AddShape(shapeWallZ);
+        //soFloor->SetShapePose(8, Posed::Trn(0.3, 0, 0));
         GetFWScene()->SetSolidMaterial(GRRenderIf::GRAY, soFloor);
         soFloor->CompInertia();
 
@@ -359,31 +376,29 @@ public:
     PHSolidIf* CreateBone(float width) {
 
         float BlenderToSpr = width / 2.48 / 15;
-        printf("width=%f,BlenderToSpr=%f", width, BlenderToSpr);
         PHSolidIf* soBone = GetPHScene()->CreateSolid();
 
         CDEllipsoidDesc nail;
-        //nail.radius = Vec3d(1.69, 0.179, 1.12)*(double)BlenderToSpr;
         nail.radius = Vec3d(1.69f, 0.179f, 1.12f) * (double)BlenderToSpr;
         shapenail = GetSdk()->GetPHSdk()->CreateShape(nail)->Cast();
         shapenail->SetDensity(density);
-        shapenail->SetStaticFriction(friction);
-        shapenail->SetDynamicFriction(friction);
+        shapenail->SetStaticFriction(fingerfriction);
+        shapenail->SetDynamicFriction(fingerfriction);
 
         CDEllipsoidDesc pad;
         pad.radius = Vec3d(2.79, 1.26, 1.5) * (double)BlenderToSpr;
         shapepad = GetSdk()->GetPHSdk()->CreateShape(pad)->Cast();
         shapepad->SetDensity(density);
-        shapepad->SetStaticFriction(friction);
-        shapepad->SetDynamicFriction(friction);
+        shapepad->SetStaticFriction(fingerfriction);
+        shapepad->SetDynamicFriction(fingerfriction);
 
         CDCapsuleDesc bone;
         bone.radius = 1.24 * BlenderToSpr;
         bone.length = (2.0f - 1.24f) * 2.0f * BlenderToSpr;
         shapebone = GetSdk()->GetPHSdk()->CreateShape(bone)->Cast();
         shapebone->SetDensity(density);
-        shapebone->SetStaticFriction(friction);
-        shapebone->SetDynamicFriction(friction);
+        shapebone->SetStaticFriction(fingerfriction);
+        shapebone->SetDynamicFriction(fingerfriction);
 
         soBone->AddShape(shapenail);
         soBone->AddShape(shapepad);
@@ -419,16 +434,16 @@ public:
         pad.radius = Vec3d(2.79, 1.26, 1.5) * (double)BlenderToSpr;
         shapepad = GetSdk()->GetPHSdk()->CreateShape(pad)->Cast();
         shapepad->SetDensity(density);
-        shapepad->SetStaticFriction(friction);
-        shapepad->SetDynamicFriction(friction);
+        shapepad->SetStaticFriction(fingerfriction);
+        shapepad->SetDynamicFriction(fingerfriction);
 
         CDCapsuleDesc bone;
         bone.radius = 1.24f * BlenderToSpr;
         bone.length = (2.0f - 1.24f) * 2.0f * BlenderToSpr;
         shapebone = GetSdk()->GetPHSdk()->CreateShape(bone)->Cast();
         shapebone->SetDensity(density);
-        shapebone->SetStaticFriction(friction);
-        shapebone->SetDynamicFriction(friction);
+        shapebone->SetStaticFriction(fingerfriction);
+        shapebone->SetDynamicFriction(fingerfriction);
 
         //soBone->AddShape(shapenail);
         soBone->AddShape(shapepad);
@@ -632,6 +647,89 @@ public:
         return soPalm;
     }
 
+    PHSolidIf* Createjenga() {
+        PHSolidIf* jenga;
+        CDBoxIf* shapejenga;
+        CDBoxDesc jengadesc;
+        jenga_x = 12.0;
+        jenga_y = 4.0;
+        jenga_z = 4.0;
+        jengadesc.boxsize = Vec3d(jenga_x*0.95,jenga_y*0.95,jenga_z*0.95)/100.0*scale;
+        shapejenga = GetSdk()->GetPHSdk()->CreateShape(jengadesc)->Cast();
+        shapejenga->SetStaticFriction(jengafriction);
+        shapejenga->SetDynamicFriction(jengafriction);
+        shapejenga->SetDensity(cube_density);
+
+
+        jenga= GetPHScene()->CreateSolid();
+        jenga->AddShape(shapejenga);
+        jenga->SetVelocity(Vec3d(0.0,0.0,0.0));
+        jenga->SetAngularVelocity(Vec3d(0.0, 0.0, 0.0));
+        jenga->CompInertia();
+        jenga->SetDynamical(false);
+        return jenga;
+    }
+    PHSolidIf* Createjenga_2() {
+        PHSolidIf* jenga;
+        CDBoxIf* shapejenga;
+        CDBoxDesc jengadesc;
+        jenga_x = 12.0;
+        jenga_y = 4.0;
+        jenga_z = 4.0;
+        jengadesc.boxsize = Vec3d(jenga_x * 0.95, jenga_y * 0.95, jenga_z * 0.95) / 100.0 * scale;
+        shapejenga = GetSdk()->GetPHSdk()->CreateShape(jengadesc)->Cast();
+        shapejenga->SetStaticFriction(jengafriction);
+        shapejenga->SetDynamicFriction(jengafriction);
+        shapejenga->SetDensity(cube_density);
+
+
+        jenga = GetPHScene()->CreateSolid();
+        jenga->AddShape(shapejenga);
+        jenga->SetVelocity(Vec3d(0.0, 0.0, 0.0));
+        jenga->SetAngularVelocity(Vec3d(0.0, 0.0, 0.0));
+        jenga->CompInertia();
+        jenga->SetDynamical(true);
+        return jenga;
+    }
+    PHSolidIf* Createjenga_3() {
+        PHSolidIf* jenga;
+        CDBoxIf* shapejenga;
+        CDBoxDesc jengadesc;
+        jenga_x = 12.0;
+        jenga_y = 4.0;
+        jenga_z = 4.0;
+        jengadesc.boxsize = Vec3d(jenga_x*0.95 , jenga_y * 1.05, jenga_z * 0.95) / 100.0 * scale;
+        shapejenga = GetSdk()->GetPHSdk()->CreateShape(jengadesc)->Cast();
+        shapejenga->SetStaticFriction(jengafriction);
+        shapejenga->SetDynamicFriction(jengafriction);
+        shapejenga->SetDensity(cube_density);
+
+
+        jenga = GetPHScene()->CreateSolid();
+        jenga->AddShape(shapejenga);
+        jenga->SetVelocity(Vec3d(0.0, 0.0, 0.0));
+        jenga->SetAngularVelocity(Vec3d(0.0, 0.0, 0.0));
+        jenga->CompInertia();
+        jenga->SetDynamical(true);
+        return jenga;
+    }
+    PHSolidIf* CreateBox() {
+        PHSolidIf* box;
+        CDBoxIf* shapebox;
+        CDBoxDesc boxdesc;
+        boxdesc.boxsize = Vec3d(2.0, 2.0, 2.0) / 100 * scale;
+        shapebox= GetSdk()->GetPHSdk()->CreateShape(boxdesc)->Cast();
+        shapebox->SetStaticFriction(jengafriction);
+        shapebox->SetDynamicFriction(jengafriction);
+        shapebox->SetDensity(cube_density);
+
+        box = GetPHScene()->CreateSolid();
+        box->AddShape(shapebox);
+        box->SetAngularVelocity(Vec3d(0.0, 0.0, 0.0));
+        box->CompInertia();
+        box->SetDynamical(true);
+        return box;
+    }
 
 
     Vec3d vecvec3(LEAP_VECTOR vec, LEAP_VECTOR vec2) {
@@ -737,8 +835,8 @@ public:
 
         if (shape == SHAPE_CAPSULE) {
             CDCapsuleDesc cd;
-            cd.radius=1.0f / 100.0f * (float)scale;
-            cd.length = 10.0f / 100.0f * (float)scale;
+            cd.radius=0.4f / 100.0f * (float)scale;
+            cd.length = 12.0f / 100.0f * (float)scale;
             shapeCapsule->SetDynamicFriction(friction);
             shapeCapsule->SetStaticFriction(friction);
             shapeCapsule->SetDensity(cube_density);
@@ -747,8 +845,16 @@ public:
 
         }
 
-        if (shape == SHAPE_ROUNDCONE)
-            cube->AddShape(shapeRoundCone);
+        if (shape == SHAPE_ROUNDCONE) {
+            CDCapsuleDesc cd;
+            cd.radius = 0.4f / 100.0f * (float)scale;
+            cd.length = 12.0f / 100.0f * (float)scale;
+            shapeCapsule->SetDynamicFriction(friction);
+            shapeCapsule->SetStaticFriction(friction);
+            shapeCapsule->SetDensity(cube_density);
+            shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
+            cube->AddShape(shapeCapsule);
+        }
         if (shape == SHAPE_SPHERE)
             cube->AddShape(shapeSphere);
         if (shape == SHAPE_ELLIPSOID){
@@ -818,11 +924,17 @@ public:
         cube->SetOrientation(q);
         cube->CompInertia();
     }
+
+    virtual void Init(int argc, char* argv[]) {
+        SampleApp::Init(argc, argv);
+        timer->SetInterval(GetPHScene()->GetTimeStep() * 1000);
+    }
+
     virtual void BuildScene() {
 
         PHSceneDesc pd;
         GetPHScene()->GetDesc(&pd);
-        pd.timeStep = 1.0 / 60;
+        
         pd.contactTolerance = 0.001 * 0.4;
         pd.airResistanceRateForAngularVelocity = 0.98;
         GetPHScene()->SetDesc(&pd);
@@ -832,8 +944,10 @@ public:
         ed.contactCorrectionRate = 0.5;
         GetPHScene()->GetConstraintEngine()->SetDesc(&ed);
         GetPHScene()->SetGravity(Vec3f(0.0f, -9.8f*0.5f, 0.0f));	// 重力を設定
-        GetPHScene()->SetTimeStep(0.015);
+        GetPHScene()->SetTimeStep(0.02);
         GetPHScene()->SetNumIteration(75);
+
+        
 
         soFloor = CreateFloor(true);
         GetCurrentWin()->GetTrackball()->SetPosition(Vec3d(0.0,2.5,10.0));
@@ -1214,7 +1328,8 @@ public:
                         if (j == 3) {
                             //fg_obj[i][j] = CreateBoneCapsule(fg_pos[i][j][0], fg_pos[i][j][1]);
                             //fg_obj[i][j] = CreateBoneSphere();
-                            fg_obj[i][j] = CreateBone(0.45);
+                            fg_obj[i][j] = CreateBone(0.22*scale);
+                            //fg_obj[i][j] = CreateBoneNo(0.22 * scale);
                         }
                         else {
                             fg_obj[i][j] = CreateBoneCapsule(fg_pos[i][j][0], fg_pos[i][j][1]);
@@ -1223,6 +1338,8 @@ public:
                         GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE,fg_obj[i][j]);
 
                         GetPHScene()->SetContactMode(fg_obj[i][j], PHSceneDesc::MODE_NONE);
+                        //GetPHScene()->SetContactMode(fg_obj[i][j], soFloor,PHSceneDesc::MODE_LCP);
+
                     }
                 }
             }
@@ -1534,7 +1651,7 @@ public:
                             solidpair = GetPHScene()->GetSolidPair(fg_obj_slide[0][3][0], cube, swaped);
                             //state=solidpair->GetContactState(0, 0);
                             //cout << state << endl();
-                            clock_t start, end;
+                            //clock_t start, end;
                             //if (state == 1 || state == 2) {
                             //    start = clock();
                             //}
@@ -1599,9 +1716,22 @@ public:
                                     fg_joint_vc_slide[i][j][0]->SetPlugPose(Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
                                     fg_joint_vc_slide[i][j][1]->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
 
+                                    
                                 }
                             }
                         }
+ 
+                        //Vec3d obj_pos, base_pos;
+                        //double gaplength;
+                        //for (int i = 0; i < 5; i++) {
+                        //    obj_pos = fg_obj[i][3]->GetFramePosition();
+                        //    base_pos = fg_base_slide[i][3][1]->GetFramePosition();
+
+                        //    cs = fg_base_slide[i][3][1]->GetShape(0)->Cast();
+                        //    cs->SetRadius(0.7*jointLength(obj_pos,base_pos));
+                        //    fg_base_slide[i][3][1]->InvalidateBbox();
+                        //}
+
                         for (int i = 0; i < 2; i++) {
                             for (int j = 0; j < 3; j++) {
                                 if (!(i == 0 && j == 0)) {
@@ -1610,7 +1740,7 @@ public:
                                 }
                             }
                         }
-
+                       
                         PHSolidPairForLCPIf* solidpair;
                         bool swaped;
                         int state;
@@ -1715,7 +1845,7 @@ public:
         if (menu == MENU_MAIN) {
             Vec3d v, w(0.0, 0.0, 0.2), p(0.5, 10, 0.0);
             static Quaterniond q = Quaterniond::Rot(Rad(0.0), 'y');
-            q = Quaterniond::Rot(Rad(90), 'y') * q;
+            //Quaterniond q = Quaterniond::Rot(Rad(90), 'y')*q;
 
             if (id == ID_BOX) {
                 Drop(SHAPE_BOX, GRRenderIf::RED, v, w, p, q);
@@ -1723,10 +1853,51 @@ public:
                 //start = clock();
             }
             if (id == ID_CAPSULE) {
-                Drop(SHAPE_CAPSULE, GRRenderIf::GREEN, v, w, p, q);
-                message = "capsule dropped.";
-                //end = clock();
-                //cout << ((float)end - start) / CLOCKS_PER_SEC << endl;
+                //Drop(SHAPE_CAPSULE, GRRenderIf::GREEN, v, w, p, q);
+                //message = "capsule dropped.";
+                for (int i = 0; i < 9; i++) {
+                    if (i == 4) {
+                        jenga[i] = Createjenga_2();
+                    }
+                    else {
+                        jenga[i] = Createjenga();
+                    }
+                }
+
+                jenga[0]->SetFramePosition(Vec3d(0.0,0.1,0.0)+Vec3d(-jenga_z,jenga_y / 2, 0) / 100.0 * scale);
+                jenga[0]->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
+                jenga[1]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0, jenga_y / 2, 0) / 100.0 * scale);
+                jenga[1]->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
+                jenga[2]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(jenga_z,jenga_y / 2, 0) / 100.0 * scale);
+                jenga[2]->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
+
+                jenga[3]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0,jenga_y / 2+jenga_y, jenga_z) / 100.0 * scale);
+                jenga[3]->SetOrientation(Quaterniond::Rot(Rad(0.0), 'y'));
+                jenga[4]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0.4,jenga_y / 2+jenga_y, 0) / 100.0 * scale);
+                jenga[4]->SetOrientation(Quaterniond::Rot(Rad(0.0), 'y'));
+                jenga[5]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0,jenga_y / 2+jenga_y, -jenga_z) / 100.0 * scale);
+                jenga[5]->SetOrientation(Quaterniond::Rot(Rad(0.0), 'y'));
+
+                jenga[6]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(-jenga_z,jenga_y / 2+jenga_y*2, 0) / 100.0 * scale);
+                jenga[6]->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
+                jenga[7]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0, jenga_y / 2+jenga_y*2, 0) / 100.0 * scale);
+                jenga[7]->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
+                jenga[8]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(jenga_z,jenga_y / 2*jenga_y+2, 0) / 100.0 * scale);
+                jenga[8]->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
+
+                for (int i = 0; i < 5; i++) {
+                    for (int j = 0; j < 4; j++) {
+                        if (!(i == 0 && j == 0)) {
+                            for (int k = 0; k < 9; k++) {
+                                GetPHScene()->SetContactMode(fg_base_slide[i][j][0], jenga[k], PHSceneDesc::MODE_NONE);
+                                GetPHScene()->SetContactMode(fg_base_slide[i][j][1], jenga[k], PHSceneDesc::MODE_NONE);
+                                
+                                GetPHScene()->SetContactMode(fg_obj[i][j], jenga[k], PHSceneDesc::MODE_LCP);
+
+                            }
+                        }
+                    }
+                }
             }
             if (id == ID_ROUNDCONE) {
                 Drop(SHAPE_ROUNDCONE, GRRenderIf::BLUE, v, w, p, q);
@@ -1734,23 +1905,89 @@ public:
 
             }
             if (id == ID_SPHERE) {
-                Drop(SHAPE_SPHERE, GRRenderIf::YELLOW, v, w, p, q);
-                message = "sphere dropped.";
+                //Drop(SHAPE_SPHERE, GRRenderIf::YELLOW, v, w, p, q);
+                //message = "sphere dropped.";
+
+                end = clock();
+                std::ofstream writing_file;
+                std::string filename = "sample.txt";
+                writing_file.open(filename, std::ios::app);
+                //std::string writing_text = "test";
+                writing_file << ((float)end - start) / CLOCKS_PER_SEC << std::endl;
+                writing_file.close();
+
+                jenga[4]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0.4, jenga_y / 2 + jenga_y, 0) / 100.0 * scale);
+                jenga[4]->SetOrientation(Quaterniond::Rot(Rad(0.0), 'y'));
+                start = clock();
 
             }
             if (id == ID_ELLIPSOID) {
-                Drop(SHAPE_ELLIPSOID, GRRenderIf::LIGHTGREEN, v, w, p, q);
-                message = "sphere dropped.";
+                //Drop(SHAPE_ELLIPSOID, GRRenderIf::LIGHTGREEN, v, w, p, q);
+                //message = "sphere dropped.";
+                for (int i = 0; i < 5; i++) {
+                    if (i == 1) {
+                        jenga[i] = Createjenga_3();
+                        GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, jenga[i]);
+
+                    }
+                    else {
+                        jenga[i] = Createjenga();
+                    }
+                }
+                jenga[0]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0, jenga_y / 2, jenga_z) / 100.0 * scale);
+                jenga[0]->SetOrientation(Quaterniond::Rot(Rad(0.0), 'y'));
+                jenga[1]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0, jenga_y / 2, 0) / 100.0 * scale);
+                jenga[1]->SetOrientation(Quaterniond::Rot(Rad(0.0), 'y'));
+                jenga[2]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0, jenga_y / 2, -jenga_z) / 100.0 * scale);
+                jenga[2]->SetOrientation(Quaterniond::Rot(Rad(0.0), 'y'));
+                jenga[3]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(jenga_x/2+jenga_z/2, jenga_y / 2, 0) / 100.0 * scale);
+                jenga[3]->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
+                jenga[4]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(-jenga_x / 2 - jenga_z / 2, jenga_y / 2, 0) / 100.0 * scale);
+                jenga[4]->SetOrientation(Quaterniond::Rot(Rad(90.0), 'y'));
+
+                for (int i = 0; i < 5; i++) {
+                    for (int j = 0; j < 4; j++) {
+                        if (!(i == 0 && j == 0)) {
+                            for (int k = 0; k < 5; k++) {
+                                GetPHScene()->SetContactMode(fg_base_slide[i][j][0], jenga[k], PHSceneDesc::MODE_NONE);
+                                GetPHScene()->SetContactMode(fg_base_slide[i][j][1], jenga[k], PHSceneDesc::MODE_NONE);
+
+                                GetPHScene()->SetContactMode(fg_obj[i][j], jenga[k], PHSceneDesc::MODE_LCP);
+
+                            }
+                        }
+                    }
+                }
+
             }
             if (id == ID_ROCK) {
-                Drop(SHAPE_ROCK, GRRenderIf::ORANGE, v, w, p, q);
-                message = "random polyhedron dropped.";
-
+                //Drop(SHAPE_ROCK, GRRenderIf::ORANGE, v, w, p, q);
+                //message = "random polyhedron dropped.";
+                jenga[1]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d(0, jenga_y / 2, 0) / 100.0 * scale);
+                jenga[1]->SetOrientation(Quaterniond::Rot(Rad(0.0), 'y'));
             }
             if (id == ID_BLOCK) {
-                Drop(SHAPE_BLOCK, GRRenderIf::CYAN, v, w, p, q);
-                message = "composite block dropped.";
+                //Drop(SHAPE_BLOCK, GRRenderIf::CYAN, v, w, p, q);
+                //message = "composite block dropped.";
+                double cubesize = 2.0;
+                double gap = 0;
+                for (int i = 0; i < 16; i++) {
+                    box[i] = CreateBox();
+                    box[i]->SetFramePosition(Vec3d(0.0, 0.1, 0.0) + Vec3d((cubesize + gap)*(i % 4),cubesize/2, (cubesize + gap) * (i / 4))/100.0*scale);
+                }
+                for (int i = 0; i < 5; i++) {
+                    for (int j = 0; j < 4; j++) {
+                        if (!(i == 0 && j == 0)) {
+                            for (int k = 0; k < 16; k++) {
+                                GetPHScene()->SetContactMode(fg_base_slide[i][j][0], box[k], PHSceneDesc::MODE_NONE);
+                                GetPHScene()->SetContactMode(fg_base_slide[i][j][1], box[k], PHSceneDesc::MODE_NONE);
 
+                                GetPHScene()->SetContactMode(fg_obj[i][j], box[k], PHSceneDesc::MODE_LCP);
+
+                            }
+                        }
+                    }
+                }
             }
 
             if (id == ID_SHAKE) {
