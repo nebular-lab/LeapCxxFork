@@ -865,9 +865,13 @@ public:
         // ステートを解放
         states->ReleaseState(GetPHScene());
 
+        if (cube) {
+            GetFWScene()->GetPHScene()->DelChildObject(cube);
+            cube = NULL;
+        }
         // 剛体を作成
-        //solid= GetPHScene()->CreateSolid();
-        /*PHSolidIf* solid = GetPHScene()->CreateSolid();*/
+        cube = GetPHScene()->CreateSolid();
+        cube->SetName("droped cube");
         // マテリアルを設定
         GetFWScene()->SetSolidMaterial(mat, cube);
         
@@ -970,7 +974,6 @@ public:
         }
         cube->SetVelocity(v);
         cube->SetAngularVelocity(w);
-        p = Vec3d(0.0, 0.3, 0.0);
         cube->SetFramePosition(p);
         cube->SetOrientation(q);
         cube->CompInertia();
@@ -1016,7 +1019,7 @@ public:
 
         cout << "type=3" << endl;
 
-        type = 3;
+        type = 6;
 
         cout << "はみ出しの長さを入力してください。\n" << endl;
         //cin >> jenga_edge;
@@ -1379,6 +1382,11 @@ public:
                         fg_pos[i][j][1] = vecvec3_2(hand->digits[i].bones[j].next_joint);
                         bone_width[i][j] = hand->digits[i].bones[j].width;
                     }
+                    //親指の根本と人差し指を繋ぐ
+                    else if (i == 0 && j == 0) {
+                        fg_pos[i][j][0] = vecvec3_2(hand->digits[1].bones[0].prev_joint);
+                        fg_pos[i][j][1] = vecvec3_2(hand->digits[0].bones[1].prev_joint);
+                    }
                 }
             }
             //GRRenderIf* render;
@@ -1394,10 +1402,21 @@ public:
                 for (int j = 0; j < 4; j++) {
                     if (!(i == 0 && j == 0)) {
                         fg_base_slide[i][j][0] = CreateBone_base();
+                        fg_base_slide[i][j][0]->SetName("base");
                         fg_base_slide[i][j][1] = CreateBone_base();
+                        fg_base_slide[i][j][1]->SetName("base");
+
                         GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base_slide[i][j][0]);
                         GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base_slide[i][j][1]);
                     }
+                    //else if (i == 0 && j == 0) {
+                    //    fg_base_slide[i][j][0] = CreateBone_base();
+                    //    fg_base_slide[i][j][0]->SetName("base");
+                    //    fg_base_slide[i][j][1] = CreateBone_base();
+                    //    fg_base_slide[i][j][1]->SetName("base");
+                    //    GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base_slide[i][j][0]);
+                    //    GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base_slide[i][j][1]);
+                    //}
                 }
             }
             //tool
@@ -1410,15 +1429,17 @@ public:
                             if (isNail == 0) {
                                 fg_obj[i][j] = CreateBoneNo(0.22 * scale);
 
+
                             }
                             else if (isNail == 1) {
                                 fg_obj[i][j] = CreateBone(0.22 * scale);
+                                fg_obj[i][j]->SetName("tooltip");
                             }
 
                         }
                         else {
                             fg_obj[i][j] = CreateBoneCapsule(fg_pos[i][j][0], fg_pos[i][j][1],bone_width[i][j]/2.0);
-
+                            fg_obj[i][j]->SetName("tool");
                         }
                         GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE,fg_obj[i][j]);
 
@@ -1426,6 +1447,13 @@ public:
                         //GetPHScene()->SetContactMode(fg_obj[i][j], soFloor,PHSceneDesc::MODE_LCP);
 
                     }
+                    //else if (i == 0 && j == 0) {
+                    //    fg_obj[i][j] = CreateBoneCapsule(fg_pos[i][j][0], fg_pos[i][j][1], bone_width[0][1]/2.0);
+                    //    GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_obj[i][j]);
+                    //    GetPHScene()->SetContactMode(fg_obj[i][j], PHSceneDesc::MODE_NONE);
+
+
+                    //}
                 }
             }
             spring = 1000.0;
@@ -1462,7 +1490,18 @@ public:
                     }
                 }
             }
-            ////手のひらの拘束
+
+            //親指と人差し指の接続
+            //PHBallJointIf* oyahitojoint;
+            //PHBallJointDesc oyahitodesc;
+            //oyahitodesc.poseSocket.Pos()= Vec3d(0.0, 0.0, jointLength(fg_pos[0][0][0], fg_pos[0][0][1]) / 2.0);
+            //oyahitodesc.posePlug.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[1][0][0], fg_pos[1][0][1]) / 2.0);
+            //oyahitojoint = GetPHScene()->CreateJoint(fg_obj[0][0], fg_obj[1][0], oyahitodesc)->Cast();
+
+
+
+
+            //手のひらの拘束
             //for (int i = 0; i < 3; i++) {
             //    
             //    palm_spring_desc[i][0].poseSocket.Pos() = Vec3d(0.0, 0.0, +jointLength(fg_pos[i + 1][0][0], fg_pos[i + 1][0][1]) / 2.0)+(fg_pos[i+2][0][0]-fg_pos[i+1][0][0])/2.0;
@@ -1814,7 +1853,6 @@ public:
                         //}
                     }
                     else if (type == 3&&hand->type==1) {
-                    
                         for (int i = 0; i < 5; i++) {
                             for (int j = 0; j < 4; j++) {
                                 if (!(i == 0 && j == 0)) {
@@ -1834,6 +1872,17 @@ public:
                                     fg_joint_vc_slide[i][j][1]->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
                                     
                                 }
+                                //if (i == 0 && j == 0) {
+                                //    fg_pos[i][j][0] = vecvec3_3(hand->digits[1].bones[0].prev_joint);
+                                //    fg_pos[i][j][1] = vecvec3_3(hand->digits[0].bones[1].prev_joint);
+                                //    //向きが変えられない
+
+                                //    fg_base_slide[i][j][0]->SetFramePosition(fg_pos[i][j][0]);
+                                //    fg_base_slide[i][j][1]->SetFramePosition(fg_pos[i][j][1]);
+
+                                //    fg_joint_vc_slide[i][j][0]->SetPlugPose(Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
+                                //    fg_joint_vc_slide[i][j][1]->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
+                                //}
                             }
                         }
  
@@ -1872,12 +1921,20 @@ public:
                         Vec3d fg_a_v;
                         fg_v = fg_obj[0][3]->GetVelocity();
                         fg_a_v = fg_obj[0][3]->GetAngularVelocity();
+                       
 
+                        //DSTR << fg_a_v << endl;
+                        //cout << fg_a_v << endl;
                         std::string csv_filename = "test.csv";
                         std::ofstream ofs_csv_file;
                         ofs_csv_file.open(csv_filename, std::ios::app);
                         ofs_csv_file << fg_v.x << ',' << fg_v.y << ',' << fg_v.z << ',' << fg_a_v.x <<','<< fg_a_v.y <<','<< fg_a_v.z << endl;
 
+                        Vec3d cube_v;
+                        if (cube) {
+                            cube_v=cube->GetVelocity();
+                            cout << cube_v << endl;
+                        }
 
                         //成功or失敗したらcubeを落とす
                         Vec3d cube_pos;
@@ -1975,7 +2032,7 @@ public:
 
     virtual void OnAction(int menu, int id) {
         if (menu == MENU_MAIN) {
-            Vec3d v, w(0.0, 0.0, 0.2), p(0.0, 0.3, 0.0);
+            Vec3d v(0.0,0.0,0.0), w(0.1, 0.0, 0.1), p(0.1, 0.3, 0.1);
             static Quaterniond q = Quaterniond::Rot(Rad(30.0), 'z');
             //Quaterniond q = Quaterniond::Rot(Rad(90), 'y')*q;
 
