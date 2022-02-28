@@ -249,6 +249,9 @@ public:
     PHBallJointDesc Balldesc[5][3];
     PHSliderJointDesc Sliderdesc;
 
+    PHBallJointIf* oyahitojoint;
+    PHBallJointDesc oyahitodesc;
+
     CDSphereIf* cs;
 
     PHSolidIf* cube;//落とす物体
@@ -259,7 +262,6 @@ public:
 
     PHSolidIf* box[16];
 
-    PHSpringDesc oyahitodesc;
 
     PHSolidIf* cylinder;
     PHSolidIf* judge;
@@ -356,8 +358,8 @@ public:
         shapeFloor->SetElasticity(0.0);
 
         soFloor->AddShape(shapeFloor);
-        soFloor->SetShapePose(0, Posed::Trn(30.0 + from_center + width, -shapeFloor->GetBoxSize().y / 2 + 0.1, 0));
-        //soFloor->SetShapePose(0, Posed::Trn(0, -shapeFloor->GetBoxSize().y /2+0.1, 0));
+        //soFloor->SetShapePose(0, Posed::Trn(30.0 + from_center + width, -shapeFloor->GetBoxSize().y / 2 + 0.1, 0));
+        soFloor->SetShapePose(0, Posed::Trn(0, -shapeFloor->GetBoxSize().y /2+0.1, 0));
         if (bWall) {
             soFloor->AddShape(shapeWallZ);
             soFloor->AddShape(shapeWallX);
@@ -369,7 +371,7 @@ public:
             soFloor->SetShapePose(3, Posed::Trn((shapeFloor->GetBoxSize().x + shapeWallZ->GetBoxSize().x) / 2, y, 0));
             soFloor->SetShapePose(4, Posed::Trn(0, y, (shapeFloor->GetBoxSize().z + shapeWallX->GetBoxSize().z) / 2));
         }
-
+        /*
         soFloor->AddShape(shapeFloor);
         soFloor->AddShape(shapeFloor);
         soFloor->AddShape(shapeFloor);
@@ -377,6 +379,7 @@ public:
         soFloor->SetShapePose(6, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2 + 0.1, 20.0+width/2));
         soFloor->SetShapePose(7, Posed::Trn(0, -shapeFloor->GetBoxSize().y / 2 + 0.1, -20.0 - width / 2));
          
+         */
         //CDBoxDesc wz;
         //wz = Vec3d(0.1, 0.7, 40.0);
         //shapeWallZ = GetSdk()->GetPHSdk()->CreateShape(wz)->Cast();
@@ -486,7 +489,7 @@ public:
         PHSolidIf* soBone = GetPHScene()->CreateSolid();
         CDSphereDesc sd;
 
-        sd.radius = 2.0f / 1000.0f * (float)scale;
+        sd.radius = 5.0f / 1000.0f * (float)scale;
 
         shapeSphere = GetSdk()->GetPHSdk()->CreateShape(sd)->Cast();
 
@@ -824,6 +827,7 @@ public:
         return vec3;
     }
     Vec3d vecvec3_3(LEAP_VECTOR vec) {
+        //leapの座標で取得して、単位をmに直し、座標変換をする
         Vec3d vec3;
         double x;
         double y;
@@ -894,6 +898,7 @@ public:
             shapeCapsule->SetDynamicFriction(friction);
             shapeCapsule->SetStaticFriction(friction);
             shapeCapsule->SetDensity(cube_density);
+            shapeCapsule->SetElasticity(0.0);
             shapeCapsule = GetSdk()->GetPHSdk()->CreateShape(cd)->Cast();
             cube->AddShape(shapeCapsule);
 
@@ -1019,7 +1024,7 @@ public:
 
         cout << "type=3" << endl;
 
-        type = 6;
+        type = 3;
 
         cout << "はみ出しの長さを入力してください。\n" << endl;
         //cin >> jenga_edge;
@@ -1378,15 +1383,20 @@ public:
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 4; j++) {
                     if (!(i == 0 && j == 0)) {
-                        fg_pos[i][j][0] = vecvec3_2(hand->digits[i].bones[j].prev_joint);
-                        fg_pos[i][j][1] = vecvec3_2(hand->digits[i].bones[j].next_joint);
+                        fg_pos[i][j][0] = vecvec3_3(hand->digits[i].bones[j].prev_joint);
+                        fg_pos[i][j][1] = vecvec3_3(hand->digits[i].bones[j].next_joint);
                         bone_width[i][j] = hand->digits[i].bones[j].width;
+
+                        fg_ori[i][j] = quaquad(hand->digits[i].bones[j].rotation);
+                        fg_ori[i][j] = x90 * fg_ori[i][j];
+                        fg_ori[i][j] = y180 * fg_ori[i][j];
                     }
                     //親指の根本と人差し指を繋ぐ
-                    else if (i == 0 && j == 0) {
-                        fg_pos[i][j][0] = vecvec3_2(hand->digits[1].bones[0].prev_joint);
-                        fg_pos[i][j][1] = vecvec3_2(hand->digits[0].bones[1].prev_joint);
-                    }
+                    //else if (i == 0 && j == 0) {
+                    //    fg_pos[i][j][0] = vecvec3_3(hand->digits[1].bones[0].prev_joint);//人差し指の根本
+                    //    fg_pos[i][j][1] = vecvec3_3(hand->digits[0].bones[1].prev_joint);//親指の根本
+                    //   
+                    //}
                 }
             }
             //GRRenderIf* render;
@@ -1414,8 +1424,8 @@ public:
                     //    fg_base_slide[i][j][0]->SetName("base");
                     //    fg_base_slide[i][j][1] = CreateBone_base();
                     //    fg_base_slide[i][j][1]->SetName("base");
-                    //    GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base_slide[i][j][0]);
-                    //    GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base_slide[i][j][1]);
+                    //    GetFWScene()->SetSolidMaterial(GRRenderIf::BLACK, fg_base_slide[i][j][0]);
+                    //    GetFWScene()->SetSolidMaterial(GRRenderIf::BLACK, fg_base_slide[i][j][1]);
                     //}
                 }
             }
@@ -1463,21 +1473,31 @@ public:
                 for (int j = 0; j < 4; j++) {
                     if (!(i == 0 && j == 0)) {
                         spring_slide[i][j][0].posePlug.Pos() = Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0);
-                        spring_slide[i][j][1].posePlug.Pos() = Vec3d(0.0, 0.0,  jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0);
+                        //spring_slide[i][j][0].posePlug.Ori() = fg_ori[i][j];
+                        //spring_slide[i][j][0].poseSocket.Ori() = fg_ori[i][j];
+
+                        spring_slide[i][j][1].posePlug.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0);
+                        //spring_slide[i][j][1].posePlug.Ori() = fg_ori[i][j];
+                        //spring_slide[i][j][1].poseSocket.Ori() = fg_ori[i][j];
 
                         spring_slide[i][j][0].spring = Vec3d(spring, spring, spring);
                         spring_slide[i][j][0].damper = Vec3d(damper, damper, damper);
                         spring_slide[i][j][0].springOri = spring;
                         spring_slide[i][j][0].damperOri = damper;
+                        //spring_slide[i][j][0].springOri = 0.0;
+                        //spring_slide[i][j][0].damperOri = 0.0;
 
                         spring_slide[i][j][1].spring = Vec3d(spring, spring, spring);
                         spring_slide[i][j][1].damper = Vec3d(damper, damper, damper);
                         spring_slide[i][j][1].springOri = spring;
                         spring_slide[i][j][1].damperOri = damper;
+                        //spring_slide[i][j][1].springOri = 0.0;
+                        //spring_slide[i][j][1].damperOri = 0.0;
                         
                         fg_joint_vc_slide[i][j][0] = GetPHScene()->CreateJoint(fg_base_slide[i][j][0], fg_obj[i][j], spring_slide[i][j][0])->Cast();
                         fg_joint_vc_slide[i][j][1] = GetPHScene()->CreateJoint(fg_base_slide[i][j][1], fg_obj[i][j], spring_slide[i][j][1])->Cast();
                     }
+
                 }
             }
             //balljoint
@@ -1492,11 +1512,10 @@ public:
             }
 
             //親指と人差し指の接続
-            //PHBallJointIf* oyahitojoint;
-            //PHBallJointDesc oyahitodesc;
-            //oyahitodesc.poseSocket.Pos()= Vec3d(0.0, 0.0, jointLength(fg_pos[0][0][0], fg_pos[0][0][1]) / 2.0);
-            //oyahitodesc.posePlug.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[1][0][0], fg_pos[1][0][1]) / 2.0);
-            //oyahitojoint = GetPHScene()->CreateJoint(fg_obj[0][0], fg_obj[1][0], oyahitodesc)->Cast();
+
+            oyahitodesc.poseSocket.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[0][1][0], fg_pos[0][1][1]) / 2.0) +(fg_pos[1][0][0] - fg_pos[0][1][0]) / 2.0;
+            oyahitodesc.posePlug.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[1][0][0], fg_pos[1][0][1]) / 2.0) + (fg_pos[0][1][0] - fg_pos[1][0][0]) / 2.0;
+            oyahitojoint = GetPHScene()->CreateJoint(fg_obj[0][1], fg_obj[1][0], oyahitodesc)->Cast();
 
 
 
@@ -1861,24 +1880,36 @@ public:
                                     fg_ori[i][j] = quaquad(hand->digits[i].bones[j].rotation);
                                     fg_ori[i][j] = x90 * fg_ori[i][j];
                                     fg_ori[i][j] = y180 * fg_ori[i][j];
+                                    //cout << fg_ori[i][j] << endl;
 
                                     fg_base_slide[i][j][0]->SetFramePosition(fg_pos[i][j][0]);
                                     fg_base_slide[i][j][1]->SetFramePosition(fg_pos[i][j][1]);
                                     fg_base_slide[i][j][0]->SetOrientation(fg_ori[i][j]);
                                     fg_base_slide[i][j][1]->SetOrientation(fg_ori[i][j]);
 
-                                    //バーチャルカップリングの位置を更新
+                                    //バーチャルカップリングの位置と姿勢を更新
                                     fg_joint_vc_slide[i][j][0]->SetPlugPose(Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
                                     fg_joint_vc_slide[i][j][1]->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
+
+                                    //fg_joint_vc_slide[i][j][0]->SetPlugPose(Posed(Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0), fg_ori[i][j]));
+                                    //fg_joint_vc_slide[i][j][1]->SetPlugPose(Posed(Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0), fg_ori[i][j]));
+
                                     
                                 }
                                 //if (i == 0 && j == 0) {
-                                //    fg_pos[i][j][0] = vecvec3_3(hand->digits[1].bones[0].prev_joint);
-                                //    fg_pos[i][j][1] = vecvec3_3(hand->digits[0].bones[1].prev_joint);
+                                //    fg_pos[i][j][0] = vecvec3_3(hand->digits[1].bones[0].prev_joint);//人差し指の根本
+                                //    fg_pos[i][j][1] = vecvec3_3(hand->digits[0].bones[1].prev_joint);//親指の根本
                                 //    //向きが変えられない
+                                //    //fg_ori[i][j].x = fg_pos[i][j][1].x - fg_pos[i][j][0].x;
+                                //    //fg_ori[i][j].y = fg_pos[i][j][1].y - fg_pos[i][j][0].y;
+                                //    //fg_ori[i][j].z = fg_pos[i][j][1].z - fg_pos[i][j][0].z;
+                                //    //fg_ori[i][j].w = 0;
+                                //    //fg_ori[i][j].RotationArc(fg_pos[i][j][0], fg_pos[i][j][1]);
 
                                 //    fg_base_slide[i][j][0]->SetFramePosition(fg_pos[i][j][0]);
                                 //    fg_base_slide[i][j][1]->SetFramePosition(fg_pos[i][j][1]);
+                                //    //fg_base_slide[i][j][0]->SetOrientation(fg_ori[i][j]);
+                                //    //fg_base_slide[i][j][1]->SetOrientation(fg_ori[i][j]);
 
                                 //    fg_joint_vc_slide[i][j][0]->SetPlugPose(Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
                                 //    fg_joint_vc_slide[i][j][1]->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
@@ -1897,6 +1928,7 @@ public:
                         //    fg_base_slide[i][3][1]->InvalidateBbox();
                         //}
                         
+
                         for (int i = 0; i < 5; i++) {
                             for (int j = 0; j < 3; j++) {
                                 if (!(i == 0 && j == 0)) {
@@ -1905,7 +1937,12 @@ public:
                                 }
                             }
                         }
+
+                        oyahitojoint->SetSocketPose(Vec3d(0.0, 0.0, jointLength(fg_pos[0][1][0], fg_pos[0][1][1]) / 2.0) + (fg_pos[1][0][0] - fg_pos[0][1][0]) / 2.0);
+                        oyahitojoint->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[1][0][0], fg_pos[1][0][1]) / 2.0) + (fg_pos[0][1][0] - fg_pos[1][0][0]) / 2.0);
                        
+
+
                         PHSolidPairForLCPIf* solidpair;
                         bool swaped;
                         int state;
@@ -1917,24 +1954,19 @@ public:
                         //    start = clock();
                         //}
 
-                        Vec3d fg_v;
-                        Vec3d fg_a_v;
-                        fg_v = fg_obj[0][3]->GetVelocity();
-                        fg_a_v = fg_obj[0][3]->GetAngularVelocity();
+                        //Vec3d fg_v;
+                        //Vec3d fg_a_v;
+                        //fg_v = fg_obj[0][3]->GetVelocity();
+                        //fg_a_v = fg_obj[0][3]->GetAngularVelocity();
                        
 
                         //DSTR << fg_a_v << endl;
                         //cout << fg_a_v << endl;
-                        std::string csv_filename = "test.csv";
-                        std::ofstream ofs_csv_file;
-                        ofs_csv_file.open(csv_filename, std::ios::app);
-                        ofs_csv_file << fg_v.x << ',' << fg_v.y << ',' << fg_v.z << ',' << fg_a_v.x <<','<< fg_a_v.y <<','<< fg_a_v.z << endl;
+                        //std::string csv_filename = "test.csv";
+                        //std::ofstream ofs_csv_file;
+                        //ofs_csv_file.open(csv_filename, std::ios::app);
+                        //ofs_csv_file << fg_v.x << ',' << fg_v.y << ',' << fg_v.z << ',' << fg_a_v.x <<','<< fg_a_v.y <<','<< fg_a_v.z << endl;
 
-                        Vec3d cube_v;
-                        if (cube) {
-                            cube_v=cube->GetVelocity();
-                            cout << cube_v << endl;
-                        }
 
                         //成功or失敗したらcubeを落とす
                         Vec3d cube_pos;
@@ -2038,6 +2070,7 @@ public:
 
             if (id == ID_BOX) {
                 Drop(SHAPE_BOX, GRRenderIf::RED, v, w, p, q);
+                //Drop(SHAPE_CAPSULE, GRRenderIf::GREEN, v, w, p, q);
                 message = "box dropped.";
                 //start = clock();
             }
