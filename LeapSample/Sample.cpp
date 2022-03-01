@@ -251,6 +251,7 @@ public:
 
     PHBallJointIf* oyahitojoint;
     PHBallJointDesc oyahitodesc;
+    PHSolidIf* oyahito[2];
 
     CDSphereIf* cs;
 
@@ -969,7 +970,7 @@ public:
                         GetPHScene()->SetContactMode(fg_obj_slide[i][j][0], cube, PHSceneDesc::MODE_LCP);
                         GetPHScene()->SetContactMode(fg_obj_slide[i][j][1], cube, PHSceneDesc::MODE_LCP);
                         
-                            GetPHScene()->SetContactMode(fg_obj[i][j], cube, PHSceneDesc::MODE_LCP);
+                        GetPHScene()->SetContactMode(fg_obj[i][j], cube, PHSceneDesc::MODE_LCP);
                         
 
                     }
@@ -1418,6 +1419,9 @@ public:
 
                         GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base_slide[i][j][0]);
                         GetFWScene()->SetSolidMaterial(GRRenderIf::RED, fg_base_slide[i][j][1]);
+                        GetPHScene()->SetContactMode(fg_base_slide[i][j][0], PHSceneDesc::MODE_NONE);
+                        GetPHScene()->SetContactMode(fg_base_slide[i][j][1], PHSceneDesc::MODE_NONE);
+
                     }
                     //else if (i == 0 && j == 0) {
                     //    fg_base_slide[i][j][0] = CreateBone_base();
@@ -1442,7 +1446,8 @@ public:
 
                             }
                             else if (isNail == 1) {
-                                fg_obj[i][j] = CreateBone(0.22 * scale);
+                                //fg_obj[i][j] = CreateBone(0.22 * scale);
+                                fg_obj[i][j] = CreateBoneCapsule(fg_pos[i][j][0], fg_pos[i][j][1], bone_width[i][j] / 2.0);
                                 fg_obj[i][j]->SetName("tooltip");
                             }
 
@@ -1472,11 +1477,11 @@ public:
             for (int i = 0; i < 5; i++) {
                 for (int j = 0; j < 4; j++) {
                     if (!(i == 0 && j == 0)) {
-                        spring_slide[i][j][0].posePlug.Pos() = Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0);
+                        spring_slide[i][j][0].posePlug.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0);
                         //spring_slide[i][j][0].posePlug.Ori() = fg_ori[i][j];
                         //spring_slide[i][j][0].poseSocket.Ori() = fg_ori[i][j];
 
-                        spring_slide[i][j][1].posePlug.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0);
+                        spring_slide[i][j][1].posePlug.Pos() = Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0);
                         //spring_slide[i][j][1].posePlug.Ori() = fg_ori[i][j];
                         //spring_slide[i][j][1].poseSocket.Ori() = fg_ori[i][j];
 
@@ -1513,6 +1518,9 @@ public:
 
             //親指と人差し指の接続
 
+            //oyahito[0] = CreateBone_base();
+            //oyahito[1] = CreateBone_base();
+
             oyahitodesc.poseSocket.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[0][1][0], fg_pos[0][1][1]) / 2.0) +(fg_pos[1][0][0] - fg_pos[0][1][0]) / 2.0;
             oyahitodesc.posePlug.Pos() = Vec3d(0.0, 0.0, jointLength(fg_pos[1][0][0], fg_pos[1][0][1]) / 2.0) + (fg_pos[0][1][0] - fg_pos[1][0][0]) / 2.0;
             oyahitojoint = GetPHScene()->CreateJoint(fg_obj[0][1], fg_obj[1][0], oyahitodesc)->Cast();
@@ -1543,100 +1551,7 @@ public:
             //    palm_joint[i][1] = GetPHScene()->CreateJoint(fg_obj[i + 1][0], fg_obj[i + 2][0], palm_spring_desc[i][1])->Cast();
 
             //}
-        }
-        if (type == 4) {
-            //cubeの設置
-            Vec3d v, w(0.0, 0.0, 0.2), p(0.5, 10, 0.0);
-            static Quaterniond q = Quaterniond::Rot(Rad(0.0), 'y');
-            q = Quaterniond::Rot(Rad(90), 'y') * q;
-            CDBoxDesc bd;
-            bd.boxsize = Vec3d(4.0, 8.0, 4.0) / 100.0 * scale;  //単位 m^3
-            shapeBox->SetDynamicFriction(friction);
-            shapeBox->SetStaticFriction(friction);
-            shapeBox->SetDensity(cube_density);//単位 kg/m^3
-            shapeBox = GetSdk()->GetPHSdk()->CreateShape(bd)->Cast();
-            cube->AddShape(shapeBox);
-            cube->SetVelocity(v);
-            cube->SetAngularVelocity(w);
-            p = Vec3d(0.0, 0.25, 0.0);
-            cube->SetFramePosition(p);
-            cube->SetOrientation(q);
-            cube->CompInertia();
-
-
-            //インターフェース側の剛体の作成
-            fg_base[0][3] = CreateBone_base();
-            GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_base[0][3]);
-            fg_base[1][3] = CreateBone_base();
-            GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_base[1][3]);
-
-            GetPHScene()->SetContactMode(fg_base[0][3], PHSceneDesc::MODE_NONE);
-            GetPHScene()->SetContactMode(fg_base[1][3], PHSceneDesc::MODE_NONE);
-
-
-            //tool側の剛体の作成
-            // 
-            // sphereは球、capsuleは長さ0.2の長さのカプセル、capsuleRoundは0.2の長さのカプセルを回転させられる
-            // 
-            //fg_obj[0][3] = CreateBoneSphere();
-            //fg_obj[0][3] = CreateBoneCapsule(Vec3d(0.2, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0));
-            fg_obj[0][3] = CreateBoneCapsuleRound(Vec3d(0.2, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0), Quaterniond::Rot(Rad(-30.0), 'x'));
-           
-            //fg_obj[1][3] = CreateBoneSphere();
-            //fg_obj[1][3] = CreateBoneCapsule(Vec3d(0.2, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0));
-            fg_obj[1][3] = CreateBoneCapsuleRound(Vec3d(0.2, 0.0, 0.0), Vec3d(0.0, 0.0, 0.0), Quaterniond::Rot(Rad(30.0), 'x'));
-
-            GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE, fg_obj[0][3]);
-            GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE, fg_obj[1][3]);
- 
-
-            GetPHScene()->SetContactMode(fg_obj[0][3], PHSceneDesc::MODE_NONE);
-            GetPHScene()->SetContactMode(fg_obj[1][3], PHSceneDesc::MODE_NONE);
-            GetPHScene()->SetContactMode(fg_obj[0][3],cube, PHSceneDesc::MODE_LCP);
-            GetPHScene()->SetContactMode(fg_obj[1][3],cube, PHSceneDesc::MODE_LCP);
-
-            //virtual coupling
-            fg_joint_vc[0][3] = GetPHScene()->CreateJoint(fg_base[0][3], fg_obj[0][3], Springdesc)->Cast();
-            fg_joint_vc[1][3] = GetPHScene()->CreateJoint(fg_base[1][3], fg_obj[1][3], Springdesc)->Cast();
-
-            //初期位置
-            fg_base[0][3]->SetFramePosition(Vec3d(0.0, 0.2, 1.0));
-            fg_base[1][3]->SetFramePosition(Vec3d(0.0, 0.2, -1.0));
-
-            fg_obj[0][3]->SetFramePosition(Vec3d(0.0, 0.2, 1.0));
-            fg_obj[1][3]->SetFramePosition(Vec3d(0.0, 0.2, -1.0));
-
-        }
-        
-        if (type == 5) {
-
-            //interface object
-            fg_base[0][3] = CreateBone_base();
-            GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_base[0][3]);
-            fg_base[1][3] = CreateBone_base();
-            GetFWScene()->SetSolidMaterial(GRRenderIf::YELLOW, fg_base[1][3]);
-
-            GetPHScene()->SetContactMode(fg_base[0][3], PHSceneDesc::MODE_NONE);
-            GetPHScene()->SetContactMode(fg_base[1][3], PHSceneDesc::MODE_NONE);
-
-            //tool object
-
-            fg_obj[0][3] = CreateBoneSphere();
-            fg_obj[1][3] = CreateBoneSphere();
-
-            GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE, fg_obj[0][3]);
-            GetFWScene()->SetSolidMaterial(GRRenderIf::BLUE, fg_obj[1][3]);
-
-            GetPHScene()->SetContactMode(fg_obj[0][3], PHSceneDesc::MODE_NONE);
-            GetPHScene()->SetContactMode(fg_obj[1][3], PHSceneDesc::MODE_NONE);
-            GetPHScene()->SetContactMode(fg_obj[0][3], cube, PHSceneDesc::MODE_LCP);
-            GetPHScene()->SetContactMode(fg_obj[1][3], cube, PHSceneDesc::MODE_LCP);
-
-            //virtual coupling
-            fg_joint_vc[0][3] = GetPHScene()->CreateJoint(fg_base[0][3], fg_obj[0][3], Springdesc)->Cast();
-            fg_joint_vc[1][3] = GetPHScene()->CreateJoint(fg_base[1][3], fg_obj[1][3], Springdesc)->Cast();
-
-        }
+        }  
     }
 
     // タイマコールバック関数．タイマ周期で呼ばれる
@@ -1659,50 +1574,7 @@ public:
             soFloor->SetVelocity(Vec3d(floorShakeAmplitude * omega * cos(time * omega), 0, 0));
         }
 
-        if (type == 4) {
-            Vec3d cube_pos;
-            Vec3d fg_pos[2];
-            Vec3d fg_obj_pos[2];
-
-
-            //親指の指先の速度と角速度の測定とcsvファイルへの書き込み
-            Vec3d fg_v;
-            Vec3d fg_a_v;
-            fg_v = fg_obj[0][3]->GetVelocity();
-            fg_a_v = fg_obj[0][3]->GetAngularVelocity();
-
-            //std::string csv_filename = "test.csv";
-            //std::ofstream ofs_csv_file;
-            //ofs_csv_file.open(csv_filename, std::ios::app);
-            //ofs_csv_file << fg_v.x << ',' << fg_v.y << ',' << fg_v.z << ',' << fg_a_v.x << ',' << fg_a_v.y << ',' << fg_a_v.z << endl;
-
-
-
-            //cubeのpositionに向かって二つの剛体が進むようになっている
-            cube_pos = cube->GetFramePosition();
-
-            fg_pos[0] = fg_base[0][3]->GetFramePosition();
-            fg_pos[1] = fg_base[1][3]->GetFramePosition();
-
-            fg_base[0][3]->SetFramePosition(fg_pos[0] + (cube_pos - fg_pos[0]) / jointLength(cube_pos, fg_pos[0]) * 0.001);
-            fg_base[1][3]->SetFramePosition(fg_pos[1] + (cube_pos - fg_pos[1]) / jointLength(cube_pos, fg_pos[1]) * 0.001);
-
-
-            //指のインターフェース側のsolidとツール側のsolidが0.05以上離れたら把持したとみなして持ち上げ、0.65の高さになったら落とす
-            fg_obj_pos[0] = fg_obj[0][3]->GetFramePosition();
-            if (jointLength(fg_obj_pos[0],fg_pos[0])>0.05) {
-                if (fg_pos[0].y < 0.7) {
-                    fg_base[0][3]->SetFramePosition(Vec3d(fg_pos[0].x, fg_pos[0].y + 0.001, fg_pos[0].z));
-                    fg_base[1][3]->SetFramePosition(Vec3d(fg_pos[1].x, fg_pos[1].y + 0.001, fg_pos[1].z));
-                }
-            }
-            if (fg_pos[0].y >= 0.65) {
-                fg_base[0][3]->SetFramePosition(Vec3d(fg_pos[0].x, fg_pos[0].y , fg_pos[0].z+0.001));
-                fg_base[1][3]->SetFramePosition(Vec3d(fg_pos[1].x, fg_pos[1].y , fg_pos[1].z-0.001));
-                BuildScene();
-            }
-        }
-        else {
+        
             frame = GetFrame();
 
             if (frame && (frame->tracking_frame_id > lastFrameID)) {
@@ -1888,8 +1760,8 @@ public:
                                     fg_base_slide[i][j][1]->SetOrientation(fg_ori[i][j]);
 
                                     //バーチャルカップリングの位置と姿勢を更新
-                                    fg_joint_vc_slide[i][j][0]->SetPlugPose(Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
-                                    fg_joint_vc_slide[i][j][1]->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
+                                    fg_joint_vc_slide[i][j][0]->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
+                                    fg_joint_vc_slide[i][j][1]->SetPlugPose(Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
 
                                     //fg_joint_vc_slide[i][j][0]->SetPlugPose(Posed(Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0), fg_ori[i][j]));
                                     //fg_joint_vc_slide[i][j][1]->SetPlugPose(Posed(Vec3d(0.0, 0.0, jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0), fg_ori[i][j]));
@@ -1928,18 +1800,21 @@ public:
                         //    fg_base_slide[i][3][1]->InvalidateBbox();
                         //}
                         
+                        //ballジョイントの関節位置の更新
+                        //for (int i = 0; i < 5; i++) {
+                        //    for (int j = 0; j < 3; j++) {
+                        //        if (!(i == 0 && j == 0)) {
+                        //            fg_joint[i][j]->SetSocketPose(Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
+                        //            fg_joint[i][j]->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[i][j + 1][0], fg_pos[i][j + 1][1]) / 2.0));
+                        //        }
+                        //    }
+                        //}
 
-                        for (int i = 0; i < 5; i++) {
-                            for (int j = 0; j < 3; j++) {
-                                if (!(i == 0 && j == 0)) {
-                                    fg_joint[i][j]->SetSocketPose(Vec3d(0.0, 0.0, -jointLength(fg_pos[i][j][0], fg_pos[i][j][1]) / 2.0));
-                                    fg_joint[i][j]->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[i][j + 1][0], fg_pos[i][j + 1][1]) / 2.0));
-                                }
-                            }
-                        }
 
-                        oyahitojoint->SetSocketPose(Vec3d(0.0, 0.0, jointLength(fg_pos[0][1][0], fg_pos[0][1][1]) / 2.0) + (fg_pos[1][0][0] - fg_pos[0][1][0]) / 2.0);
-                        oyahitojoint->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[1][0][0], fg_pos[1][0][1]) / 2.0) + (fg_pos[0][1][0] - fg_pos[1][0][0]) / 2.0);
+                        //親指と人差し指の接続の更新
+
+                        oyahitojoint->SetSocketPose(Vec3d(0.0, 0.0, jointLength(fg_pos[0][1][0], fg_pos[0][1][1]) / 2.0+0.01) + (fg_pos[1][0][0] - fg_pos[0][1][0]) / 2.0);
+                        oyahitojoint->SetPlugPose(Vec3d(0.0, 0.0, jointLength(fg_pos[1][0][0], fg_pos[1][0][1]) / 2.0 + 0.01) + (fg_pos[0][1][0] - fg_pos[1][0][0]) / 2.0);
                        
 
 
@@ -2008,49 +1883,10 @@ public:
                             interval = 1;
                         }
                     }
-                    else if (type == 5) {
-                        // finger position from leapmotion
-                        fg_pos[0][3][1] = vecvec3_3(hand->digits[0].bones[3].next_joint);
-                        fg_pos[1][3][1] = vecvec3_3(hand->digits[1].bones[3].next_joint);
-
-                        // finger rotation from leapmotion
-                        fg_ori[0][3] = quaquad(hand->digits[0].bones[3].rotation);
-                        fg_ori[0][3] = x90 * fg_ori[0][3];
-                        fg_ori[0][3] = y180 * fg_ori[0][3];
-                        fg_ori[1][3] = quaquad(hand->digits[1].bones[3].rotation);
-                        fg_ori[1][3] = x90 * fg_ori[1][3];
-                        fg_ori[1][3] = y180 * fg_ori[1][3];
-
-                        // Update position and orientation
-                        fg_base[0][3]->SetFramePosition(fg_pos[0][3][1]);
-                        fg_base[1][3]->SetFramePosition(fg_pos[1][3][1]);
-                        fg_base[0][3]->SetOrientation(fg_ori[0][3]);
-                        fg_base[1][3]->SetOrientation(fg_ori[1][3]);
-
-                        // If the cube falls into the hole, set again
-                        Vec3d cube_pos;
-                        cube_pos = cube->GetFramePosition();
-                        if (sorf == 0 && cube_pos.x > 0.5 && cube_pos.x<0.65 && cube_pos.z>-0.075 && cube_pos.z<0.075 && cube_pos.y>-2.0 && cube_pos.y < -1.0) {
-                            end = clock();
-                            std::ofstream writing_file;
-                            std::string filename2 = "sample.txt";
-                            writing_file.open(filename2, std::ios::app);
-                            //std::string writing_text = "test";
-                            writing_file << ((float)end - start) / CLOCKS_PER_SEC << std::endl;
-                            writing_file.close();
-                            sorf = 1;
-                        }
-                        if (sorf == 1 || sorf == 2) {
-                            Vec3d v, w(0.0, 0.0, 0.2), p(0.5, 10, 0.0);
-                            static Quaterniond q = Quaterniond::Rot(Rad(0.0), 'y');
-                            q = Quaterniond::Rot(Rad(90), 'y') * q;
-                            Drop(SHAPE_BOX, GRRenderIf::RED, v, w, p, q);
-                            sorf = 0;
-                        }
-                    }
+                   
                 }
             }
-        }
+        
     }
 
     // 描画関数．描画要求が来たときに呼ばれる
